@@ -43,10 +43,17 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .fi{animation:fi .3s ease both;}
 
-/* DEMO CTRL */
-.demo-ctrl{position:fixed;bottom:16px;right:16px;z-index:999;background:var(--navy2);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 16px;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.4);}
-.dc-title{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.dc-title span{width:6px;height:6px;border-radius:50%;background:var(--teal);}
+/* DEMO CTRL — ลากย้ายได้ + ย่อ/ขยาย (Option C) */
+.demo-ctrl{position:fixed;bottom:16px;right:16px;z-index:999;background:var(--navy2);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 16px;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.4);transition:padding .2s;}
+.demo-ctrl.collapsed{padding:8px 12px;}
+.demo-ctrl.collapsed .dc-body{display:none;}
+.dc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;user-select:none;}
+.demo-ctrl.collapsed .dc-head{margin-bottom:0;}
+.dc-drag-handle{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px;cursor:move;flex:1;}
+.dc-drag-handle span{width:6px;height:6px;border-radius:50%;background:var(--teal);}
+.dc-collapse-btn{width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);font-size:16px;line-height:1;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:inherit;padding:0;}
+.dc-collapse-btn:hover{background:rgba(255,255,255,.15);}
+.dc-body{transition:opacity .2s;}
 .dc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
 .dc-lbl{font-size:12px;color:rgba(255,255,255,.7);}
 .dc-toggle{width:38px;height:20px;border-radius:10px;border:none;cursor:pointer;transition:.3s;background:rgba(255,255,255,.15);position:relative;}
@@ -62,6 +69,8 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 .dc-stat{flex:1;text-align:center;}
 .dc-stat-val{font-size:18px;font-weight:700;color:#fff;}
 .dc-stat-lbl{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px;}
+.dc-other-room-msg{display:none;margin-top:8px;padding:8px 10px;background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.4);border-radius:8px;font-size:12px;font-weight:600;color:#93c5fd;}
+.dc-other-room-msg.show{display:block;}
 
 /* ══════════════════════════════════════════
    PATIENT PAGE
@@ -339,6 +348,9 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 .sim-hdr{background:var(--navy2);padding:12px 14px;}
 .sim-hdr-title{font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;}
 .sim-hdr-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;}
+.sim-room-select-row{padding:10px 14px;background:rgba(0,0,0,.15);border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:8px;}
+.sim-room-select-lbl{font-size:12px;font-weight:600;color:rgba(255,255,255,.9);white-space:nowrap;}
+.sim-room-select{flex:1;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;}
 .sim-rooms{flex:1;overflow-y:auto;padding:10px;}
 .src{background:var(--card);border:1.5px solid var(--border);border-radius:11px;padding:10px 12px;margin-bottom:7px;transition:.25s;}
 .src.has-req{border-color:rgba(217,119,6,.5);background:rgba(254,243,199,.4);}
@@ -439,7 +451,7 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 /* countdown ring on rating screen */
 .rating-countdown{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
 
-.triage-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:11px;padding:10px 12px 16px;display:flex;align-items:flex-start;gap:10px;transition:.3s;position:relative;overflow:hidden;}
+.triage-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:11px;padding:10px 12px 16px;display:flex;align-items:flex-start;gap:10px;transition:.3s;position:relative;overflow:visible;}
 .triage-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px;}
 .triage-card.waiting::before{background:var(--red);}
 .triage-card.waiting.emergency{background:rgba(220,38,38,.07);}
@@ -492,13 +504,29 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 .rc-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
 
 /* Staff */
-.staff-item{display:flex;align-items:center;gap:7px;padding:6px;border-radius:8px;background:rgba(255,255,255,.02);margin-bottom:4px;}
+.staff-item{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.02);margin-bottom:4px;}
+.staff-item.on-break{opacity:.75;}
 .staff-av{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.staff-info{flex:1;min-width:0;}
 .staff-name{font-size:11px;font-weight:600;color:#fff;}
 .staff-status{font-size:10px;margin-top:1px;}
 .staff-status.free{color:rgba(22,163,74,.8);}
 .staff-status.enroute{color:rgba(37,99,235,.9);}
 .staff-status.busy{color:rgba(234,88,12,.8);}
+.staff-status.break{color:rgba(148,163,184,.9);}
+.staff-break-btn{flex-shrink:0;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);font-family:inherit;}
+.staff-break-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
+.ns-fair-info{background:rgba(15,158,142,.08);border:1px solid rgba(15,158,142,.25);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:8px;}
+.ns-fair-info strong{color:var(--teal);}
+.tc-suggest{font-size:10px;color:rgba(255,255,255,.6);margin-top:4px;}
+.tc-suggest strong{color:#86efac;}
+.tc-assign-wrap{display:inline-block;position:relative;vertical-align:middle;margin-left:4px;}
+.tc-btn-assign{background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);}
+.tc-assign-dropdown{display:none;position:absolute;top:100%;left:0;margin-top:4px;min-width:180px;background:var(--navy2);border:1px solid rgba(255,255,255,.15);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:10;max-height:200px;overflow-y:auto;}
+.tc-assign-dropdown.open{display:block;z-index:9999;}
+.tc-assign-item{display:block;width:100%;padding:8px 10px;text-align:left;font-size:11px;color:rgba(255,255,255,.9);background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;font-family:inherit;}
+.tc-assign-item:last-child{border-bottom:none;}
+.tc-assign-item:hover{background:rgba(255,255,255,.08);}
 
 /* Log */
 .log-list{max-height:180px;overflow-y:auto;}
@@ -593,6 +621,37 @@ table.dt tr.fl td{background:rgba(22,163,74,.06);}
 .chip.ok{background:var(--green-l);color:var(--green);}
 .chip.warn{background:var(--amber-l);color:var(--amber);}
 .chip.bad{background:var(--red-l);color:var(--red);}
+.chip.role-super_admin{background:#f3e8ff;color:#7c3aed;}
+.chip.role-head_nurse{background:#dbeafe;color:#1d4ed8;}
+.chip.role-nurse{background:#ccfbf1;color:#0d9488;}
+.chip.role-doctor{background:#fef3c7;color:#b45309;}
+.chip.role-viewer{background:#f3f4f6;color:#6b7280;}
+
+/* ── EXEC Placeholder (Phase ถัดไป) ── */
+.exec-placeholder-box{text-align:center;padding:48px 24px;max-width:400px;margin:40px auto;background:var(--card);border:1px solid var(--border);border-radius:16px;}
+.exec-placeholder-icon{font-size:48px;margin-bottom:16px;opacity:.7;}
+.exec-placeholder-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.exec-placeholder-desc{font-size:12px;color:var(--muted);}
+
+/* ── EXEC User Management (Phase) ── */
+.exec-um-roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
+.exec-um-role-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
+.exec-um-role-card .num{font-size:20px;font-weight:800;color:var(--text);}
+.exec-um-role-card .lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+.exec-um-table-wrap{max-height:360px;overflow-y:auto;}
+.exec-um-count{font-size:11px;color:var(--muted);font-weight:600;}
+.exec-um-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:10px;font-weight:600;cursor:pointer;margin-right:4px;}
+.exec-um-btn:hover{background:var(--border);}
+.exec-um-btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+/* ── EXEC PDPA Consent (Phase) ── */
+.exec-pdpa-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.exec-pdpa-summary-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.exec-pdpa-summary-card .num{font-size:22px;font-weight:800;}
+.exec-pdpa-summary-card .lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+.exec-pdpa-summary-card.given .num{color:var(--green);}
+.exec-pdpa-summary-card.withdrawn .num{color:var(--red);}
+.exec-pdpa-summary-card.pending .num{color:var(--amber);}
 
 /* ── AUDIT TRAIL — Legal Grade ── */
 .audit-section{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);}
@@ -655,9 +714,13 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
   </div>
 </nav>
 
-<!-- DEMO CTRL -->
-<div class="demo-ctrl">
-  <div class="dc-title"><span></span>Demo Control</div>
+<!-- DEMO CTRL (ลากหัวเพื่อย้าย · กด −/＋ เพื่อย่อ/ขยาย) -->
+<div class="demo-ctrl" id="demo-ctrl">
+  <div class="dc-head">
+    <div class="dc-drag-handle" id="dc-drag-handle"><span></span>Demo Control</div>
+    <button type="button" class="dc-collapse-btn" id="dc-collapse-btn" title="ย่อ" onclick="toggleDemoCtrlCollapse()">−</button>
+  </div>
+  <div class="dc-body">
   <div class="dc-row">
     <span class="dc-lbl">Auto Simulate</span>
     <button class="dc-toggle" id="autoToggle" onclick="toggleAuto()"></button>
@@ -676,6 +739,8 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
     <div class="dc-stat"><div class="dc-stat-val" id="dc-active">0</div><div class="dc-stat-lbl">Active</div></div>
     <div class="dc-stat"><div class="dc-stat-val" id="dc-done">0</div><div class="dc-stat-lbl">Done</div></div>
   </div>
+  <div class="dc-other-room-msg" id="dc-other-room-msg"></div>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -693,7 +758,7 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
               <button class="ov-back-btn" onclick="closeOverlay('ov-nursecall')">← กลับ</button>
               <div class="ov-hdr-info">
                 <div class="ov-hdr-title">🔔 เรียกพยาบาล</div>
-                <div class="ov-hdr-sub">Smart Nurse Call — ห้อง 301A · กรุณาเลือกประเภท</div>
+                <div class="ov-hdr-sub" id="ov-nursecall-hdr-sub">Smart Nurse Call — ห้อง 301A · กรุณาเลือกประเภท</div>
               </div>
             </div>
             <div class="ov-nc-body">
@@ -962,6 +1027,17 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
           <div class="sim-hdr-title">🏨 Ward อายุรกรรม 3A — 6 ห้อง</div>
           <div class="sim-hdr-sub">กดส่งคำร้องพร้อมกันหลายห้องได้</div>
         </div>
+        <div class="sim-room-select-row">
+          <label class="sim-room-select-lbl">แท็บเล็ตแสดง:</label>
+          <select class="sim-room-select" id="pt-room-select" onchange="setCurrentPatientRoom(this.value)">
+            <option value="301A">301A — สมชาย ใจดี</option>
+            <option value="302A">302A — มาลี จันทร์เพ็ง</option>
+            <option value="303A">303A — วิชัย แสงทอง</option>
+            <option value="304A">304A — ประสิทธิ์ มีสุข</option>
+            <option value="305A">305A — ลัดดา ศรีวงศ์</option>
+            <option value="306A">306A — สุชาติ บุญมี</option>
+          </select>
+        </div>
         <div class="sim-rooms" id="sim-rooms-list"></div>
       </div>
     </div>
@@ -1000,6 +1076,10 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
       <div class="ns-main">
         <div class="ns-card-box">
           <div class="ns-section-title">🔴 Live Triage Board <span class="ns-count-badge" id="ns-queue-badge">0</span></div>
+          <div class="ns-fair-info" id="ns-fair-info">
+            <span>⚖️</span>
+            <span><strong>มอบหมายอัตโนมัติตาม workload</strong> — กด "รับทราบ (มอบตามระบบ)" ระบบจะเลือกพยาบาลที่งานน้อยสุดหรือสลับตามลำดับ ลดการเลือกที่รักมักที่ชัง</span>
+          </div>
           <div id="ns-triage-list" class="triage-list"><div class="ns-empty">กดปุ่ม "เรียกพยาบาล" บน Patient App เพื่อเริ่มต้น</div></div>
         </div>
         <div class="ns-card-box">
@@ -1041,31 +1121,35 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
       <div class="exec-sidebar">
         <div class="exec-sidebar-logo"><div>🏥 Admin / Head Nurse</div><p id="exec-current-user">–</p></div>
         <div class="exec-menu-item active" data-exec-view="overview" onclick="setExecView('overview')">📊 Overview</div>
-        <div class="exec-menu-item has-alert" data-exec-view="overview" onclick="setExecView('overview')">🔔 Nurse Call Report <div class="mi-dot"></div></div>
+        <div class="exec-menu-item has-alert" data-exec-view="overview" data-exec-scroll="exec-section-kpis" onclick="setExecView('overview','exec-section-kpis')">🔔 Nurse Call Report <div class="mi-dot"></div></div>
         <div class="exec-menu-item" data-exec-view="tele" onclick="setExecView('tele')">📹 Telemedicine</div>
-        <div class="exec-menu-item" data-exec-view="overview" onclick="setExecView('overview')">🏥 Ward Performance</div>
-        <div class="exec-menu-item">👥 User Management</div>
-        <div class="exec-menu-item" data-exec-view="overview" onclick="setExecView('overview')">📋 Audit Log</div>
+        <div class="exec-menu-item" data-exec-view="overview" data-exec-scroll="exec-section-ward" onclick="setExecView('overview','exec-section-ward')">🏥 Ward Performance</div>
+        <div class="exec-menu-item" data-exec-view="usermgmt" onclick="setExecView('usermgmt')">👥 User Management</div>
+        <div class="exec-menu-item" data-exec-view="overview" data-exec-scroll="exec-section-audit" onclick="setExecView('overview','exec-section-audit')">📋 Audit Log</div>
         <div style="height:1px;background:rgba(255,255,255,.07);margin:10px 0;"></div>
-        <div class="exec-menu-item">📥 Export Reports</div>
-        <div class="exec-menu-item">🔒 PDPA Consent</div>
-        <div class="exec-menu-item">⚙️ Settings</div>
+        <div class="exec-menu-item" data-exec-view="placeholder" data-exec-placeholder="export" onclick="setExecView('placeholder','export')">📥 Export Reports</div>
+        <div class="exec-menu-item" data-exec-view="pdpa" onclick="setExecView('pdpa')">🔒 PDPA Consent</div>
+        <div class="exec-menu-item" data-exec-view="placeholder" data-exec-placeholder="settings" onclick="setExecView('placeholder','settings')">⚙️ Settings</div>
       </div>
       <div class="exec-content">
         <!-- Overview / Nurse Call content -->
         <div id="exec-view-overview">
         <div class="exec-toprow">
           <div>
-            <div class="exec-page-title">ภาพรวม — 28 ก.พ. 2569</div>
-            <div class="exec-page-sub">Ward อายุรกรรม 3A · Live · อัปเดตทันที</div>
+            <div class="exec-page-title" id="exec-page-title">ภาพรวม — </div>
+            <div class="exec-page-sub" id="exec-page-sub">Ward อายุรกรรม 3A · Live · อัปเดตทันที</div>
           </div>
           <div class="exec-toprow-right">
-            <select class="exec-select"><option>วันนี้</option><option>สัปดาห์นี้</option><option>เดือนนี้</option></select>
-            <button class="exec-export-btn">📥 Export PDF</button>
+            <select class="exec-select" id="exec-period-select" onchange="setExecPeriod(this.value)">
+              <option value="day">วันนี้</option>
+              <option value="week">สัปดาห์นี้</option>
+              <option value="month">เดือนนี้</option>
+            </select>
+            <button class="exec-export-btn" id="exec-export-pdf" onclick="execExportPDF()">📥 Export PDF</button>
           </div>
         </div>
 
-        <div class="exec-kpis">
+        <div class="exec-kpis" id="exec-section-kpis">
           <div class="kpi-card kpi1"><div class="kpi-icon">📞</div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-lbl">Total Calls วันนี้</div><div class="kpi-chg warn" id="kpi-total-chg">รอรับคำร้อง</div></div>
           <div class="kpi-card kpi2"><div class="kpi-icon">⏱️</div><div class="kpi-val" id="kpi-avg">–</div><div class="kpi-lbl">Avg Response (นาที)</div><div class="kpi-chg up" id="kpi-avg-chg">เป้าหมาย &lt; 5:00</div></div>
           <div class="kpi-card kpi3"><div class="kpi-icon">⭐</div><div class="kpi-val" id="kpi-sat">–</div><div class="kpi-lbl">Satisfaction Score</div><div class="kpi-chg warn" id="kpi-sat-chg">รอการประเมิน</div></div>
@@ -1074,7 +1158,7 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
 
         <div class="exec-charts">
           <div class="chart-card">
-            <div class="chart-title">📞 ประเภทคำร้อง (วันนี้)</div>
+            <div class="chart-title" id="exec-type-dist-title">📞 ประเภทคำร้อง (วันนี้)</div>
             <div class="type-dist" id="exec-type-dist"></div>
           </div>
           <div class="chart-card">
@@ -1093,8 +1177,9 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
         </div>
 
         <!-- Ward Performance -->
-        <div class="exec-table-card">
-          <div class="exec-table-hdr"><h3>🏥 Ward Performance (TOR 6.5.1)</h3><button class="exec-table-export">📥 Export Excel</button></div>
+        <div class="exec-table-card" id="exec-section-ward">
+          <div class="exec-table-hdr"><h3>🏥 Ward Performance (TOR 6.5.1)</h3><button class="exec-table-export" id="exec-export-excel" onclick="execExportExcel()">📥 Export Excel</button></div>
+          <div style="font-size:10px;color:var(--muted);padding:0 18px 8px;">Ward = หน่วยพยาบาล (Nurse Call) · Tele = สาขาแพทย์ (Telemedicine)</div>
           <table class="dt">
             <thead><tr><th>แผนก</th><th>Calls</th><th>Avg Response</th><th>Bedside Rate</th><th>Satisfaction</th><th>สถานะ</th></tr></thead>
             <tbody id="ward-perf-body"></tbody>
@@ -1102,10 +1187,10 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
         </div>
 
         <!-- LEGAL AUDIT TRAIL -->
-        <div class="audit-section">
+        <div class="audit-section" id="exec-section-audit">
           <div class="audit-hdr">
             <h3>📋 Audit Trail — Legal Grade (TOR 6.6.1)</h3>
-            <div class="audit-legal-badge">🔒 Tamper-Proof · ISO 8601 · Hash Verified</div>
+            <div class="audit-legal-badge">🔒 Tamper-Proof · ISO 8601 · Hash Verified · <span style="opacity:.9;">Demo: Hash Simulated (ไม่ใช่ SHA-256 จริง)</span></div>
           </div>
           <!-- Chain summary for latest call -->
           <div class="chain-summary" id="chain-summary" style="display:none;">
@@ -1122,15 +1207,88 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
           </div>
         </div>
         </div>
+        <!-- Placeholder views (Phase ถัดไป) -->
+        <div id="exec-view-placeholder" style="display:none;">
+          <div class="exec-placeholder-box">
+            <div class="exec-placeholder-icon" id="exec-placeholder-icon">⚙️</div>
+            <div class="exec-placeholder-title" id="exec-placeholder-title">ฟีเจอร์นี้จะพร้อมใน Phase ถัดไป</div>
+            <div class="exec-placeholder-desc" id="exec-placeholder-desc">ตาม TOR โครงการ</div>
+          </div>
+        </div>
+        <!-- User Management (Phase) — RBAC TOR BA2 -->
+        <div id="exec-view-usermgmt" style="display:none;">
+          <div class="exec-toprow">
+            <div>
+              <div class="exec-page-title">👥 User Management</div>
+              <div class="exec-page-sub">จัดการผู้ใช้และบทบาท (RBAC ตาม TOR BA2)</div>
+            </div>
+            <div class="exec-toprow-right">
+              <select class="exec-select" id="exec-um-role-filter" onchange="renderExecUserMgmt()">
+                <option value="">ทุกบทบาท</option>
+                <option value="super_admin">Super Admin</option>
+                <option value="head_nurse">Head Nurse</option>
+                <option value="nurse">Nurse</option>
+                <option value="doctor">Doctor</option>
+                <option value="viewer">Viewer</option>
+              </select>
+              <button class="exec-export-btn" onclick="execUserMgmtAdd()">➕ เพิ่มผู้ใช้</button>
+            </div>
+          </div>
+          <div class="exec-um-roles" id="exec-um-role-cards"></div>
+          <div class="exec-table-card">
+            <div class="exec-table-hdr"><h3>รายชื่อผู้ใช้</h3><span class="exec-um-count" id="exec-um-count"></span></div>
+            <div class="exec-um-table-wrap">
+              <table class="dt">
+                <thead><tr><th>ผู้ใช้</th><th>อีเมล</th><th>บทบาท</th><th>หน่วย/แผนก</th><th>สถานะ</th><th>ล็อกอินล่าสุด</th><th>การดำเนินการ</th></tr></thead>
+                <tbody id="exec-um-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- PDPA Consent (Phase) — ความยินยอมตาม PDPA -->
+        <div id="exec-view-pdpa" style="display:none;">
+          <div class="exec-toprow">
+            <div>
+              <div class="exec-page-title">🔒 PDPA Consent</div>
+              <div class="exec-page-sub">จัดการความยินยอมและการเก็บข้อมูลส่วนบุคคลตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)</div>
+            </div>
+            <div class="exec-toprow-right">
+              <select class="exec-select" id="exec-pdpa-type-filter" onchange="renderExecPdpa()">
+                <option value="">ทุกประเภท</option>
+                <option value="health_data">เก็บ/ใช้ข้อมูลสุขภาพ</option>
+                <option value="tele_media">ภาพ/เสียง Telemedicine</option>
+                <option value="research">ใช้ข้อมูลเพื่อวิจัย</option>
+                <option value="contact">ติดต่อ/แจ้งเตือน</option>
+              </select>
+              <select class="exec-select" id="exec-pdpa-status-filter" onchange="renderExecPdpa()">
+                <option value="">ทุกสถานะ</option>
+                <option value="given">ให้ความยินยอมแล้ว</option>
+                <option value="withdrawn">ถอนความยินยอม</option>
+                <option value="pending">ยังไม่ให้</option>
+              </select>
+              <button class="exec-export-btn" onclick="execPdpaExport()">📥 Export</button>
+            </div>
+          </div>
+          <div class="exec-pdpa-summary" id="exec-pdpa-summary"></div>
+          <div class="exec-table-card">
+            <div class="exec-table-hdr"><h3>บันทึกความยินยอม</h3><span class="exec-um-count" id="exec-pdpa-count"></span></div>
+            <div class="exec-um-table-wrap">
+              <table class="dt">
+                <thead><tr><th>ห้อง</th><th>ผู้ป่วย</th><th>ประเภทความยินยอม</th><th>สถานะ</th><th>วันที่ให้</th><th>วันที่ถอน</th><th>การดำเนินการ</th></tr></thead>
+                <tbody id="exec-pdpa-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
         <!-- Telemedicine report (BLOCK T) -->
         <div id="exec-view-tele" style="display:none;">
           <div class="exec-toprow">
             <div>
-              <div class="exec-page-title">📹 Telemedicine — รายงานวันนี้</div>
+              <div class="exec-page-title" id="exec-tele-title">📹 Telemedicine — รายงานวันนี้</div>
               <div class="exec-page-sub">7 สาขา · On-Demand / Scheduled (T1–T3)</div>
             </div>
             <div class="exec-toprow-right">
-              <button class="exec-export-btn">📥 Export PDF</button>
+              <button class="exec-export-btn" onclick="execExportTelePDF()">📥 Export PDF</button>
             </div>
           </div>
           <div class="exec-table-card">
@@ -1219,11 +1377,11 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
 /* ─────────────────────────── DATA ─────────────────────────── */
 const PATIENTS = [
   { room:'301A', name:'สมชาย ใจดี',      age:79, icon:'👴', hn:'67001', wardName:'อายุรกรรม 3A', conds:['เบาหวาน','ความดันสูง'], risks:['เสี่ยงล้ม'], vtp:null },
-  { room:'302A', name:'มาลี จันทร์เพ็ง',  age:65, icon:'👩', conds:['หัวใจ'],               risks:[], vtp:'yellow' },
-  { room:'303A', name:'วิชัย แสงทอง',     age:72, icon:'👴', conds:['ไต','เบาหวาน'],        risks:[], vtp:null },
-  { room:'304A', name:'ประสิทธิ์ มีสุข',  age:68, icon:'👨', conds:['ความดันสูง'],           risks:[], vtp:null },
-  { room:'305A', name:'ลัดดา ศรีวงศ์',    age:75, icon:'👩', conds:['มะเร็งเต้านม'],        risks:[], vtp:'orange' },
-  { room:'306A', name:'สุชาติ บุญมี',     age:83, icon:'👴', conds:['ปอด'],                 risks:['เสี่ยงล้ม'], vtp:null },
+  { room:'302A', name:'มาลี จันทร์เพ็ง',  age:65, icon:'👩', hn:'67002', wardName:'อายุรกรรม 3A', conds:['หัวใจ'],               risks:[], vtp:'yellow' },
+  { room:'303A', name:'วิชัย แสงทอง',     age:72, icon:'👴', hn:'67003', wardName:'อายุรกรรม 3A', conds:['ไต','เบาหวาน'],        risks:[], vtp:null },
+  { room:'304A', name:'ประสิทธิ์ มีสุข',  age:68, icon:'👨', hn:'67004', wardName:'อายุรกรรม 3A', conds:['ความดันสูง'],           risks:[], vtp:null },
+  { room:'305A', name:'ลัดดา ศรีวงศ์',    age:75, icon:'👩', hn:'67005', wardName:'อายุรกรรม 3A', conds:['มะเร็งเต้านม'],        risks:[], vtp:'orange' },
+  { room:'306A', name:'สุชาติ บุญมี',     age:83, icon:'👴', hn:'67006', wardName:'อายุรกรรม 3A', conds:['ปอด'],                 risks:['เสี่ยงล้ม'], vtp:null },
 ];
 const REQ_TYPES = [
   { type:'general',   label:'ขอความช่วยเหลือ', icon:'🙋', priority:1, color:'var(--teal)' },
@@ -1233,6 +1391,7 @@ const REQ_TYPES = [
   { type:'emergency', label:'ฉุกเฉิน',            icon:'🚨', priority:4, color:'var(--red)' },
 ];
 const NURSES = ['พว. สุดา นาคสุข','พว. จาย ชาน','พว. มลิวัลย์ สมบัติ'];
+let lastAssignedNurseName = ''; /* สำหรับ Round-Robin เมื่อ workload เท่ากัน */
 
 /* ── Telemedicine (BLOCK T) ── */
 const TELE_DEPARTMENTS = [
@@ -1259,15 +1418,21 @@ let MEDICATION_ALERTS = [
   { id:'ma1', medicineName:'เมตฟอร์มิน 500 mg', time:'08:00', room:'301A', status:'pending', note:'หลังอาหารเช้า' },
   { id:'ma2', medicineName:'โลซาร์แทน 50 mg',   time:'08:30', room:'301A', status:'pending', note:'ความดัน' },
   { id:'ma3', medicineName:'แอสไพริน 81 mg',    time:'20:00', room:'301A', status:'pending', note:'ก่อนนอน' },
+  { id:'ma4', medicineName:'แอสไพริน 81 mg',    time:'08:00', room:'302A', status:'pending', note:'หลังอาหารเช้า' },
+  { id:'ma5', medicineName:'ฟูโรซีไมด์ 40 mg', time:'10:00', room:'302A', status:'taken', note:'ยาขับน้ำ' },
+  { id:'ma6', medicineName:'เมตฟอร์มิน 500 mg', time:'08:00', room:'303A', status:'pending', note:'หลังอาหารเช้า' },
+  { id:'ma7', medicineName:'อินซูลิน (ตามสั่ง)', time:'12:00', room:'303A', status:'pending', note:'ก่อนอาหารกลางวัน' },
 ];
 let SYSTEM_ALERTS = [
   { id:'sa1', type:'battery_low', device:'Tablet 302A', room:'302A', time:'08:15', message:'แบตเตอรี่ต่ำ < 15%' },
+  { id:'sa2', type:'maintenance', device:'WiFi AP โซน B', room:null, time:'07:30', message:'กำหนดซ่อมบำรุง 10:00–11:00 น.' },
+  { id:'sa3', type:'battery_low', device:'Tablet 305A', room:'305A', time:'08:45', message:'แบตเตอรี่ต่ำ < 20%' },
 ];
 
 function getUnreadAlertsCount(room){
-  const r = room!=null ? room : (PATIENTS[0]?PATIENTS[0].room:null);
+  const r = room!=null ? room : (getCurrentPatient()?getCurrentPatient().room:null);
   const med = r ? MEDICATION_ALERTS.filter(a=>a.room===r&&a.status==='pending').length : MEDICATION_ALERTS.filter(a=>a.status==='pending').length;
-  const sys = r ? SYSTEM_ALERTS.filter(a=>a.room===r).length : SYSTEM_ALERTS.length;
+  const sys = r ? SYSTEM_ALERTS.filter(a=>!a.room||a.room===r).length : SYSTEM_ALERTS.length;
   return med + sys;
 }
 
@@ -1286,11 +1451,18 @@ const FOOD_MENU_ITEMS = [
 ];
 let FOOD_ORDERS = [
   { mealTimeId:'breakfast', room:'301A', items:[{ id:'m1', nameThai:'ข้าวต้ม' }], status:'delivered' },
-  { mealTimeId:'lunch',     room:'301A', items:[], status:'pending' },
+  { mealTimeId:'lunch',     room:'301A', items:[{ id:'m3', nameThai:'ข้าวผัด' },{ id:'m4', nameThai:'แกงจืดเต้าหู้' }], status:'ordered' },
   { mealTimeId:'dinner',    room:'301A', items:[], status:'pending' },
+  { mealTimeId:'breakfast', room:'302A', items:[{ id:'m2', nameThai:'โจ๊กหมู' }], status:'delivered' },
+  { mealTimeId:'lunch',     room:'302A', items:[], status:'pending' },
+  { mealTimeId:'dinner',    room:'302A', items:[], status:'pending' },
+  { mealTimeId:'breakfast', room:'303A', items:[{ id:'m1', nameThai:'ข้าวต้ม' }], status:'delivered' },
+  { mealTimeId:'lunch',     room:'303A', items:[{ id:'m2', nameThai:'โจ๊กหมู' }], status:'pending' },
+  { mealTimeId:'dinner',    room:'303A', items:[], status:'pending' },
 ];
 
 /* ── Ward Performance (TOR 4.1–4.3, 6.5.1) ── */
+/* หมายเหตุ: Ward = หน่วยพยาบาล (นับคำร้อง Nurse Call), Tele = สาขาแพทย์ (ปรึกษาทางวิดีโอ) */
 const WARD_PERFORMANCE = [
   { id:'internal', name:'อายุรกรรม 3A', calls:0, avgResponse:'–', bedsideRate:'–', satisfaction:'–', status:'ok', statusLabel:'✅ Live' },
   { id:'surgery',  name:'ศัลยกรรม',    calls:18, avgResponse:'4:20', bedsideRate:'92%', satisfaction:'4.2 ⭐', status:'warn', statusLabel:'⚠ 1 Offline' },
@@ -1299,8 +1471,69 @@ const WARD_PERFORMANCE = [
   { id:'ob',       name:'สูตินรีเวช',  calls:9,  avgResponse:'5:10', bedsideRate:'87%', satisfaction:'3.9 ⭐', status:'bad', statusLabel:'🔴 ช้าเกิน' },
 ];
 
+/* ── Executive Dashboard: ช่วงเวลา + Mock สัปดาห์/เดือน (TOR) ── */
+let execPeriod = 'day'; /* 'day' | 'week' | 'month' */
+const EXEC_MOCK_WEEK = {
+  total: 87,
+  avgResponseSec: 225,
+  bedsideRatePct: 94,
+  satisfaction: [2,8,18,28,31],
+  callsByType: { general: 25, water: 20, toilet: 18, pain: 12, emergency: 2 },
+};
+const EXEC_MOCK_MONTH = {
+  total: 342,
+  avgResponseSec: 232,
+  bedsideRatePct: 93,
+  satisfaction: [10,32,72,118,110],
+  callsByType: { general: 98, water: 82, toilet: 68, pain: 52, emergency: 12 },
+};
+
 /* ── Current user / RBAC (BA2) ── */
 const CURRENT_USER = { name:'ผอ. สมศักดิ์', role:'Super Admin' };
+
+/* ── User Management (Phase) — RBAC TOR BA2 ── */
+const EXEC_ROLES = [
+  { id:'super_admin', label:'Super Admin', labelThai:'ผู้ดูแลระบบ', desc:'เข้าถึงทุกฟีเจอร์ รวม Executive Dashboard', color:'var(--purple)' },
+  { id:'head_nurse',  label:'Head Nurse',  labelThai:'หัวหน้าพยาบาล', desc:'จัดการ Ward, ดูรายงาน, มอบหมายพยาบาล', color:'var(--blue)' },
+  { id:'nurse',       label:'Nurse',       labelThai:'พยาบาล', desc:'Nurse Station, รับคำร้อง, Bedside Confirm', color:'var(--teal)' },
+  { id:'doctor',      label:'Doctor',       labelThai:'แพทย์', desc:'ดูรายชื่อผู้ป่วย, Telemedicine', color:'var(--amber)' },
+  { id:'viewer',      label:'Viewer',       labelThai:'ผู้ดูรายงาน', desc:'ดู Executive Dashboard (อ่านอย่างเดียว)', color:'var(--muted)' },
+];
+let EXEC_USERS = [
+  { id:'u1', name:'ผอ. สมศักดิ์',      email:'admin@hospital.go.th',    roleId:'super_admin', wardOrDept:'–',           status:'active', lastLogin:'1 มี.ค. 2569 08:15' },
+  { id:'u2', name:'พว. สุภาพร ใจดี',   email:'supaporn.n@hospital.go.th', roleId:'head_nurse',  wardOrDept:'อายุรกรรม 3A', status:'active', lastLogin:'1 มี.ค. 2569 07:00' },
+  { id:'u3', name:'พว. สุดา นาคสุข',   email:'suda.n@hospital.go.th',   roleId:'nurse',       wardOrDept:'อายุรกรรม 3A', status:'active', lastLogin:'1 มี.ค. 2569 06:45' },
+  { id:'u4', name:'พว. จาย ชาน',       email:'jai.c@hospital.go.th',    roleId:'nurse',       wardOrDept:'อายุรกรรม 3A', status:'active', lastLogin:'1 มี.ค. 2569 06:50' },
+  { id:'u5', name:'พว. มลิวัลย์ สมบัติ', email:'maliwan.s@hospital.go.th', roleId:'nurse',     wardOrDept:'อายุรกรรม 3A', status:'active', lastLogin:'1 มี.ค. 2569 06:48' },
+  { id:'u6', name:'นพ. สมิทธ์',        email:'smith.m@hospital.go.th',   roleId:'doctor',      wardOrDept:'อายุรกรรม',   status:'active', lastLogin:'1 มี.ค. 2569 07:30' },
+  { id:'u7', name:'นพ. วิชัย ใจดี',    email:'wichai.i@hospital.go.th',   roleId:'doctor',      wardOrDept:'อายุรกรรม (Tele)', status:'active', lastLogin:'28 ก.พ. 2569 16:00' },
+  { id:'u8', name:'คุณ วิชาญ รายงาน',  email:'wichan.r@hospital.go.th',  roleId:'viewer',      wardOrDept:'–',           status:'active', lastLogin:'28 ก.พ. 2569 17:20' },
+  { id:'u9', name:'พว. เก่าลาออก',     email:'old.n@hospital.go.th',     roleId:'nurse',       wardOrDept:'อายุรกรรม 3A', status:'inactive', lastLogin:'15 ก.พ. 2569' },
+];
+
+/* ── PDPA Consent (Phase) — ความยินยอมตาม PDPA ── */
+const PDPA_CONSENT_TYPES = [
+  { id:'health_data',  labelThai:'เก็บ/ใช้ข้อมูลสุขภาพ', desc:'เก็บและใช้ข้อมูลสุขภาพในระบบ Nurse Call, Vital, Telemedicine' },
+  { id:'tele_media',   labelThai:'ภาพ/เสียง Telemedicine', desc:'บันทึกภาพและเสียงระหว่างปรึกษาแพทย์ทางวิดีโอ (ถ้ามี)' },
+  { id:'research',     labelThai:'ใช้ข้อมูลเพื่อวิจัย', desc:'ใช้ข้อมูลไม่ระบุตัวตนเพื่อการวิจัย/พัฒนาระบบ' },
+  { id:'contact',      labelThai:'ติดต่อ/แจ้งเตือน', desc:'ติดต่อทาง SMS/แอป เพื่อนัดและแจ้งเตือน' },
+];
+let PDPA_CONSENT_RECORDS = [
+  { id:'c1', room:'301A', patientName:'สมชาย ใจดี', consentTypeId:'health_data',  status:'given',   givenAt:'28 ก.พ. 2569 09:00', withdrawnAt:null },
+  { id:'c2', room:'301A', patientName:'สมชาย ใจดี', consentTypeId:'tele_media',   status:'given',   givenAt:'28 ก.พ. 2569 09:00', withdrawnAt:null },
+  { id:'c3', room:'301A', patientName:'สมชาย ใจดี', consentTypeId:'contact',     status:'given',   givenAt:'28 ก.พ. 2569 09:00', withdrawnAt:null },
+  { id:'c4', room:'301A', patientName:'สมชาย ใจดี', consentTypeId:'research',    status:'withdrawn', givenAt:'27 ก.พ. 2569', withdrawnAt:'1 มี.ค. 2569 08:00' },
+  { id:'c5', room:'302A', patientName:'มาลี จันทร์เพ็ง', consentTypeId:'health_data', status:'given', givenAt:'29 ก.พ. 2569 10:15', withdrawnAt:null },
+  { id:'c6', room:'302A', patientName:'มาลี จันทร์เพ็ง', consentTypeId:'tele_media',  status:'given', givenAt:'29 ก.พ. 2569 10:15', withdrawnAt:null },
+  { id:'c7', room:'302A', patientName:'มาลี จันทร์เพ็ง', consentTypeId:'contact',    status:'given', givenAt:'29 ก.พ. 2569 10:15', withdrawnAt:null },
+  { id:'c8', room:'302A', patientName:'มาลี จันทร์เพ็ง', consentTypeId:'research',   status:'pending', givenAt:null, withdrawnAt:null },
+  { id:'c9', room:'303A', patientName:'วิชัย แสงทอง', consentTypeId:'health_data', status:'given', givenAt:'1 มี.ค. 2569 06:30', withdrawnAt:null },
+  { id:'c10', room:'303A', patientName:'วิชัย แสงทอง', consentTypeId:'contact',   status:'given', givenAt:'1 มี.ค. 2569 06:30', withdrawnAt:null },
+  { id:'c11', room:'303A', patientName:'วิชัย แสงทอง', consentTypeId:'tele_media', status:'pending', givenAt:null, withdrawnAt:null },
+  { id:'c12', room:'304A', patientName:'ประสิทธิ์ มีสุข', consentTypeId:'health_data', status:'given', givenAt:'28 ก.พ. 2569', withdrawnAt:null },
+  { id:'c13', room:'305A', patientName:'ลัดดา ศรีวงศ์', consentTypeId:'health_data', status:'given', givenAt:'29 ก.พ. 2569', withdrawnAt:null },
+  { id:'c14', room:'305A', patientName:'ลัดดา ศรีวงศ์', consentTypeId:'research',  status:'withdrawn', givenAt:'28 ก.พ. 2569', withdrawnAt:'29 ก.พ. 2569' },
+];
 
 /* ── Staff on duty (A3 Shift, BN6) ── */
 let STAFF_ON_DUTY = [
@@ -1310,11 +1543,20 @@ let STAFF_ON_DUTY = [
   { id:'n3', name:'พว. มลิวัลย์ สมบัติ', role:'พยาบาล', status:'free' },
 ];
 
-/* ── Care team สำหรับ Patient App header (ห้อง 301A) ── */
+/* ── Care team สำหรับ Patient App header (ต่อห้อง) ── */
 const CARE_TEAM = [
   { role:'แพทย์', name:'นพ. สมิทธ์', av:'👨‍⚕️' },
   { role:'พยาบาล', name:'พว. สุดา นาคสุข', av:'👩‍⚕️' },
 ];
+const CARE_TEAM_BY_ROOM = {
+  '301A': [ { role:'แพทย์', name:'นพ. สมิทธ์', av:'👨‍⚕️' }, { role:'พยาบาล', name:'พว. สุดา นาคสุข', av:'👩‍⚕️' } ],
+  '302A': [ { role:'แพทย์', name:'นพ. สมิทธ์', av:'👨‍⚕️' }, { role:'พยาบาล', name:'พว. จาย ชาน', av:'👩‍⚕️' } ],
+  '303A': [ { role:'แพทย์', name:'นพ. สมิทธ์', av:'👨‍⚕️' }, { role:'พยาบาล', name:'พว. มลิวัลย์ สมบัติ', av:'👩‍⚕️' } ],
+  '304A': [ { role:'แพทย์', name:'นพ. สมิทธ์', av:'👨‍⚕️' }, { role:'พยาบาล', name:'พว. สุดา นาคสุข', av:'👩‍⚕️' } ],
+  '305A': [ { role:'แพทย์', name:'นพ. สมิทธ์', av:'👨‍⚕️' }, { role:'พยาบาล', name:'พว. จาย ชาน', av:'👩‍⚕️' } ],
+  '306A': [ { role:'แพทย์', name:'นพ. สมิทธ์', av:'👨‍⚕️' }, { role:'พยาบาล', name:'พว. มลิวัลย์ สมบัติ', av:'👩‍⚕️' } ],
+};
+function getCareTeam(room){ return (room && CARE_TEAM_BY_ROOM[room]) ? CARE_TEAM_BY_ROOM[room] : CARE_TEAM; }
 
 /* ── Phase 2 Mock Data (Patient App) ── */
 /* การนอน: ตัวเลขล่าสุด (แสดงบน tile) + ย้อนหลัง 24 ชม. + สรุป */
@@ -1369,9 +1611,24 @@ let autoRunning = false, autoInterval = null, autoSpeed = 20;
 const roomRequests = {};
 const STATS = { total:0, done:0, bedsideConfirmed:0, responseTimes:[], bedsideTimes:[], callsByType:{}, satisfaction:[] };
 let selectedRating = 0;
+let currentPatientRoom = '301A';
+function getCurrentPatient(){ return PATIENTS.find(p=>p.room===currentPatientRoom)||PATIENTS[0]; }
+function setCurrentPatientRoom(room){
+  currentPatientRoom=room;
+  closeAllOverlays();
+  renderPatientHeader();
+  updateCallbarForCurrentRoom();
+  updateAlertBadge();
+  updateFlowBar(roomRequests[room]?1:0);
+  const sel=document.getElementById('pt-room-select'); if(sel)sel.value=room;
+}
 
 /* Telemedicine state */
-let TELE_SESSIONS = [];
+let TELE_SESSIONS = [
+  { room:'302A', dept:'อายุรกรรม', doctor:'นพ. วิชัย ใจดี', status:'completed', startTime:Date.now()-3600000 },
+  { room:'304A', dept:'หัวใจ', doctor:'นพ. มานพ หัวใจแข็ง', status:'completed', startTime:Date.now()-7200000 },
+  { room:'301A', dept:'จิตเวช', doctor:'นพ. มาลี จิตเวช', status:'in-progress', startTime:Date.now()-600000 },
+];
 let currentTeleSession = null;
 let teleQueuePosition = 0;
 let teleStep = 0;
@@ -1429,14 +1686,14 @@ setInterval(()=>{
     const sl=document.getElementById('src-timer-'+q.patient.room);
     if(sl)sl.textContent=fmtSec(secs);
   });
-  // Bedside timer
-  const bq=roomRequests['301A'];
+  // Bedside timer (current tablet room)
+  const bq=roomRequests[currentPatientRoom];
   if(bq&&['enroute','bedside'].includes(bq.status)){
     const secs=Math.floor((Date.now()-bq.startTime)/1000);
     const bv=document.getElementById('bedside-timer-val');
     if(bv)bv.textContent=fmtSec(secs);
   }
-  updateCallbar301();
+  updateCallbarForCurrentRoom();
 },1000);
 
 /* ─────────────────────────── NAVIGATION ─────────────────────────── */
@@ -1456,7 +1713,7 @@ function closeOverlay(id){ document.getElementById(id).classList.remove('show');
 function closeAllOverlays(){ ['ov-nursecall','ov-bedside','ov-care','ov-rating','ov-alerts','ov-tele','ov-food','ov-phase2'].forEach(closeOverlay); }
 
 function openNurseCallOverlay(){
-  if(!roomRequests['301A']){
+  if(!roomRequests[currentPatientRoom]){
     hideEmergencyConfirm();
     var eb=document.getElementById('nc-emerg-btn'); if(eb){ eb.disabled=false; eb.style.opacity=''; }
     openOverlay('ov-nursecall');
@@ -1465,7 +1722,7 @@ function openNurseCallOverlay(){
 
 /* ─────────────────────────── PATIENT HEADER (TOR A2) ─────────────────────────── */
 function renderPatientHeader(){
-  const p=PATIENTS[0]; if(!p) return;
+  const p=getCurrentPatient(); if(!p) return;
   const wardName=p.wardName||(WARD_PERFORMANCE&&WARD_PERFORMANCE[0]?WARD_PERFORMANCE[0].name:'อายุรกรรม 3A');
   const hn=p.hn||'–';
   const infoStr=`HN: ${hn} · อายุ ${p.age} ปี · ห้อง ${p.room} · ${wardName}`;
@@ -1475,11 +1732,13 @@ function renderPatientHeader(){
   set('pt-info',infoStr);
   set('pt-av',p.icon||'👤');
   set('pt-footer-ward',`🏥 Ward ${wardName} · ห้อง ${p.room}`);
-  set('ov-pt-name',`${p.name} · ห้อง ${p.room}`);
-  set('ov-pt-info',`อายุ ${p.age} ปี · ห้อง ${p.room}`);
+  set('ov-pt-name',`คุณคือ ${p.name}`);
+  set('ov-pt-info',`ห้อง ${p.room} · อายุ ${p.age} ปี`);
   set('ov-pt-av',p.icon||'👤');
-  const teamEl=document.getElementById('pt-team'); if(teamEl&&CARE_TEAM&&CARE_TEAM.length){
-    teamEl.innerHTML=CARE_TEAM.map(m=>`<div class="pt-mbr"><div class="pt-mbr-av">${m.av||'👤'}</div><div class="pt-mbr-nm">${m.name}</div></div>`).join('');
+  const hdrSub=document.getElementById('ov-nursecall-hdr-sub'); if(hdrSub)hdrSub.textContent='Smart Nurse Call — ห้อง '+p.room+' · กรุณาเลือกประเภท';
+  const team = getCareTeam(p.room);
+  const teamEl=document.getElementById('pt-team'); if(teamEl&&team&&team.length){
+    teamEl.innerHTML=team.map(m=>`<div class="pt-mbr"><div class="pt-mbr-av">${m.av||'👤'}</div><div class="pt-mbr-nm">${m.name}</div></div>`).join('');
   }
 }
 
@@ -1496,9 +1755,9 @@ function openAlertsOverlay(){
 function renderAlertsList(){
   const body = document.getElementById('ov-alerts-body');
   if(!body) return;
-  const room = PATIENTS[0] ? PATIENTS[0].room : null;
+  const room = getCurrentPatient() ? getCurrentPatient().room : null;
   const medItems = room ? MEDICATION_ALERTS.filter(a=>a.room===room) : MEDICATION_ALERTS;
-  const sysItems = room ? SYSTEM_ALERTS.filter(a=>a.room===room) : SYSTEM_ALERTS;
+  const sysItems = room ? SYSTEM_ALERTS.filter(a=>!a.room||a.room===room) : SYSTEM_ALERTS;
   let html = '';
   if(medItems.length){
     html += '<div class="ov-alerts-section">💊 ยาตามเวลา (Medication Reminder)</div>';
@@ -1562,7 +1821,7 @@ function teleSelectDept(deptId){
   const dept = TELE_DEPARTMENTS.find(d=>d.id===deptId);
   const doctor = TELE_DOCTORS.find(d=>d.deptId===deptId);
   if(!dept) return;
-  currentTeleSession = { deptId, dept, doctor, room:'301A' };
+  currentTeleSession = { deptId, dept, doctor, room: currentPatientRoom };
   document.getElementById('tele-step-1').classList.remove('show');
   document.getElementById('tele-step-2').classList.add('show');
   const info = document.getElementById('tele-doctor-info');
@@ -1833,7 +2092,7 @@ function openFoodOverlay(){
 function renderFoodContent(){
   const body = document.getElementById('ov-food-body');
   if(!body) return;
-  const room = '301A';
+  const room = currentPatientRoom;
 
   if(foodSelectedMealId){
     const meal = FOOD_MEAL_TIMES.find(m=>m.id===foodSelectedMealId);
@@ -1852,7 +2111,7 @@ function renderFoodContent(){
     return;
   }
 
-  let html = '<div class="ov-food-section">มื้อของวัน · ห้อง 301A</div>';
+  let html = '<div class="ov-food-section">มื้อของวัน · ห้อง '+room+'</div>';
   FOOD_MEAL_TIMES.forEach(meal=>{
     const order = FOOD_ORDERS.find(o=>o.room===room&&o.mealTimeId===meal.id);
     const status = order ? (order.status==='delivered' ? 'delivered' : order.status==='ordered' ? 'ordered' : order.status==='preparing' ? 'preparing' : 'pending') : 'pending';
@@ -1888,10 +2147,12 @@ function foodToggleItem(id){
 }
 function foodConfirmOrder(){
   if(!foodSelectedMealId||!foodSelectedItems.length){ alert('กรุณาเลือกรายการอาหาร'); return; }
-  const order = FOOD_ORDERS.find(o=>o.room==='301A'&&o.mealTimeId===foodSelectedMealId);
+  const order = FOOD_ORDERS.find(o=>o.room===currentPatientRoom&&o.mealTimeId===foodSelectedMealId);
   if(order){
     order.items = foodSelectedItems.slice();
     order.status = 'ordered';
+  } else {
+    FOOD_ORDERS.push({ mealTimeId: foodSelectedMealId, room: currentPatientRoom, items: foodSelectedItems.slice(), status: 'ordered' });
   }
   foodSelectedMealId = null;
   foodSelectedItems = [];
@@ -1899,14 +2160,96 @@ function foodConfirmOrder(){
 }
 
 /* ─────────────────────────── EXEC DASHBOARD VIEW SWITCH ─────────────────────────── */
-function setExecView(viewId){
+function setExecView(viewId, opt){
   document.querySelectorAll('.exec-menu-item').forEach(el=>el.classList.remove('active'));
-  const first = document.querySelector('.exec-menu-item[data-exec-view="'+viewId+'"]');
-  if(first) first.classList.add('active');
-  document.getElementById('exec-view-overview').style.display = viewId==='overview' ? '' : 'none';
+  let toActivate = null;
+  if(viewId==='overview' && opt && String(opt).indexOf('exec-section-')===0)
+    toActivate = document.querySelector('.exec-menu-item[data-exec-scroll="'+opt+'"]');
+  else if(viewId==='placeholder' && opt)
+    toActivate = document.querySelector('.exec-menu-item[data-exec-placeholder="'+opt+'"]');
+  else
+    toActivate = document.querySelector('.exec-menu-item[data-exec-view="'+viewId+'"]');
+  if(toActivate) toActivate.classList.add('active');
+
+  const overviewEl = document.getElementById('exec-view-overview');
   const teleEl = document.getElementById('exec-view-tele');
-  if(teleEl) teleEl.style.display = viewId==='tele' ? 'block' : 'none';
+  const placeholderEl = document.getElementById('exec-view-placeholder');
+  const usermgmtEl = document.getElementById('exec-view-usermgmt');
+  const pdpaEl = document.getElementById('exec-view-pdpa');
+  overviewEl.style.display = (viewId==='overview') ? '' : 'none';
+  if(teleEl) teleEl.style.display = (viewId==='tele') ? 'block' : 'none';
+  if(placeholderEl) placeholderEl.style.display = (viewId==='placeholder') ? 'block' : 'none';
+  if(usermgmtEl) usermgmtEl.style.display = (viewId==='usermgmt') ? 'block' : 'none';
+  if(pdpaEl) pdpaEl.style.display = (viewId==='pdpa') ? 'block' : 'none';
+
   if(viewId==='tele') renderExecTeleContent();
+  if(viewId==='placeholder') showExecPlaceholder(opt);
+  if(viewId==='usermgmt') renderExecUserMgmt();
+  if(viewId==='pdpa') renderExecPdpa();
+  if(viewId==='overview' && opt && String(opt).indexOf('exec-section-')===0){
+    setTimeout(function(){ const el=document.getElementById(opt); if(el)el.scrollIntoView({behavior:'smooth',block:'start'}); }, 120);
+  }
+}
+function showExecPlaceholder(key){
+  const iconEl=document.getElementById('exec-placeholder-icon');
+  const titleEl=document.getElementById('exec-placeholder-title');
+  const descEl=document.getElementById('exec-placeholder-desc');
+  const TEXTS = {
+    'user-mgmt': { icon:'👥', title:'User Management', desc:'จัดการผู้ใช้และบทบาท (RBAC ตาม TOR BA2) — ฟีเจอร์นี้จะพร้อมใน Phase ถัดไป' },
+    'export':     { icon:'📥', title:'Export Reports', desc:'ดาวน์โหลดรายงานรวม (PDF/Excel) ตามช่วงเวลา — ใช้ปุ่ม Export ในแต่ละหน้าตาม TOR' },
+    'pdpa':       { icon:'🔒', title:'PDPA Consent', desc:'จัดการความยินยอมและการเก็บข้อมูลส่วนบุคคลตาม PDPA — ฟีเจอร์นี้จะพร้อมใน Phase ถัดไป' },
+    'settings':   { icon:'⚙️', title:'Settings', desc:'ตั้งค่าระบบและ Ward — ฟีเจอร์นี้จะพร้อมใน Phase ถัดไป' },
+  };
+  const t = TEXTS[key] || { icon:'⚙️', title:'ฟีเจอร์นี้จะพร้อมใน Phase ถัดไป', desc:'ตาม TOR โครงการ' };
+  if(iconEl)iconEl.textContent=t.icon;
+  if(titleEl)titleEl.textContent=t.title;
+  if(descEl)descEl.textContent=t.desc;
+}
+function setExecPeriod(value){
+  execPeriod = value || 'day';
+  const sel = document.getElementById('exec-period-select');
+  if(sel && sel.value!==execPeriod) sel.value = execPeriod;
+  updateExecDateTitle();
+  updateExecDashboard();
+}
+function updateExecDateTitle(){
+  const titleEl = document.getElementById('exec-page-title');
+  const subEl = document.getElementById('exec-page-sub');
+  if(!titleEl) return;
+  const d = new Date();
+  const periodLabel = execPeriod==='week' ? ' (สัปดาห์นี้)' : execPeriod==='month' ? ' (เดือนนี้)' : '';
+  titleEl.textContent = 'ภาพรวม — ' + formatDateTH(d) + periodLabel;
+  if(subEl) subEl.textContent = execPeriod==='day' ? 'Ward อายุรกรรม 3A · Live · อัปเดตทันที' : 'Ward อายุรกรรม 3A · ข้อมูลรวมตามช่วงเวลา (จำลอง)';
+}
+function execExportPDF(){
+  const el = document.getElementById('exec-view-overview');
+  if(!el){ alert('ไม่พบหน้าสรุป'); return; }
+  try {
+    window.print();
+  } catch(e) {
+    alert('Export PDF: ใช้พิมพ์ (Ctrl+P) แล้วเลือก "Save as PDF" — Demo');
+  }
+}
+function execExportExcel(){
+  const rows = [];
+  rows.push(['แผนก','Calls','Avg Response','Bedside Rate','Satisfaction','สถานะ']);
+  const tbody = document.getElementById('ward-perf-body');
+  if(tbody){
+    tbody.querySelectorAll('tr').forEach(tr=>{
+      const tds = tr.querySelectorAll('td');
+      if(tds.length>=6) rows.push([tds[0].innerText.trim(),tds[1].innerText.trim(),tds[2].innerText.trim(),tds[3].innerText.trim(),tds[4].innerText.trim(),tds[5].innerText.trim()]);
+    });
+  }
+  const csv = rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Ward_Performance_'+formatDateTH(new Date()).replace(/\s/g,'_')+'.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function execExportTelePDF(){
+  try { window.print(); } catch(e) { alert('Export: ใช้พิมพ์ (Ctrl+P) แล้วเลือก Save as PDF'); }
 }
 function renderExecTeleContent(){
   const sessionsEl = document.getElementById('exec-tele-sessions');
@@ -1927,11 +2270,129 @@ function renderExecTeleContent(){
   }
 }
 
+function renderExecUserMgmt(){
+  const roleFilter = document.getElementById('exec-um-role-filter');
+  const filterRole = roleFilter ? roleFilter.value : '';
+  let users = EXEC_USERS;
+  if(filterRole) users = EXEC_USERS.filter(u=>u.roleId===filterRole);
+
+  const cardsEl = document.getElementById('exec-um-role-cards');
+  if(cardsEl){
+    cardsEl.innerHTML = EXEC_ROLES.map(r=>{
+      const n = EXEC_USERS.filter(u=>u.roleId===r.id&&u.status==='active').length;
+      return `<div class="exec-um-role-card" style="border-left:3px solid ${r.color}"><div class="num">${n}</div><div class="lbl">${r.labelThai}</div></div>`;
+    }).join('');
+  }
+
+  const tbody = document.getElementById('exec-um-body');
+  const countEl = document.getElementById('exec-um-count');
+  if(!tbody) return;
+  const roleMap = {};
+  EXEC_ROLES.forEach(r=>{ roleMap[r.id]=r; });
+  tbody.innerHTML = users.map(u=>{
+    const role = roleMap[u.roleId]||{ labelThai: u.roleId, color: 'var(--muted)' };
+    const statusCls = u.status==='active' ? 'ok' : 'bad';
+    const statusLabel = u.status==='active' ? '✅ ใช้งาน' : '⛔ ปิดใช้';
+    return `<tr>
+      <td><strong>${u.name}</strong></td>
+      <td style="font-size:11px;color:var(--muted);">${u.email}</td>
+      <td><span class="chip role-${u.roleId}">${role.labelThai}</span></td>
+      <td>${u.wardOrDept}</td>
+      <td><span class="chip ${statusCls}">${statusLabel}</span></td>
+      <td style="font-size:11px;">${u.lastLogin||'–'}</td>
+      <td>
+        <button class="exec-um-btn" onclick="execUserMgmtEdit('${u.id}')">แก้ไข</button>
+        <button class="exec-um-btn" onclick="execUserMgmtRole('${u.id}')">บทบาท</button>
+      </td>
+    </tr>`;
+  }).join('');
+  if(countEl) countEl.textContent = users.length + ' คน';
+}
+
+function execUserMgmtAdd(){
+  alert('เพิ่มผู้ใช้ — ฟอร์มเพิ่มผู้ใช้จะเชื่อมกับระบบจริงใน Phase ถัดไป (Demo)');
+}
+function execUserMgmtEdit(id){
+  const u = EXEC_USERS.find(x=>x.id===id); if(!u) return;
+  alert('แก้ไขผู้ใช้: '+u.name+' — ฟอร์มแก้ไขจะเชื่อมกับระบบจริงใน Phase ถัดไป (Demo)');
+}
+function execUserMgmtRole(id){
+  const u = EXEC_USERS.find(x=>x.id===id); if(!u) return;
+  const r = EXEC_ROLES.find(x=>x.id===u.roleId); if(!r) return;
+  alert('เปลี่ยนบทบาท: '+u.name+' (ปัจจุบัน: '+r.labelThai+') — ฟอร์มเปลี่ยนบทบาทจะเชื่อมกับระบบจริงใน Phase ถัดไป (Demo)');
+}
+
+function renderExecPdpa(){
+  const typeFilter = document.getElementById('exec-pdpa-type-filter');
+  const statusFilter = document.getElementById('exec-pdpa-status-filter');
+  const filterType = typeFilter ? typeFilter.value : '';
+  const filterStatus = statusFilter ? statusFilter.value : '';
+  let records = PDPA_CONSENT_RECORDS;
+  if(filterType) records = records.filter(r=>r.consentTypeId===filterType);
+  if(filterStatus) records = records.filter(r=>r.status===filterStatus);
+
+  const typeMap = {};
+  PDPA_CONSENT_TYPES.forEach(t=>{ typeMap[t.id]=t; });
+
+  const givenCount = PDPA_CONSENT_RECORDS.filter(r=>r.status==='given').length;
+  const withdrawnCount = PDPA_CONSENT_RECORDS.filter(r=>r.status==='withdrawn').length;
+  const pendingCount = PDPA_CONSENT_RECORDS.filter(r=>r.status==='pending').length;
+
+  const summaryEl = document.getElementById('exec-pdpa-summary');
+  if(summaryEl){
+    summaryEl.innerHTML =
+      '<div class="exec-pdpa-summary-card given"><div class="num">'+givenCount+'</div><div class="lbl">ให้ความยินยอมแล้ว</div></div>'+
+      '<div class="exec-pdpa-summary-card withdrawn"><div class="num">'+withdrawnCount+'</div><div class="lbl">ถอนความยินยอม</div></div>'+
+      '<div class="exec-pdpa-summary-card pending"><div class="num">'+pendingCount+'</div><div class="lbl">ยังไม่ให้</div></div>';
+  }
+
+  const tbody = document.getElementById('exec-pdpa-body');
+  const countEl = document.getElementById('exec-pdpa-count');
+  if(!tbody) return;
+  const statusLabels = { given:'✅ ให้แล้ว', withdrawn:'⛔ ถอนแล้ว', pending:'⏳ ยังไม่ให้' };
+  const statusCls = { given:'ok', withdrawn:'bad', pending:'warn' };
+  tbody.innerHTML = records.map(r=>{
+    const type = typeMap[r.consentTypeId]||{ labelThai: r.consentTypeId };
+    return '<tr>'+
+      '<td>'+r.room+'</td>'+
+      '<td><strong>'+r.patientName+'</strong></td>'+
+      '<td>'+type.labelThai+'</td>'+
+      '<td><span class="chip '+statusCls[r.status]+'">'+statusLabels[r.status]+'</span></td>'+
+      '<td style="font-size:11px;">'+(r.givenAt||'–')+'</td>'+
+      '<td style="font-size:11px;">'+(r.withdrawnAt||'–')+'</td>'+
+      '<td><button class="exec-um-btn" onclick="execPdpaViewDetail(\''+r.id+'\')">ดูรายละเอียด</button></td>'+
+      '</tr>';
+  }).join('');
+  if(countEl) countEl.textContent = records.length + ' รายการ';
+}
+
+function execPdpaViewDetail(id){
+  const r = PDPA_CONSENT_RECORDS.find(x=>x.id===id); if(!r) return;
+  const t = PDPA_CONSENT_TYPES.find(x=>x.id===r.consentTypeId);
+  alert('รายละเอียดความยินยอม\nผู้ป่วย: '+r.patientName+' (ห้อง '+r.room+')\nประเภท: '+(t?t.labelThai:r.consentTypeId)+'\nสถานะ: '+r.status+'\nวันที่ให้: '+(r.givenAt||'–')+'\nวันที่ถอน: '+(r.withdrawnAt||'–')+'\n\nฟอร์มดู/แก้ไขจะเชื่อมกับระบบจริงใน Phase ถัดไป (Demo)');
+}
+
+function execPdpaExport(){
+  const rows = [['ห้อง','ผู้ป่วย','ประเภทความยินยอม','สถานะ','วันที่ให้','วันที่ถอน']];
+  const typeMap = {}; PDPA_CONSENT_TYPES.forEach(t=>{ typeMap[t.id]=t; });
+  PDPA_CONSENT_RECORDS.forEach(r=>{
+    const t = typeMap[r.consentTypeId]||{ labelThai: r.consentTypeId };
+    rows.push([r.room, r.patientName, t.labelThai, r.status, r.givenAt||'–', r.withdrawnAt||'–']);
+  });
+  const csv = rows.map(row=>row.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'PDPA_Consent_'+formatDateTH(new Date()).replace(/\s/g,'_')+'.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 /* ─────────────────────────── FLOW BAR ─────────────────────────── */
 function updateFlowBar(step){
   const bar = document.getElementById('flow-bar');
   if(!bar) return;
-  const q = roomRequests['301A'];
+  const q = roomRequests[currentPatientRoom];
   if(!q){ bar.style.display='none'; return; }
   bar.style.display='flex';
   for(let i=1;i<=6;i++){
@@ -1980,8 +2441,8 @@ function createRequest(patient, reqType){
     document.getElementById('vtp-red-room').textContent=`ห้อง ${patient.room} — ${patient.name}`;
     document.getElementById('vtp-red-msg').textContent='กดฉุกเฉิน — แจ้งทีมพยาบาลทุกคน';
   }
-  if(patient.room==='301A'){
-    updateCallbar301();
+  if(patient.room===currentPatientRoom){
+    updateCallbarForCurrentRoom();
     updateFlowBar(1);
     updateChainSummary(req);
     showBedsideWaiting(req);  // ไปหน้ารอพยาบาล พร้อมข้อความ "ส่งคำร้องแล้ว"
@@ -1989,8 +2450,8 @@ function createRequest(patient, reqType){
   return req;
 }
 
-/* ─────────────────────────── PATIENT 301A ─────────────────────────── */
-function patientSendRequest(type,label,icon){ createRequest(PATIENTS[0], type); }
+/* ─────────────────────────── PATIENT (current room) ─────────────────────────── */
+function patientSendRequest(type,label,icon){ createRequest(getCurrentPatient(), type); }
 
 function showEmergencyConfirm(){
   const el=document.getElementById('nc-emerg-modal'); if(el)el.classList.add('show');
@@ -2001,7 +2462,7 @@ function hideEmergencyConfirm(){
 function confirmEmergencySend(){
   hideEmergencyConfirm();
   var btn=document.getElementById('nc-emerg-btn'); if(btn){ btn.disabled=true; btn.style.opacity='0.8'; }
-  createRequest(PATIENTS[0], 'emergency');
+  createRequest(getCurrentPatient(), 'emergency');
 }
 
 function patientSendWithFeedback(type,label,icon,btnEl){
@@ -2015,7 +2476,7 @@ function patientSendWithFeedback(type,label,icon,btnEl){
   if(lbl)lbl.textContent='กำลังส่ง...';
   if(sub)sub.textContent='';
   setTimeout(function(){
-    createRequest(PATIENTS[0], type);
+    createRequest(getCurrentPatient(), type);
     if(lbl)lbl.textContent=origLbl;
     if(sub)sub.textContent=origSub;
     allBtns.forEach(function(b){ b.disabled=false; });
@@ -2023,14 +2484,14 @@ function patientSendWithFeedback(type,label,icon,btnEl){
 }
 
 function patientCancelRequest(){
-  const q=roomRequests['301A']; if(!q)return;
+  const q=roomRequests[currentPatientRoom]; if(!q)return;
   cancelRequest(q.id);
   closeAllOverlays();
   updateFlowBar(0);
 }
 
-function updateCallbar301(){
-  const q=roomRequests['301A'];
+function updateCallbarForCurrentRoom(){
+  const q=roomRequests[currentPatientRoom];
   const bar=document.getElementById('pt-callbar');
   if(!bar)return;
   if(!q){bar.style.display='none';return;}
@@ -2057,7 +2518,7 @@ function updateCallbar301(){
 }
 
 function openBedsideStatus(){
-  const q=roomRequests['301A']; if(!q)return;
+  const q=roomRequests[currentPatientRoom]; if(!q)return;
   // Update overlay content before showing
   const ni=document.getElementById('bedside-icon');
   const nn=document.getElementById('bedside-nurse-name');
@@ -2096,12 +2557,12 @@ function showBedsideWaiting(req){
 }
 
 function bedsideConfirm(){
-  const q=roomRequests['301A']; if(!q||q.status!=='enroute') return;
+  const q=roomRequests[currentPatientRoom]; if(!q||q.status!=='enroute') return;
   q.status='bedside'; q.bedsideTime=Date.now();
   STATS.bedsideConfirmed++;
   if(q.nurse) setStaffStatus(q.nurse,'busy');
 
-  const ev={event:'BEDSIDE_CONFIRMED', user:'ผู้ป่วย/ญาติ (Patient Tablet)',room:'301A',detail:'📍 ยืนยันพยาบาลมาถึงแล้ว — Physical Presence Verified',ts:nowISO(),tsTH:nowTH()};
+  const ev={event:'BEDSIDE_CONFIRMED', user:'ผู้ป่วย/ญาติ (Patient Tablet)',room:q.patient.room,detail:'📍 ยืนยันพยาบาลมาถึงแล้ว — Physical Presence Verified',ts:nowISO(),tsTH:nowTH()};
   ev.hash=makeHash(ev); q.auditChain.push(ev); addAudit(ev,'bedside');
 
   closeOverlay('ov-bedside');
@@ -2109,18 +2570,18 @@ function bedsideConfirm(){
   document.getElementById('care-req-label').textContent=q.reqType.icon+' '+q.reqType.label;
   openOverlay('ov-care');
   updateFlowBar(5);
-  updateCallbar301();
+  updateCallbarForCurrentRoom();
   renderTriageBoard();
-  renderRoomCard('301A','bedside-ok');
-  renderSimCard('301A','bedside','');
+  renderRoomCard(q.patient.room,'bedside-ok');
+  renderSimCard(q.patient.room,'bedside','');
   updateNSStats();
-  addLog('var(--teal)',`ห้อง 301A: 📍 ยืนยันมาถึงแล้ว — Physical Presence Confirmed`);
+  addLog('var(--teal)',`ห้อง ${q.patient.room}: 📍 ยืนยันมาถึงแล้ว — Physical Presence Confirmed`);
   updateChainSummary(q);
   updateExecDashboard();
 }
 
 function bedsideComplete(){
-  const q=roomRequests['301A']; if(!q) return;
+  const q=roomRequests[currentPatientRoom]; if(!q) return;
   const nurseLabel=`${q.nurse||'พยาบาล'} — ${q.reqType.icon} ${q.reqType.label}`;
   completeRequest(q.id,'tablet');
   closeOverlay('ov-care');
@@ -2170,13 +2631,13 @@ function selectEmoji(n, el){
 }
 
 function submitRating(){
-  const q = QUEUE.find(x=>x.patient.room==='301A'&&x.status==='done');
+  const q = QUEUE.find(x=>x.patient.room===currentPatientRoom&&x.status==='done');
   const EMOJI_MAP = {1:'😞 ไม่พอใจ',2:'😕 พอใช้',3:'😊 ดี',4:'😄 ดีมาก',5:'🤩 ยอดเยี่ยม'};
   if(q && selectedRating>0){
     q.rating = selectedRating;
     STATS.satisfaction.push(selectedRating);
   }
-  const ev={event:'PATIENT_RATED',user:'ผู้ป่วย สมชาย',room:'301A',
+  const ev={event:'PATIENT_RATED',user:'ผู้ป่วย '+(getCurrentPatient()?getCurrentPatient().name:''),room:currentPatientRoom,
     detail:`${EMOJI_MAP[selectedRating]||'–'} — ${q?q.reqType.label:''}`,
     ts:nowISO(),tsTH:nowTH()};
   ev.hash = makeHash(ev);
@@ -2189,18 +2650,97 @@ function submitRating(){
 }
 function skipRating(){ closeAllOverlays(); updateFlowBar(0); }
 
-/* ─────────────────────────── NURSE STATION ACTIONS ─────────────────────────── */
-function ackRequest(id){
+/* ─────────────────────────── NURSE STATION: มอบหมายยุติธรรม (ป้องกันเลือกที่รักมักที่ชัง) ─────────────────────────── */
+function getStaffWorkload(nurseName){
+  return QUEUE.filter(q=>q.nurse===nurseName&&q.status!=='done').length;
+}
+/** รายชื่อพยาบาลที่รับได้ + workload (สำหรับ dropdown เลือกคน). ใช้ชุด eligible เดียวกับ selectNurseForRequest */
+function getEligibleNursesWithWorkload(isEmergency){
+  const nurses = STAFF_ON_DUTY.filter(s=>s.role==='พยาบาล'&&NURSES.includes(s.name));
+  let eligible = isEmergency ? nurses : nurses.filter(s=>s.status!=='break');
+  if(isEmergency&&eligible.length===0) eligible=nurses;
+  return eligible.map(n=>({ name:n.name, workload:getStaffWorkload(n.name), status:n.status }));
+}
+/** คืนค่า { name, reason } หรือ null ถ้าไม่มีพยาบาลรับได้. reason เช่น "งานน้อยสุด (0 รายการ)", "สลับตามลำดับ (งานเท่ากัน)" */
+function selectNurseForRequest(isEmergency){
+  const withWorkload = getEligibleNursesWithWorkload(isEmergency);
+  if(!withWorkload.length) return null;
+  const sorted = withWorkload.slice().sort((a,b)=>a.workload-b.workload);
+  const minW = sorted[0].workload;
+  const tied = sorted.filter(x=>x.workload===minW).map(x=>x.name);
+  let pick = tied[0];
+  let reason = minW===0 ? 'ว่าง (0 รายการ)' : `งานน้อยสุด (${minW} รายการ)`;
+  if(tied.length>1){
+    const order = NURSES.filter(n=>tied.includes(n));
+    const lastIdx = order.indexOf(lastAssignedNurseName);
+    const nextIdx = lastIdx<0 ? 0 : (lastIdx+1)%order.length;
+    pick = order[nextIdx];
+    reason = 'สลับตามลำดับ (งานเท่ากัน)';
+  }
+  return { name: pick, reason };
+}
+/** มอบคำร้องให้พยาบาลที่เลือกเอง (ต้องอยู่ในรายชื่อรับได้) */
+function ackRequestWithNurse(id, nurseName){
   const q=QUEUE.find(x=>x.id===id); if(!q||q.status!=='waiting')return;
+  const isEmergency=!!(q.reqType&&q.reqType.type==='emergency');
+  const eligible=getEligibleNursesWithWorkload(isEmergency).map(x=>x.name);
+  if(!eligible.includes(nurseName))return;
+  closeAssignDropdown();
   q.status='ack'; q.ackTime=Date.now();
-  q.nurse=NURSES[Math.floor(Math.random()*NURSES.length)];
+  q.nurse=nurseName;
+  lastAssignedNurseName=nurseName;
   setStaffStatus(q.nurse,'at_station');
   const ev={event:'NURSE_ACK',user:q.nurse,room:q.patient.room,detail:`รับทราบ ${q.reqType.icon} ${q.reqType.label}`,ts:nowISO(),tsTH:nowTH()};
   ev.hash=makeHash(ev); q.auditChain.push(ev); addAudit(ev,'ack');
   renderTriageBoard(); hideBellBadge(); updateNSStats();
   addLog('var(--amber)',`${q.nurse}: รับคำร้อง ${q.reqType.icon} ห้อง ${q.patient.room}`);
-  if(q.patient.room==='301A'){
-    updateCallbar301(); updateFlowBar(2);
+  if(q.patient.room===currentPatientRoom){
+    updateCallbarForCurrentRoom(); updateFlowBar(2);
+    const el=document.getElementById('bedside-nurse-name'); if(el)el.textContent=`${q.nurse} รับทราบแล้ว...`;
+    const msg=document.getElementById('bedside-msg'); if(msg)msg.textContent='พยาบาลรับทราบคำร้องของคุณแล้ว\nกำลังเตรียมมาหาคุณ';
+    updateChainSummary(q);
+  }
+}
+var _assignDropdownRequestId=null;
+function toggleAssignDropdown(id){
+  var dd=document.getElementById('tc-assign-dd-'+id); if(!dd)return;
+  if(_assignDropdownRequestId===id){ closeAssignDropdown(); return; }
+  closeAssignDropdown();
+  _assignDropdownRequestId=id;
+  dd.classList.add('open');
+  setTimeout(function(){
+    document.addEventListener('click', _closeAssignOnClickOutside);
+  },0);
+}
+function _closeAssignOnClickOutside(e){
+  if(e.target.closest('.tc-assign-wrap'))return;
+  closeAssignDropdown();
+  document.removeEventListener('click',_closeAssignOnClickOutside);
+}
+function closeAssignDropdown(){
+  document.querySelectorAll('.tc-assign-dropdown.open').forEach(function(el){ el.classList.remove('open'); });
+  _assignDropdownRequestId=null;
+  document.removeEventListener('click',_closeAssignOnClickOutside);
+}
+
+/* ─────────────────────────── NURSE STATION ACTIONS ─────────────────────────── */
+function ackRequest(id){
+  const q=QUEUE.find(x=>x.id===id); if(!q||q.status!=='waiting')return;
+  const suggested=selectNurseForRequest(q.reqType&&q.reqType.type==='emergency');
+  if(!suggested){
+    if(typeof alert!=='undefined') alert('ไม่มีพยาบาลว่างรับงานในขณะนี้ (อาจอยู่พักเบรกทั้งหมด)');
+    return;
+  }
+  q.status='ack'; q.ackTime=Date.now();
+  q.nurse=suggested.name;
+  lastAssignedNurseName=suggested.name;
+  setStaffStatus(q.nurse,'at_station');
+  const ev={event:'NURSE_ACK',user:q.nurse,room:q.patient.room,detail:`รับทราบ ${q.reqType.icon} ${q.reqType.label}`,ts:nowISO(),tsTH:nowTH()};
+  ev.hash=makeHash(ev); q.auditChain.push(ev); addAudit(ev,'ack');
+  renderTriageBoard(); hideBellBadge(); updateNSStats();
+  addLog('var(--amber)',`${q.nurse}: รับคำร้อง ${q.reqType.icon} ห้อง ${q.patient.room}`);
+  if(q.patient.room===currentPatientRoom){
+    updateCallbarForCurrentRoom(); updateFlowBar(2);
     const el=document.getElementById('bedside-nurse-name'); if(el)el.textContent=`${q.nurse} รับทราบแล้ว...`;
     const msg=document.getElementById('bedside-msg'); if(msg)msg.textContent='พยาบาลรับทราบคำร้องของคุณแล้ว\nกำลังเตรียมมาหาคุณ';
     updateChainSummary(q);
@@ -2217,9 +2757,8 @@ function enrouteRequest(id){
   renderSimCard(q.patient.room,'enroute','');
   updateNSStats();
   addLog('var(--blue)',`${q.nurse}: 🏃 กำลังไปห้อง ${q.patient.room}`);
-  if(q.patient.room==='301A'){
-    updateCallbar301(); updateFlowBar(3);
-    // Show confirm button on bedside overlay
+  if(q.patient.room===currentPatientRoom){
+    updateCallbarForCurrentRoom(); updateFlowBar(3);
     const btn=document.getElementById('bedside-confirm-btn'); if(btn)btn.style.display='';
     const ni=document.getElementById('bedside-icon'); if(ni)ni.textContent='🏃';
     const nn=document.getElementById('bedside-nurse-name'); if(nn)nn.textContent=`${q.nurse} กำลังมา...`;
@@ -2233,7 +2772,7 @@ function enrouteRequest(id){
 function completeRequest(id, source='station'){
   const q=QUEUE.find(x=>x.id===id); if(!q||q.status==='done')return;
   // GUARD: if source is station, require bedside confirmed (except emergency & auto-sim)
-  if(source==='station' && q.status!=='bedside' && q.status!=='progress' && q.patient.room!=='301A'){
+  if(source==='station' && q.status!=='bedside' && q.status!=='progress' && q.patient.room!==currentPatientRoom){
     // Auto-sim rooms: allow
   }
   q.status='done'; q.completeTime=Date.now();
@@ -2244,7 +2783,7 @@ function completeRequest(id, source='station'){
 
   if(!q.rating){
     q.rating=Math.random()<0.65?5:Math.random()<0.65?4:3;
-    if(q.patient.room!=='301A'){ STATS.satisfaction.push(q.rating); }
+    if(q.patient.room!==currentPatientRoom){ STATS.satisfaction.push(q.rating); }
   }
 
   const ev={event:'COMPLETE',user:source==='tablet'?'ผู้ป่วย/ญาติ (Patient Tablet)':q.nurse,room:q.patient.room,detail:`เสร็จสิ้น — Response ${fmtSec(responseSecs)} min`,ts:nowISO(),tsTH:nowTH()};
@@ -2256,7 +2795,7 @@ function completeRequest(id, source='station'){
   document.getElementById('vtp-red').style.display='none';
   addLog('var(--green)',`ห้อง ${q.patient.room}: ✅ เสร็จสิ้น — Response ${fmtSec(responseSecs)} · ⭐${q.rating}`);
   updateDcStats();
-  if(q.patient.room==='301A'){ updateCallbar301(); updateChainSummary(q); }
+  if(q.patient.room===currentPatientRoom){ updateCallbarForCurrentRoom(); updateChainSummary(q); }
 }
 
 function cancelRequest(id){
@@ -2269,7 +2808,7 @@ function cancelRequest(id){
   renderTriageBoard(); renderRoomCard(q.patient.room,'ok');
   renderSimCard(q.patient.room,'reset','');
   updateNSStats(); addLog('var(--amber)',`ห้อง ${q.patient.room}: ยกเลิกคำร้อง`);
-  if(q.patient.room==='301A'){updateCallbar301(); updateFlowBar(0);}
+  if(q.patient.room===currentPatientRoom){updateCallbarForCurrentRoom(); updateFlowBar(0);}
   updateDcStats();
 }
 
@@ -2288,6 +2827,7 @@ function getSLA(secs, reqType){
 }
 
 function renderTriageBoard(){
+  closeAssignDropdown();
   const list=document.getElementById('ns-triage-list');
   const active=QUEUE.filter(q=>q.status!=='done');
   active.sort((a,b)=>b.reqType.priority-a.reqType.priority||a.startTime-b.startTime);
@@ -2300,8 +2840,16 @@ function renderTriageBoard(){
     const sla=getSLA(secs, q.reqType.type);
     let pill='',btn='';
     if(q.status==='waiting'){
+      const suggested=selectNurseForRequest(q.reqType&&q.reqType.type==='emergency');
+      const suggestLine=suggested ? `<div class="tc-suggest">ระบบแนะนำ: <strong>${suggested.name}</strong> (${suggested.reason})</div>` : `<div class="tc-suggest" style="color:#fca5a5">ไม่มีพยาบาลว่างรับงาน</div>`;
       pill=`<span class="tc-status-pill waiting">รอพยาบาล</span>`;
-      btn=`<button class="tc-btn ack" onclick="ackRequest(${q.id})">✓ รับทราบ</button>`;
+      const eligibleList=getEligibleNursesWithWorkload(!!(q.reqType&&q.reqType.type==='emergency'));
+      const assignDropdownItems=eligibleList.map(n=>{
+        const breakLabel=n.status==='break' ? ' (พัก)' : '';
+        return `<button type="button" class="tc-assign-item" data-request-id="${q.id}" data-nurse-name="${n.name.replace(/"/g,'&quot;')}" onclick="ackRequestWithNurse(parseInt(this.dataset.requestId), this.getAttribute('data-nurse-name'));">${n.name} — ${n.workload} รายการ${breakLabel}</button>`;
+      }).join('');
+      const assignDropdown=eligibleList.length ? `<div class="tc-assign-wrap" onclick="event.stopPropagation()"><button type="button" class="tc-btn tc-btn-assign" onclick="toggleAssignDropdown(${q.id})">มอบให้…</button><div class="tc-assign-dropdown" id="tc-assign-dd-${q.id}">${assignDropdownItems}</div></div>` : '';
+      btn=(suggested ? `<button class="tc-btn ack" onclick="ackRequest(${q.id})" title="มอบให้ ${suggested.name} ตามระบบ">✓ รับทราบ (มอบตามระบบ)</button>` : `<button class="tc-btn locked" title="ไม่มีพยาบาลว่าง">✓ รับทราบ</button>`) + assignDropdown + suggestLine;
     } else if(q.status==='ack'){
       pill=`<span class="tc-status-pill ack">${q.nurse?.split(' ')[1]||'พยาบาล'}</span>`;
       btn=`<button class="tc-btn enroute" onclick="enrouteRequest(${q.id})">🏃 กำลังไป</button>`;
@@ -2461,18 +3009,29 @@ function renderNSMedAlerts(){
 }
 
 /* Nurse Station: Staff On Duty from STAFF_ON_DUTY (A3, BN6) */
-const STAFF_STATUS_LABELS = { free:'ว่าง', at_station:'สถานี', enroute:'กำลังไป', busy:'อยู่ข้างเตียง' };
+const STAFF_STATUS_LABELS = { free:'ว่าง', at_station:'สถานี', enroute:'กำลังไป', busy:'อยู่ข้างเตียง', break:'พักเบรก' };
 function setStaffStatus(nurseName, status){
   const s=STAFF_ON_DUTY.find(x=>x.name===nurseName);
   if(s){ s.status=status; renderNSStaff(); }
 }
+function toggleStaffBreak(staffId){
+  const s=STAFF_ON_DUTY.find(x=>x.id===staffId);
+  if(!s||s.role!=='พยาบาล')return;
+  const active=QUEUE.filter(q=>q.nurse===s.name&&q.status!=='done');
+  if(s.status==='break'){ s.status='free'; renderNSStaff(); return; }
+  if(active.length>0) return;
+  s.status='break';
+  renderNSStaff();
+}
 function renderNSStaff(){
   const el=document.getElementById('ns-staff-list'); if(!el)return;
   el.innerHTML=STAFF_ON_DUTY.map(s=>{
-    const statusCls=s.status==='enroute'?'enroute':s.status==='busy'?'busy':'free';
+    const statusCls=s.status==='enroute'?'enroute':s.status==='busy'?'busy':s.status==='break'?'break':'free';
     const label=STAFF_STATUS_LABELS[s.status]||s.status;
     const av=s.role==='แพทย์'?'👨‍⚕️':'👩‍⚕️';
-    return `<div class="staff-item"><div class="staff-av">${av}</div><div><div class="staff-name">${s.name}</div><div class="staff-status ${statusCls}" id="staff-${s.id}">● ${label}</div></div></div>`;
+    const workload= s.role==='พยาบาล' ? getStaffWorkload(s.name) : 0;
+    const breakBtn= s.role==='พยาบาล' ? `<button type="button" class="staff-break-btn" onclick="toggleStaffBreak('${s.id}')" title="${s.status==='break'?'กลับจากพักเบรก':'ตั้งว่าพักเบรก'}">${s.status==='break'?'↩ กลับ':'☕ พัก'}</button>` : '';
+    return `<div class="staff-item ${s.status==='break'?'on-break':''}"><div class="staff-av">${av}</div><div class="staff-info"><div class="staff-name">${s.name}</div><div class="staff-status ${statusCls}" id="staff-${s.id}">● ${label}${s.role==='พยาบาล'&&workload>0?' · '+workload+' รายการ':''}</div></div>${breakBtn}</div>`;
   }).join('');
 }
 
@@ -2494,69 +3053,94 @@ function updateDcStats(){
 }
 
 /* ─────────────────────────── EXEC DASHBOARD ─────────────────────────── */
+function getExecDisplayStats(){
+  if(execPeriod==='day')
+    return {
+      total: STATS.total,
+      avgResponseSec: STATS.responseTimes.length>0 ? Math.round(STATS.responseTimes.reduce((a,b)=>a+b,0)/STATS.responseTimes.length) : null,
+      bedsideRatePct: STATS.done>0 ? Math.round((STATS.bedsideConfirmed/STATS.done)*100) : 0,
+      satisfactionCounts: null,
+      satisfactionArray: STATS.satisfaction,
+      callsByType: STATS.callsByType,
+    };
+  if(execPeriod==='week'){
+    const m=EXEC_MOCK_WEEK;
+    return { total: m.total, avgResponseSec: m.avgResponseSec, bedsideRatePct: m.bedsideRatePct, satisfactionCounts: m.satisfaction, satisfactionArray: null, callsByType: m.callsByType };
+  }
+  const m=EXEC_MOCK_MONTH;
+  return { total: m.total, avgResponseSec: m.avgResponseSec, bedsideRatePct: m.bedsideRatePct, satisfactionCounts: m.satisfaction, satisfactionArray: null, callsByType: m.callsByType };
+}
+
 function updateExecDashboard(){
-  // Ward table first so w-* elements exist (TOR 6.5.1)
-  renderWardPerformance();
+  const ds = getExecDisplayStats();
+  renderWardPerformance(ds);
 
-  // KPI total
   const kt=document.getElementById('kpi-total');
-  if(kt){kt.textContent=STATS.total;kt.classList.remove('bump');void kt.offsetWidth;kt.classList.add('bump');}
-  document.getElementById('kpi-total-chg').textContent=Object.keys(roomRequests).length>0?`🔴 LIVE — ${Object.keys(roomRequests).length} คำร้องขณะนี้`:'–';
+  if(kt){ kt.textContent=ds.total; kt.classList.remove('bump'); void kt.offsetWidth; kt.classList.add('bump'); }
+  const chgEl=document.getElementById('kpi-total-chg');
+  if(chgEl) chgEl.textContent = execPeriod==='day' && Object.keys(roomRequests).length>0 ? `🔴 LIVE — ${Object.keys(roomRequests).length} คำร้องขณะนี้` : (execPeriod!=='day' ? 'ข้อมูลรวมช่วงเวลา (จำลอง)' : '–');
 
-  // Avg response
-  if(STATS.responseTimes.length>0){
-    const avg=Math.round(STATS.responseTimes.reduce((a,b)=>a+b,0)/STATS.responseTimes.length);
-    const avgStr=fmtSec(avg);
+  if(ds.avgResponseSec!=null){
+    const avgStr=fmtSec(ds.avgResponseSec);
     const wAvg=document.getElementById('w-avg'); if(wAvg)wAvg.textContent=avgStr;
     document.getElementById('kpi-avg').textContent=avgStr;
-    document.getElementById('kpi-avg-chg').className='kpi-chg '+(avg<300?'up':'dn');
-    document.getElementById('kpi-avg-chg').textContent=(avg<300?'✅ ':'')+avgStr+' (เป้า < 5:00)';
+    const avgOk=ds.avgResponseSec<300;
+    const kc=document.getElementById('kpi-avg-chg'); if(kc){ kc.className='kpi-chg '+(avgOk?'up':'dn'); kc.textContent=(avgOk?'✅ ':'')+avgStr+' (เป้า < 5:00)'; }
   }
 
-  // Satisfaction (Emoji-based, Exec-only — ไม่แสดงให้พยาบาลเห็น)
-  if(STATS.satisfaction.length>0){
-    const avg=(STATS.satisfaction.reduce((a,b)=>a+b,0)/STATS.satisfaction.length).toFixed(1);
-    const EMOJI_SCORE=['–','😞','😕','😊','😄','🤩'];
-    const avgNum=parseFloat(avg);
-    const emojiIdx=Math.round(avgNum); // 1-5
-    const wSat=document.getElementById('w-sat'); if(wSat)wSat.textContent=avg+'/5';
-    document.getElementById('kpi-sat').textContent=EMOJI_SCORE[emojiIdx]||avg;
-    document.getElementById('kpi-sat-chg').textContent=`คะแนนเฉลี่ย ${avg}/5 — จาก ${STATS.satisfaction.length} รีวิว`;
-    document.getElementById('sat-score').textContent=EMOJI_SCORE[emojiIdx]||avg;
-    document.getElementById('sat-score-lbl').textContent=`เฉลี่ย ${avg}/5 — ${STATS.satisfaction.length} การประเมิน`;
+  const EMOJI_SCORE=['–','😞','😕','😊','😄','🤩'];
+  let satTotal=0, satAvg=0;
+  if(ds.satisfactionArray && ds.satisfactionArray.length>0){
+    satTotal=ds.satisfactionArray.length;
+    satAvg=(ds.satisfactionArray.reduce((a,b)=>a+b,0)/satTotal).toFixed(1);
+  } else if(ds.satisfactionCounts && ds.satisfactionCounts.length===5){
+    satTotal=ds.satisfactionCounts.reduce((a,b)=>a+b,0);
+    let sum=0; ds.satisfactionCounts.forEach((c,i)=>{ sum+= c*(i+1); });
+    satAvg=satTotal>0 ? (sum/satTotal).toFixed(1) : 0;
+  }
+  if(satTotal>0){
+    const avgNum=parseFloat(satAvg);
+    const emojiIdx=Math.round(avgNum);
+    const wSat=document.getElementById('w-sat'); if(wSat)wSat.textContent=satAvg+'/5';
+    document.getElementById('kpi-sat').textContent=EMOJI_SCORE[emojiIdx]||satAvg;
+    document.getElementById('kpi-sat-chg').textContent=`คะแนนเฉลี่ย ${satAvg}/5 — จาก ${satTotal} รีวิว`;
+    document.getElementById('sat-score').textContent=EMOJI_SCORE[emojiIdx]||satAvg;
+    document.getElementById('sat-score-lbl').textContent=`เฉลี่ย ${satAvg}/5 — ${satTotal} การประเมิน`;
     for(let s=1;s<=5;s++){
-      const cnt=STATS.satisfaction.filter(x=>x===s).length;
-      const pct=Math.round((cnt/STATS.satisfaction.length)*100);
+      let cnt=0;
+      if(ds.satisfactionArray) cnt=ds.satisfactionArray.filter(x=>x===s).length;
+      else if(ds.satisfactionCounts) cnt=ds.satisfactionCounts[s-1]||0;
+      const pct=satTotal>0 ? Math.round((cnt/satTotal)*100) : 0;
       const el=document.getElementById('sat'+s); if(el)el.style.width=pct+'%';
       const pe=document.getElementById('sat'+s+'-pct'); if(pe)pe.textContent=cnt;
     }
   }
 
-  // Bedside rate
-  const bedsideRate=STATS.done>0?Math.round((STATS.bedsideConfirmed/STATS.done)*100):0;
-  const bk=document.getElementById('kpi-bedside'); if(bk)bk.textContent=bedsideRate+'%';
-  const wb=document.getElementById('w-bedside'); if(wb)wb.textContent=bedsideRate+'%';
+  const bk=document.getElementById('kpi-bedside'); if(bk)bk.textContent=ds.bedsideRatePct+'%';
+  const wb=document.getElementById('w-bedside'); if(wb)wb.textContent=ds.bedsideRatePct+'%';
+  document.getElementById('w-calls').textContent=ds.total;
 
-  // Ward calls
-  document.getElementById('w-calls').textContent=STATS.total;
-
-  // Type dist
+  const typeTitleEl=document.getElementById('exec-type-dist-title');
+  if(typeTitleEl) typeTitleEl.textContent = '📞 ประเภทคำร้อง (' + (execPeriod==='day'?'วันนี้':execPeriod==='week'?'สัปดาห์นี้':'เดือนนี้') + ')';
   const td=document.getElementById('exec-type-dist');
-  const maxCnt=Math.max(1,...Object.values(STATS.callsByType));
+  const cbt=ds.callsByType||{};
+  const maxCnt=Math.max(1,...REQ_TYPES.map(rt=>cbt[rt.type]||0));
   td.innerHTML=REQ_TYPES.map(rt=>{
-    const cnt=STATS.callsByType[rt.type]||0;
-    const pct=Math.round((cnt/maxCnt)*100);
+    const cnt=cbt[rt.type]||0;
+    const pct=maxCnt>0 ? Math.round((cnt/maxCnt)*100) : 0;
     return `<div class="type-row"><span class="type-icon">${rt.icon}</span><span class="type-lbl">${rt.label}</span><div class="type-bar-wrap"><div class="type-bar-fill" style="width:${pct}%;background:${rt.color}"></div></div><span class="type-count">${cnt}</span></div>`;
   }).join('');
 }
 
-function renderWardPerformance(){
+function renderWardPerformance(ds){
   const tbody=document.getElementById('ward-perf-body'); if(!tbody)return;
-  const currentWard=WARD_PERFORMANCE[0]; // อายุรกรรม 3A = current ward
-  const avgStr=STATS.responseTimes.length>0 ? fmtSec(Math.round(STATS.responseTimes.reduce((a,b)=>a+b,0)/STATS.responseTimes.length)) : '–';
-  const bedsideRate=STATS.done>0 ? Math.round((STATS.bedsideConfirmed/STATS.done)*100)+'%' : '–';
-  const satStr=STATS.satisfaction.length>0 ? (STATS.satisfaction.reduce((a,b)=>a+b,0)/STATS.satisfaction.length).toFixed(1)+'/5' : '–';
-  let html=`<tr><td><strong>${currentWard.name}</strong></td><td id="w-calls">${STATS.total}</td><td id="w-avg">${avgStr}</td><td id="w-bedside">${bedsideRate}</td><td id="w-sat">${satStr}</td><td><span class="chip ok">✅ Live</span></td></tr>`;
+  if(!ds) ds = getExecDisplayStats();
+  const currentWard=WARD_PERFORMANCE[0];
+  const avgStr=ds.avgResponseSec!=null ? fmtSec(ds.avgResponseSec) : '–';
+  let satStr='–';
+  if(ds.satisfactionArray&&ds.satisfactionArray.length>0) satStr=(ds.satisfactionArray.reduce((a,b)=>a+b,0)/ds.satisfactionArray.length).toFixed(1)+'/5';
+  else if(ds.satisfactionCounts){ const n=ds.satisfactionCounts.reduce((a,b)=>a+b,0); if(n>0){ let s=0; ds.satisfactionCounts.forEach((c,i)=>{ s+=c*(i+1); }); satStr=(s/n).toFixed(1)+'/5'; } }
+  let html=`<tr><td><strong>${currentWard.name}</strong></td><td id="w-calls">${ds.total}</td><td id="w-avg">${avgStr}</td><td id="w-bedside">${ds.bedsideRatePct}%</td><td id="w-sat">${satStr}</td><td><span class="chip ok">${execPeriod==='day'?'✅ Live':'✅ ข้อมูลรวม'}</span></td></tr>`;
   WARD_PERFORMANCE.slice(1).forEach(w=>{
     html+=`<tr><td>${w.name}</td><td>${w.calls}</td><td>${w.avgResponse}</td><td>${w.bedsideRate}</td><td>${w.satisfaction}</td><td><span class="chip ${w.status}">${w.statusLabel}</span></td></tr>`;
   });
@@ -2618,7 +3202,7 @@ function setSpeed(s,_,btn){
 function startAutoSim(){
   clearInterval(autoInterval);
   autoInterval=setInterval(()=>{
-    const free=PATIENTS.filter(p=>!roomRequests[p.room]&&p.room!=='301A');
+    const free=PATIENTS.filter(p=>!roomRequests[p.room]&&p.room!==currentPatientRoom);
     if(!free.length)return;
     const p=free[Math.floor(Math.random()*free.length)];
     const w=['general','general','water','water','toilet','toilet','pain'];
@@ -2653,14 +3237,129 @@ function simulateRandom(){
   const free=PATIENTS.filter(p=>!roomRequests[p.room]);
   if(!free.length)return;
   const p=free[Math.floor(Math.random()*free.length)];
-  if(p.room==='301A'){patientSendRequest('general','ขอความช่วยเหลือ','🙋');return;}
+  if(p.room===currentPatientRoom){ patientSendRequest('general','ขอความช่วยเหลือ','🙋'); return; }
   const w=['general','general','water','water','toilet','toilet','pain','emergency'];
   createRequest(p,w[Math.floor(Math.random()*w.length)]);
+  var msgEl=document.getElementById('dc-other-room-msg');
+  if(msgEl){ msgEl.textContent='ส่งคำร้องห้อง '+p.room+' แล้ว — ดูที่ Nurse Station'; msgEl.classList.add('show'); setTimeout(function(){ msgEl.classList.remove('show'); }, 4500); }
+}
+
+/* ─────────────────────────── DEMO CTRL: ลากย้าย + ย่อ/ขยาย (Option C) ─────────────────────────── */
+function toggleDemoCtrlCollapse(){
+  var el=document.getElementById('demo-ctrl');
+  var btn=document.getElementById('dc-collapse-btn');
+  if(!el||!btn)return;
+  var collapsed=el.classList.toggle('collapsed');
+  btn.textContent=collapsed?'＋':'−';
+  btn.title=collapsed?'ขยาย':'ย่อ';
+  try{ localStorage.setItem('dcCollapsed',collapsed?'1':'0'); }catch(_){}
+}
+function initDemoCtrl(){
+  var box=document.getElementById('demo-ctrl');
+  var handle=document.getElementById('dc-drag-handle');
+  var collapseBtn=document.getElementById('dc-collapse-btn');
+  if(!box||!handle)return;
+  var savedLeft=localStorage.getItem('dcLeft');
+  var savedTop=localStorage.getItem('dcTop');
+  var collapsed=localStorage.getItem('dcCollapsed')==='1';
+  if(savedLeft!=null&&savedTop!=null){
+    box.style.left=savedLeft+'px';
+    box.style.top=savedTop+'px';
+    box.style.right='';
+    box.style.bottom='';
+  }else{
+    var rect=box.getBoundingClientRect();
+    box.style.left=(window.innerWidth-rect.width-16)+'px';
+    box.style.top=(window.innerHeight-rect.height-16)+'px';
+    box.style.right='';
+    box.style.bottom='';
+  }
+  if(collapsed){
+    box.classList.add('collapsed');
+    if(collapseBtn){ collapseBtn.textContent='＋'; collapseBtn.title='ขยาย'; }
+  }
+  var dragging=false, startX, startY, startLeft, startTop;
+  function startDrag(e){
+    if(e.target.closest('.dc-collapse-btn'))return;
+    e.preventDefault();
+    dragging=true;
+    var x=e.clientX!=null?e.clientX:e.touches[0].clientX;
+    var y=e.clientY!=null?e.clientY:e.touches[0].clientY;
+    startX=x; startY=y;
+    startLeft=parseFloat(box.style.left)||0;
+    startTop=parseFloat(box.style.top)||0;
+  }
+  function move(e){
+    if(!dragging)return;
+    e.preventDefault();
+    var x=e.clientX!=null?e.clientX:e.touches[0].clientX;
+    var y=e.clientY!=null?e.clientY:e.touches[0].clientY;
+    var dx=x-startX, dy=y-startY;
+    var L=Math.max(0,Math.min(window.innerWidth-box.offsetWidth,startLeft+dx));
+    var T=Math.max(0,Math.min(window.innerHeight-box.offsetHeight,startTop+dy));
+    box.style.left=L+'px';
+    box.style.top=T+'px';
+  }
+  function stopDrag(){
+    if(!dragging)return;
+    dragging=false;
+    try{
+      localStorage.setItem('dcLeft',box.style.left);
+      localStorage.setItem('dcTop',box.style.top);
+    }catch(_){}
+  }
+  handle.addEventListener('mousedown',startDrag);
+  handle.addEventListener('touchstart',startDrag,{passive:false});
+  document.addEventListener('mousemove',move);
+  document.addEventListener('touchmove',move,{passive:false});
+  document.addEventListener('mouseup',stopDrag);
+  document.addEventListener('touchend',stopDrag);
+}
+
+/* ─────────────────────────── MOCK DATA SEED (ให้ Demo ครบ) ─────────────────────────── */
+function seedExecMockData(){
+  if(STATS.total>0) return;
+  STATS.total = 5;
+  STATS.done = 5;
+  STATS.bedsideConfirmed = 5;
+  STATS.responseTimes.push(180, 240, 120, 300, 200);
+  STATS.satisfaction.push(4, 5, 4, 3, 5);
+  STATS.callsByType = { general: 2, water: 2, toilet: 1 };
+}
+function seedAuditMockData(){
+  const t = new Date();
+  const pad = (n)=>String(n).padStart(2,'0');
+  const ts = (h, m) => `${pad(t.getDate())}/${pad(t.getMonth()+1)}/${t.getFullYear()+543} ${pad(h)}:${pad(m)}:00`;
+  const events = [
+    { event:'REQUEST', user:'ผู้ป่วย มาลี จันทร์เพ็ง', room:'302A', detail:'💧 ขอน้ำ / ผ้าห่ม', tsTH:ts(7,45) },
+    { event:'NURSE_ACK', user:'พว. จาย ชาน', room:'302A', detail:'รับทราบคำร้อง', tsTH:ts(7,46) },
+    { event:'NURSE_ENROUTE', user:'พว. จาย ชาน', room:'302A', detail:'กำลังไปห้อง 302A', tsTH:ts(7,47) },
+    { event:'BEDSIDE_CONFIRMED', user:'ผู้ป่วย (ยืนยันที่เตียง)', room:'302A', detail:'📍 ยืนยันมาถึง', tsTH:ts(7,50) },
+    { event:'COMPLETE', user:'ผู้ป่วย มาลี จันทร์เพ็ง', room:'302A', detail:'เสร็จสิ้นการบริการ', tsTH:ts(7,52) },
+    { event:'PATIENT_RATED', user:'ผู้ป่วย มาลี จันทร์เพ็ง', room:'302A', detail:'⭐ ประเมิน 5/5', tsTH:ts(7,53) },
+  ];
+  events.forEach(ev=>{ ev.hash = makeHash(ev); addAudit(ev, ev.event==='REQUEST'?'request':ev.event==='NURSE_ACK'?'ack':ev.event==='NURSE_ENROUTE'?'enroute':ev.event==='BEDSIDE_CONFIRMED'?'bedside':ev.event==='COMPLETE'?'complete':'rated'); });
+}
+function seedNurseLog(){
+  const list = document.getElementById('ns-log-list'); if(!list || list.children.length>0) return;
+  [
+    { color: 'var(--teal)', text: 'ห้อง 302A — มาลี จันทร์เพ็ง: 💧 ขอน้ำ / ผ้าห่ม · เสร็จแล้ว' },
+    { color: 'var(--green)', text: 'ห้อง 304A — ประสิทธิ์ มีสุข: 🙋 ขอความช่วยเหลือ · Bedside ยืนยันแล้ว' },
+    { color: 'var(--muted)', text: 'ระบบพร้อม — Ward อายุรกรรม 3A · Demo' },
+  ].forEach(function(o){
+    const item = document.createElement('div'); item.className = 'log-item';
+    item.innerHTML = '<div class="log-dot" style="background:'+o.color+'"></div><div class="log-time">'+nowHHMM()+'</div><div class="log-text">'+o.text+'</div>';
+    list.appendChild(item);
+  });
 }
 
 /* ─────────────────────────── INIT ─────────────────────────── */
 const execUserEl = document.getElementById('exec-current-user');
 if(execUserEl) execUserEl.textContent = CURRENT_USER.name + ' · ' + CURRENT_USER.role;
+initDemoCtrl();
+seedExecMockData();
+seedAuditMockData();
+seedNurseLog();
 renderPatientHeader();
 updateSleepTileLatest();
 initSimPanel();
@@ -2669,6 +3368,7 @@ renderNSMedAlerts();
 renderNSStaff();
 renderNSVtp();
 updateExecDashboard();
+updateExecDateTitle();
 updateAlertBadge();
 </script>
 </body>
