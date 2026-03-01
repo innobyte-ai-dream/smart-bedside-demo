@@ -1,0 +1,6 @@
+Docs/
+
+# ignore ID_KEY.txt
+ID_KEY.txt
+.env
+.DS_Store
