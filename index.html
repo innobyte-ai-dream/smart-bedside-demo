@@ -1,0 +1,2600 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Patient Bedside & Telemedicine Platform — Live Demo v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#0f9e8e;--teal-d:#0d8a7c;--teal-l:#e0f7f5;
+  --navy:#0c1f3f;--navy2:#132952;
+  --blue:#2563eb;--blue-l:#dbeafe;
+  --amber:#d97706;--amber-l:#fef3c7;
+  --red:#dc2626;--red-l:#fee2e2;
+  --orange:#ea580c;--orange-l:#ffedd5;
+  --green:#16a34a;--green-l:#dcfce7;
+  --purple:#7c3aed;--purple-l:#ede9fe;
+  --bg:#f0f4f8;--text:#1a2742;--muted:#607090;
+  --border:#d8e4f0;--card:#fff;
+  --shadow:0 2px 16px rgba(12,31,63,.09);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--navy);height:52px;display:flex;align-items:center;padding:0 20px;gap:0;box-shadow:0 2px 20px rgba(0,0,0,.4);}
+.logo{color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;margin-right:24px;white-space:nowrap;}
+.logo em{color:var(--teal);font-style:normal;}
+.nav-tabs{display:flex;gap:3px;flex:1;}
+.nav-tab{padding:7px 16px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:rgba(255,255,255,.55);border:none;background:transparent;font-family:inherit;white-space:nowrap;transition:.2s;}
+.nav-tab:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-tab.active{background:var(--teal);color:#fff;font-weight:700;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+.live-pill{display:flex;align-items:center;gap:6px;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.35);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:#4ade80;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.nav-clock{font-family:'IBM Plex Mono',monospace;font-size:13px;color:rgba(255,255,255,.6);font-weight:600;}
+
+/* PAGES */
+.page{display:none;padding-top:52px;min-height:100vh;}
+.page.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fi .3s ease both;}
+
+/* DEMO CTRL */
+.demo-ctrl{position:fixed;bottom:16px;right:16px;z-index:999;background:var(--navy2);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 16px;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.dc-title{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.dc-title span{width:6px;height:6px;border-radius:50%;background:var(--teal);}
+.dc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.dc-lbl{font-size:12px;color:rgba(255,255,255,.7);}
+.dc-toggle{width:38px;height:20px;border-radius:10px;border:none;cursor:pointer;transition:.3s;background:rgba(255,255,255,.15);position:relative;}
+.dc-toggle.on{background:var(--teal);}
+.dc-toggle::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.3s;}
+.dc-toggle.on::after{left:21px;}
+.dc-speed{display:flex;gap:4px;}
+.dc-speed-btn{padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.5);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;}
+.dc-speed-btn.active{background:var(--amber);border-color:var(--amber);color:#fff;}
+.dc-send-btn{width:100%;padding:7px;background:rgba(232,115,90,.2);border:1px solid rgba(232,115,90,.4);border-radius:8px;color:#fca5a5;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:.2s;}
+.dc-send-btn:hover{background:rgba(232,115,90,.3);}
+.dc-stat-row{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);}
+.dc-stat{flex:1;text-align:center;}
+.dc-stat-val{font-size:18px;font-weight:700;color:#fff;}
+.dc-stat-lbl{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px;}
+
+/* ══════════════════════════════════════════
+   PATIENT PAGE
+══════════════════════════════════════════ */
+.pt-page-wrap{display:grid;grid-template-columns:1fr 300px;height:calc(100vh - 52px);}
+.pt-left{display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(150deg,#d8e8f5,#e5eaf5);}
+.pt-right{background:#fff;border-left:1px solid var(--border);overflow-y:auto;}
+
+/* TABLET */
+.tablet-outer{background:#1c1c1e;border-radius:24px;padding:10px;box-shadow:0 28px 72px rgba(0,0,0,.35),inset 0 0 0 2px #3a3a3c;width:100%;max-width:780px;}
+.tablet-screen{background:linear-gradient(155deg,#e8f2f9,#edf1f9);border-radius:16px;overflow:hidden;aspect-ratio:16/10;display:flex;flex-direction:column;position:relative;}
+
+/* ── OVERLAY SYSTEM (absolute layers) ── */
+.tab-overlay{display:none;flex-direction:column;position:absolute;inset:0;z-index:20;border-radius:16px;overflow:hidden;}
+.tab-overlay.show{display:flex;}
+
+/* Nurse Call Type Selection */
+.ov-nursecall{background:#f8fafc;}
+.ov-nursecall-hdr{background:linear-gradient(135deg,#b83a2a,#e8735a);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-back-btn{background:rgba(255,255,255,.25);border:none;border-radius:7px;padding:4px 11px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;}
+.ov-hdr-info{flex:1;}
+.ov-hdr-title{font-size:15px;font-weight:700;color:#fff;}
+.ov-hdr-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;}
+.ov-nc-body{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
+.ov-pt-card{background:#fff8f7;border:1.5px solid rgba(232,115,90,.2);border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:10px;}
+.ov-pt-av{font-size:22px;}
+.ov-pt-name{font-size:12px;font-weight:700;color:#b83a2a;}
+.ov-pt-info{font-size:10px;color:var(--muted);margin-top:2px;}
+.ov-type-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.ov-nc-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.nc-btn{background:#fff;border:2px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;transition:.2s;}
+.nc-btn:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.1);}
+.nc-btn:active{transform:scale(.97);}
+.nc-btn.nc-general{border-color:rgba(15,158,142,.4);background:#f0fdfa;}
+.nc-btn.nc-water{border-color:rgba(37,99,235,.4);background:#eff6ff;}
+.nc-btn.nc-toilet{border-color:rgba(124,58,237,.4);background:#f5f3ff;}
+.nc-btn.nc-pain{border-color:rgba(234,88,12,.4);background:#fff7ed;}
+.nc-btn-icon{font-size:24px;display:block;margin-bottom:5px;}
+.nc-btn-lbl{font-size:11px;font-weight:700;color:var(--text);display:block;}
+.nc-btn-sub{font-size:9px;color:var(--muted);display:block;margin-top:1px;}
+.nc-emerg{background:#fff0ee;border:2px solid rgba(220,38,38,.4);border-radius:12px;padding:11px 14px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px;transition:.2s;}
+.nc-emerg:hover{background:#ffe0dc;}
+.nc-emerg-icon{font-size:26px;}
+.nc-emerg-lbl{font-size:12px;font-weight:700;color:var(--red);}
+.nc-emerg-sub{font-size:10px;color:#e8735a;margin-top:1px;}
+
+/* ── BEDSIDE CONFIRM OVERLAY ── */
+.ov-bedside{background:#f0f9ff;}
+.ov-bedside-hdr{background:linear-gradient(135deg,#1e40af,#2563eb);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-bedside-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:12px;text-align:center;}
+.bedside-icon{font-size:56px;margin-bottom:4px;}
+.bedside-nurse-name{font-size:16px;font-weight:800;color:var(--navy);}
+.bedside-msg{font-size:13px;color:var(--muted);line-height:1.5;}
+.bedside-timer-box{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:10px 20px;font-family:'IBM Plex Mono',monospace;}
+.bedside-timer-lbl{font-size:10px;color:var(--muted);}
+.bedside-timer-val{font-size:24px;font-weight:700;color:var(--blue);}
+.bedside-confirm-btn{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 28px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;max-width:280px;transition:.2s;box-shadow:0 4px 20px rgba(37,99,235,.3);}
+.bedside-confirm-btn:hover{opacity:.9;transform:scale(1.02);}
+.bedside-confirm-btn:active{transform:scale(.98);}
+.bedside-note{font-size:10px;color:var(--muted);padding:0 16px;}
+
+/* ── CARE IN PROGRESS OVERLAY ── */
+.ov-care{background:#f0fdf4;}
+.ov-care-hdr{background:linear-gradient(135deg,#14532d,#16a34a);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-care-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:12px;text-align:center;}
+.care-icon{font-size:50px;}
+.care-title{font-size:15px;font-weight:800;color:#14532d;}
+.care-nurse{font-size:13px;color:var(--muted);}
+.care-req{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--text);}
+.care-complete-btn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:14px 28px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;max-width:280px;transition:.2s;box-shadow:0 4px 20px rgba(22,163,74,.3);}
+.care-complete-btn:hover{opacity:.9;transform:scale(1.02);}
+
+/* ── RATING OVERLAY ── */
+.ov-rating{background:#fffbf0;}
+.ov-rating-hdr{background:linear-gradient(135deg,#78350f,#d97706);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-rating-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:10px;text-align:center;}
+.rating-title{font-size:15px;font-weight:800;color:#78350f;}
+.rating-sub{font-size:12px;color:var(--muted);}
+.rating-submit-btn{background:var(--amber);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;width:100%;max-width:240px;}
+.rating-skip{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;}
+
+/* ── ALERTS OVERLAY (BLOCK AL) ── */
+.ov-alerts{background:#fffef7;}
+.ov-alerts-hdr{background:linear-gradient(135deg,#854d0e,#b45309);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-alerts-body{flex:1;overflow-y:auto;padding:12px 14px;}
+.ov-alerts-section{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:10px 0 6px;}
+.ov-alerts-section:first-of-type{margin-top:0;}
+.alert-item{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+.alert-item.done{opacity:.6;}
+.alert-item-name{font-size:13px;font-weight:700;color:var(--text);}
+.alert-item-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.alert-item-actions{display:flex;gap:6px;margin-top:8px;}
+.alert-item-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit;}
+.alert-item-btn.ack{background:var(--blue-l);color:var(--blue);}
+.alert-item-btn.taken{background:var(--green-l);color:var(--green);}
+
+/* ── TELEMEDICINE OVERLAY (BLOCK T) ── */
+.ov-tele{background:#f0f9ff;}
+.ov-tele-hdr{background:linear-gradient(135deg,#1e40af,#2563eb);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-tele-body{flex:1;overflow-y:auto;padding:12px 14px;}
+.ov-tele-step{display:none;}
+.ov-tele-step.show{display:block;}
+.tele-dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tele-dept-btn{background:#fff;border:2px solid var(--border);border-radius:12px;padding:12px 10px;cursor:pointer;text-align:center;font-family:inherit;transition:.2s;}
+.tele-dept-btn:hover{border-color:var(--blue);background:var(--blue-l);}
+.tele-dept-btn.full{border-color:var(--amber);background:#fef3c7;}
+.tele-dept-name{font-size:12px;font-weight:700;color:var(--text);}
+.tele-dept-queue{font-size:10px;color:var(--muted);margin-top:2px;}
+.tele-wait-msg{text-align:center;padding:20px;font-size:14px;color:var(--text);}
+.tele-wait-num{font-size:28px;font-weight:800;color:var(--blue);font-family:'IBM Plex Mono',monospace;}
+.tele-consult-placeholder{background:rgba(0,0,0,.05);border-radius:12px;padding:24px;text-align:center;}
+.tele-consult-placeholder .icon{font-size:48px;margin-bottom:8px;}
+.tele-consult-placeholder .txt{font-size:13px;color:var(--muted);}
+.tele-end-btn{width:100%;max-width:260px;margin:16px auto 0;padding:12px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:block;}
+
+/* ── FOOD SERVICE OVERLAY (TOR 1.2: Large touch, font 18–28px) ── */
+.ov-food{background:#fffbf5;}
+.ov-food-hdr{background:linear-gradient(135deg,#b45309,#ea580c);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.ov-food-hdr .ov-hdr-title{font-size:18px;font-weight:700;}
+.ov-food-hdr .ov-hdr-sub{font-size:12px;}
+.ov-food-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+.ov-food-section{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.food-meal-row{background:#fff;border:2px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:0;}
+.food-meal-row .name{font-size:18px;font-weight:700;color:var(--text);}
+.food-meal-row .time{font-size:13px;color:var(--muted);margin-top:4px;}
+.food-meal-row .status{font-size:13px;font-weight:600;margin-top:8px;padding:6px 12px;border-radius:8px;display:inline-block;}
+.food-meal-row .status.pending{background:#fef3c7;color:#92400e;}
+.food-meal-row .status.ordered{background:#dbeafe;color:#1e40af;}
+.food-meal-row .status.preparing{background:#ffedd5;color:#9a3412;}
+.food-meal-row .status.delivered{background:#dcfce7;color:#14532d;}
+.food-meal-btn{min-height:48px;margin-top:12px;padding:14px 16px;background:var(--orange);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:.2s;}
+.food-meal-btn:hover{opacity:.95;}
+.food-meal-btn:active{transform:scale(.98);}
+/* เลือกรายการ — grid เหมือน Nurse Call (TOR 1.2) */
+.food-select-hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.food-select-back{min-height:48px;background:rgba(0,0,0,.08);border:none;border-radius:10px;padding:10px 18px;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;}
+.food-select-title{font-size:22px;font-weight:700;color:var(--text);}
+.ov-type-title.food{font-size:16px;font-weight:700;margin:12px 0 10px;color:var(--muted);}
+/* ผู้สูงอายุ: การ์ดใหญ่ รูปใหญ่ ตัวอักษร 20–24px (TOR 1.2+) */
+.food-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.food-menu-btn{min-height:100px;background:#fff;border:3px solid var(--border);border-radius:16px;padding:16px 12px;cursor:pointer;text-align:center;font-family:inherit;transition:.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.food-menu-btn:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(234,88,12,.15);border-color:var(--orange);}
+.food-menu-btn:active{transform:scale(.98);}
+.food-menu-btn.sel{border-color:var(--orange);background:linear-gradient(135deg,#fff7ed,#ffedd5);box-shadow:0 4px 16px rgba(234,88,12,.2);}
+.food-menu-btn .icon{font-size:72px;line-height:1;display:block;}
+.food-menu-btn .lbl{font-size:20px;font-weight:700;color:var(--text);line-height:1.3;}
+.food-confirm-btn{min-height:56px;width:100%;margin-top:20px;padding:16px 20px;background:var(--orange);color:#fff;border:none;border-radius:14px;font-size:22px;font-weight:700;cursor:pointer;font-family:inherit;}
+.food-confirm-btn:hover{opacity:.95;}
+.food-confirm-btn:active{transform:scale(.98);}
+
+/* ── PHASE 2 (Sleep, Entertain, Family, Room) ── */
+.ov-phase2{background:#f8fafc;}
+.ov-phase2-body{flex:1;overflow-y:auto;padding:16px;}
+.ov-phase2-body .icon{font-size:56px;margin-bottom:12px;}
+.ov-phase2-body .title{font-size:16px;font-weight:800;color:var(--text);}
+.ov-phase2-body .sub{font-size:12px;color:var(--muted);margin-top:6px;}
+.phase2-card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);}
+.phase2-card h4{font-size:18px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.phase2-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.06);gap:10px;font-size:18px;}
+.phase2-row:last-child{border-bottom:none;}
+.phase2-list-btn{width:100%;text-align:left;background:#fff;border:2px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;font-family:inherit;font-size:18px;font-weight:600;display:flex;align-items:center;gap:12px;transition:.2s;min-height:48px;}
+.phase2-list-btn:hover{background:#f0f9ff;border-color:var(--blue);}
+.phase2-list-btn .icon{font-size:28px;}
+.phase2-list-btn .category{font-size:14px;color:var(--muted);}
+.phase2-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin:12px 0;}
+.phase2-ctrl .val{font-size:22px;font-weight:800;color:var(--text);min-width:60px;text-align:center;}
+.phase2-ctrl .unit{font-size:14px;color:var(--muted);margin-left:2px;}
+.phase2-ctrl button{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;}
+.phase2-ctrl button:hover{background:var(--teal-l);border-color:var(--teal);color:var(--teal);}
+.phase2-badge{font-size:14px;background:var(--green-l);color:var(--green);padding:4px 10px;border-radius:20px;font-weight:700;}
+.phase2-call-btn{min-height:48px;padding:10px 18px;font-size:18px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:2px solid var(--teal);background:var(--teal-l);color:var(--teal);}
+.phase2-contact-name{font-size:18px;font-weight:700;}
+.phase2-contact-relation{font-size:14px;color:var(--muted);}
+.phase2-sub-note{font-size:14px;color:var(--muted);text-align:center;margin-top:12px;}
+.phase2-back-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.phase2-back-btn{min-height:48px;padding:10px 16px;font-size:18px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:2px solid var(--border);background:#fff;color:var(--text);display:inline-flex;align-items:center;gap:6px;}
+.phase2-back-btn:hover{background:var(--teal-l);border-color:var(--teal);color:var(--teal);}
+.phase2-now-playing{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:24px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff;margin-top:12px;}
+.phase2-now-playing .icon{font-size:64px;opacity:.9;}
+.phase2-now-playing .channel-name{font-size:22px;font-weight:800;}
+.phase2-now-playing .status{font-size:16px;color:rgba(255,255,255,.7);}
+.phase2-now-playing .ctrl{display:flex;gap:12px;margin-top:12px;}
+.phase2-now-playing .ctrl button{min-height:48px;padding:12px 20px;font-size:18px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:none;}
+.phase2-now-playing .ctrl .btn-back{background:rgba(255,255,255,.2);color:#fff;}
+.phase2-now-playing .ctrl .btn-stop{background:var(--red);color:#fff;}
+
+/* การนอน — อ่านง่ายสำหรับผู้สูงอายุ (ฟอนต์ 18–22px) */
+.sleep-hero{background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:16px;padding:20px;text-align:center;color:#fff;margin-bottom:16px;}
+.sleep-hero .hero-label{font-size:18px;font-weight:700;opacity:.9;margin-bottom:4px;}
+.sleep-hero .hero-value{font-size:28px;font-weight:800;line-height:1.2;}
+.sleep-hero .hero-unit{font-size:20px;font-weight:700;opacity:.95;}
+.sleep-section-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--teal);}
+.sleep-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:18px;border-bottom:1px solid rgba(0,0,0,.06);}
+.sleep-row:last-child{border-bottom:none;}
+.sleep-row .lbl{color:var(--muted);}
+.sleep-row .val{font-weight:700;font-size:20px;color:var(--text);}
+.sleep-table .sleep-row{font-size:18px;}
+.sleep-summary-box{background:var(--teal-l);border:2px solid rgba(15,158,142,.25);border-radius:12px;padding:16px;margin-top:12px;}
+.sleep-summary-box .big{font-size:22px;font-weight:800;color:var(--teal);}
+.sleep-summary-box .line{font-size:18px;margin-top:8px;color:var(--text);}
+.pt-tile-num{font-size:15px;font-weight:700;color:var(--teal);margin-top:2px;}
+
+/* Patient Home Screen */
+.pt-hdr{background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.pt-av{width:42px;height:42px;border-radius:50%;background:#dceef8;border:2px solid #4a90d9;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.pt-name{font-size:13px;font-weight:700;color:var(--text);}
+.pt-info{font-size:10px;color:var(--muted);margin-top:1px;}
+.pt-tags{display:flex;gap:4px;margin-top:2px;flex-wrap:wrap;}
+.pt-tag{padding:1px 6px;border-radius:20px;background:#fde8e3;color:#c04030;font-size:9px;font-weight:600;}
+.pt-team{margin-left:auto;display:flex;gap:7px;}
+.pt-mbr{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.pt-mbr-av{width:32px;height:32px;border-radius:50%;background:#e0f0ff;border:2px solid #4a90d9;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.pt-mbr-nm{font-size:9px;color:var(--muted);text-align:center;}
+.pt-clock{padding:6px 10px;background:rgba(37,99,235,.08);border-radius:9px;border:1px solid rgba(37,99,235,.15);text-align:right;flex-shrink:0;}
+.pt-clock-val{font-size:20px;font-weight:800;color:#1d4ed8;font-family:'IBM Plex Mono',monospace;line-height:1;}
+.pt-clock-date{font-size:9px;color:var(--muted);margin-top:2px;}
+
+.pt-callbar{display:none;align-items:center;gap:10px;padding:7px 14px;border-bottom:2px solid;flex-shrink:0;}
+.pt-callbar.show{display:flex;}
+.pt-callbar.waiting{background:#fde3da;border-color:#e8735a;}
+.pt-callbar.ack,.pt-callbar.enroute{background:#dbeafe;border-color:#3b82f6;}
+.pt-callbar.bedside,.pt-callbar.progress{background:#dcfce7;border-color:#22c55e;}
+.cb-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.cb-dot.red{background:#e8735a;box-shadow:0 0 0 3px rgba(232,115,90,.25);animation:pulse 1.2s infinite;}
+.cb-dot.blue{background:var(--blue);}
+.cb-dot.green{background:var(--green);}
+.cb-text{font-size:12px;font-weight:700;flex:1;}
+.cb-text.waiting{color:#c04030;}
+.cb-text.ack,.cb-text.enroute{color:#1d4ed8;}
+.cb-text.bedside,.cb-text.progress{color:#15803d;}
+.cb-timer{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);}
+.cb-cancel{padding:3px 10px;border:2px solid #e8735a;border-radius:6px;background:transparent;font-size:10px;font-weight:700;color:#c04030;cursor:pointer;font-family:inherit;}
+
+.pt-grid{flex:1;padding:8px 10px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:6px;}
+.pt-tile{border-radius:11px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.06);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 4px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.05);}
+.pt-tile:hover{transform:scale(1.04);box-shadow:0 5px 16px rgba(0,0,0,.1);}
+.pt-tile::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:11px 11px 0 0;}
+.pt-tile.nurse::before{background:#e8735a;}
+.pt-tile.tele::before{background:#4a90d9;}
+.pt-tile.food::before{background:#f0a04b;}
+.pt-tile.alert::before{background:#e8b84b;}
+.pt-tile.sleep::before{background:#8b72be;}
+.pt-tile.entertain::before{background:#5bb85b;}
+.pt-tile.family::before{background:#e8709a;}
+.pt-tile.room::before{background:#2bbdb4;}
+.pt-tile.nurse{background:#fff0ee;border-color:rgba(232,115,90,.3);}
+.pt-tile-icon{font-size:22px;}
+.pt-tile-lbl{font-size:10px;font-weight:700;color:var(--text);text-align:center;line-height:1.3;}
+.pt-tile-sub{font-size:9px;color:var(--muted);}
+.pt-badge{position:absolute;top:5px;right:5px;background:var(--red);color:#fff;font-size:8px;font-weight:700;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;}
+.pt-footer{padding:4px 14px;border-top:1px solid rgba(0,0,0,.05);background:rgba(255,255,255,.5);display:flex;justify-content:space-between;flex-shrink:0;}
+.pt-footer span{font-size:9px;color:var(--muted);}
+
+/* SIM PANEL */
+.sim-panel{height:100%;display:flex;flex-direction:column;}
+.sim-hdr{background:var(--navy2);padding:12px 14px;}
+.sim-hdr-title{font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;}
+.sim-hdr-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;}
+.sim-rooms{flex:1;overflow-y:auto;padding:10px;}
+.src{background:var(--card);border:1.5px solid var(--border);border-radius:11px;padding:10px 12px;margin-bottom:7px;transition:.25s;}
+.src.has-req{border-color:rgba(217,119,6,.5);background:rgba(254,243,199,.4);}
+.src.is-enroute{border-color:rgba(37,99,235,.5);background:rgba(219,234,254,.4);}
+.src.is-bedside{border-color:rgba(22,163,74,.5);background:rgba(220,252,231,.4);}
+.src.is-done{border-color:rgba(22,163,74,.3);background:rgba(220,252,231,.2);}
+.src.is-crit{border-color:rgba(220,38,38,.6);background:rgba(254,226,226,.4);animation:cpulse 1.5s infinite;}
+@keyframes cpulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 3px rgba(220,38,38,.2)}}
+.src-top{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.src-room{font-size:12px;font-weight:800;color:var(--text);}
+.src-name{font-size:11px;color:var(--muted);flex:1;}
+.src-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.src-dot.green{background:var(--green);}
+.src-dot.amber{background:var(--amber);animation:pulse 1s infinite;}
+.src-dot.blue{background:var(--blue);}
+.src-dot.teal{background:var(--teal);}
+.src-dot.red{background:var(--red);animation:pulse .7s infinite;}
+.src-conds{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:6px;}
+.src-cond{font-size:9px;padding:1px 6px;border-radius:7px;background:var(--teal-l);color:var(--teal-d);font-weight:500;}
+.src-cond.warn{background:#fee2e2;color:#991b1b;}
+.src-cond.vtp-y{background:#fef9c3;color:#854d0e;}
+.src-cond.vtp-o{background:#ffedd5;color:#9a3412;}
+.src-req-label{font-size:10px;font-weight:600;margin-bottom:5px;display:none;}
+.src-req-label.show{display:block;}
+.src-actions{display:flex;gap:5px;}
+.src-btn{flex:1;padding:5px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:.2s;}
+.src-btn.send{background:rgba(232,115,90,.1);color:#c04030;border:1px solid rgba(232,115,90,.3);}
+.src-btn.send:hover{background:rgba(232,115,90,.2);}
+.src-btn.disabled{opacity:.3;cursor:not-allowed;}
+.src-btn.cancel{background:rgba(220,38,38,.07);color:var(--red);border:1px solid rgba(220,38,38,.2);}
+.src-btn.emerg{background:rgba(220,38,38,.08);color:var(--red);border:1px solid rgba(220,38,38,.25);}
+.src-timer{font-size:9px;color:var(--muted);margin-top:4px;font-family:'IBM Plex Mono',monospace;}
+
+/* FLOW INDICATOR */
+.flow-bar{background:rgba(255,255,255,.9);border-top:1px solid var(--border);padding:6px 10px;display:flex;align-items:center;gap:0;flex-shrink:0;}
+.flow-step{display:flex;align-items:center;flex:1;}
+.flow-dot{width:20px;height:20px;border-radius:50%;border:2px solid #d0d8e8;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;transition:.3s;}
+.flow-dot.done{background:var(--green);border-color:var(--green);color:#fff;}
+.flow-dot.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.2);animation:flow-pulse 1.5s infinite;}
+@keyframes flow-pulse{0%,100%{box-shadow:0 0 0 3px rgba(37,99,235,.2)}50%{box-shadow:0 0 0 6px rgba(37,99,235,.05)}}
+.flow-dot.locked{background:#e5e7eb;border-color:#e5e7eb;color:#9ca3af;}
+.flow-line{flex:1;height:2px;background:#e5e7eb;transition:.3s;}
+.flow-line.done{background:var(--green);}
+.flow-lbl{font-size:8px;text-align:center;color:var(--muted);margin-top:2px;white-space:nowrap;}
+.flow-col{display:flex;flex-direction:column;align-items:center;}
+
+/* ══════════════════════════════════════════
+   NURSE STATION
+══════════════════════════════════════════ */
+.ns-page{background:linear-gradient(160deg,#0c1f3f,#112050);min-height:calc(100vh - 52px);padding:18px;}
+.ns-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.ns-topbar-left h2{font-size:15px;font-weight:700;color:#fff;}
+.ns-topbar-left p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;}
+.ns-topbar-right{display:flex;align-items:center;gap:10px;}
+.ns-user{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.06);border-radius:9px;padding:5px 10px;}
+.ns-user-av{width:26px;height:26px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ns-user-name{font-size:11px;color:rgba(255,255,255,.7);font-weight:600;}
+.ns-bell-wrap{position:relative;}
+.ns-bell-btn{background:rgba(255,255,255,.07);border:none;border-radius:9px;padding:5px 10px;font-size:16px;cursor:pointer;color:#fff;transition:.3s;}
+@keyframes bell{0%,100%{transform:rotate(0)}20%{transform:rotate(-18deg)}40%{transform:rotate(18deg)}60%{transform:rotate(-12deg)}80%{transform:rotate(12deg)}}
+.ns-bell-btn.ring{animation:bell .6s 2;}
+.ns-bell-count{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;display:none;align-items:center;justify-content:center;border:2px solid #0c1f3f;}
+.ns-bell-count.show{display:flex;}
+
+.ns-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px;}
+.ns-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 14px;}
+.ns-stat-lbl{font-size:10px;color:rgba(255,255,255,.4);margin-bottom:3px;}
+.ns-stat-val{font-size:24px;font-weight:800;color:#fff;font-family:'IBM Plex Mono',monospace;}
+.ns-stat-sub{font-size:9px;margin-top:2px;}
+
+.ns-layout{display:grid;grid-template-columns:1fr 270px;gap:12px;}
+.ns-main{display:flex;flex-direction:column;gap:12px;}
+.ns-side{display:flex;flex-direction:column;gap:12px;}
+
+.ns-card-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;}
+.ns-section-title{font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.7px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;}
+.ns-count-badge{background:rgba(220,38,38,.2);color:#fca5a5;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;}
+.ns-empty{text-align:center;padding:20px;color:rgba(255,255,255,.2);font-size:12px;}
+
+/* Triage Card */
+.triage-list{display:flex;flex-direction:column;gap:7px;}
+/* ── SLA AGING BAR ── */
+.sla-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.04);}
+.sla-bar-fill{height:100%;border-radius:0 0 0 0;transition:width 1s linear,background .5s;}
+.sla-label{font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;white-space:nowrap;}
+.sla-label.ok   {background:rgba(22,163,74,.15);color:#86efac;}
+.sla-label.warn {background:rgba(234,179,8,.15);color:#fde047;}
+.sla-label.over {background:rgba(220,38,38,.2);color:#fca5a5;animation:pulse .8s infinite;}
+/* SLA thresholds: green 0-60%, yellow 60-85%, red 85%+ of 5min target */
+
+/* ── EMOJI RATING (Patient Tablet) ── */
+.emoji-rating-wrap{display:flex;gap:10px;justify-content:center;margin:8px 0;}
+.emoji-opt{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 10px;border-radius:12px;border:2px solid transparent;transition:.2s;}
+.emoji-opt:hover{background:rgba(0,0,0,.04);transform:scale(1.08);}
+.emoji-opt.sel{border-color:var(--amber);background:rgba(217,119,6,.08);}
+.emoji-face{font-size:30px;transition:.2s;}
+.emoji-lbl{font-size:9px;font-weight:700;color:var(--muted);}
+/* countdown ring on rating screen */
+.rating-countdown{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
+
+.triage-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:11px;padding:10px 12px 16px;display:flex;align-items:flex-start;gap:10px;transition:.3s;position:relative;overflow:hidden;}
+.triage-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px;}
+.triage-card.waiting::before{background:var(--red);}
+.triage-card.waiting.emergency{background:rgba(220,38,38,.07);}
+.triage-card.ack::before{background:var(--amber);}
+.triage-card.enroute::before{background:var(--blue);}
+.triage-card.bedside::before{background:var(--teal);}
+.triage-card.progress::before{background:var(--green);}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.triage-card.new{animation:slideDown .3s ease both;}
+.tc-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.tc-room{font-size:15px;font-weight:800;color:#fff;flex-shrink:0;min-width:44px;}
+.tc-info{flex:1;min-width:0;}
+.tc-patient{font-size:11px;font-weight:700;color:#fff;}
+.tc-req{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;}
+.tc-badges{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap;}
+.tc-badge{font-size:9px;padding:1px 5px;border-radius:7px;font-weight:600;}
+.tc-badge.risk{background:rgba(234,88,12,.2);color:#fb923c;}
+.tc-badge.cond{background:rgba(255,255,255,.07);color:rgba(255,255,255,.45);}
+.tc-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.tc-timer{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;}
+.tc-timer.warn{color:#fcd34d;}
+.tc-timer.ok{color:rgba(255,255,255,.35);}
+.tc-status-pill{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;white-space:nowrap;}
+.tc-status-pill.waiting{background:rgba(220,38,38,.2);color:#fca5a5;}
+.tc-status-pill.ack{background:rgba(217,119,6,.2);color:#fcd34d;}
+.tc-status-pill.enroute{background:rgba(37,99,235,.2);color:#93c5fd;}
+.tc-status-pill.bedside{background:rgba(15,158,142,.2);color:#5eead4;}
+.tc-status-pill.progress{background:rgba(22,163,74,.2);color:#86efac;}
+.tc-btn{padding:4px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;border:none;font-family:inherit;white-space:nowrap;transition:.2s;}
+.tc-btn.ack{background:var(--amber);color:#fff;}
+.tc-btn.enroute{background:var(--blue);color:#fff;}
+.tc-btn.locked{background:rgba(255,255,255,.06);color:rgba(255,255,255,.3);cursor:not-allowed;font-size:9px;}
+.tc-btn:not(.locked):hover{opacity:.85;}
+/* Bedside confirmed glow */
+.triage-card.bedside{border-color:rgba(15,158,142,.4);background:rgba(15,158,142,.04);}
+@keyframes confirm-glow{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 3px rgba(15,158,142,.15)}}
+.triage-card.bedside{animation:confirm-glow 2s 2;}
+
+/* Room grid */
+.room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.room-card{background:rgba(255,255,255,.03);border:1.5px solid rgba(255,255,255,.07);border-radius:9px;padding:8px 9px;transition:.3s;}
+.room-card.calling{border-color:rgba(220,38,38,.5);background:rgba(220,38,38,.06);}
+.room-card.calling.emergency{animation:cpulse 1.2s infinite;}
+.room-card.enrouting{border-color:rgba(37,99,235,.4);background:rgba(37,99,235,.04);}
+.room-card.bedside-ok{border-color:rgba(15,158,142,.4);background:rgba(15,158,142,.05);}
+.room-card.done-flash{border-color:rgba(22,163,74,.4);background:rgba(22,163,74,.06);}
+.rc-number{font-size:13px;font-weight:800;color:#fff;}
+.rc-name{font-size:9px;color:rgba(255,255,255,.35);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rc-status{font-size:9px;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:3px;}
+.rc-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+
+/* Staff */
+.staff-item{display:flex;align-items:center;gap:7px;padding:6px;border-radius:8px;background:rgba(255,255,255,.02);margin-bottom:4px;}
+.staff-av{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.staff-name{font-size:11px;font-weight:600;color:#fff;}
+.staff-status{font-size:10px;margin-top:1px;}
+.staff-status.free{color:rgba(22,163,74,.8);}
+.staff-status.enroute{color:rgba(37,99,235,.9);}
+.staff-status.busy{color:rgba(234,88,12,.8);}
+
+/* Log */
+.log-list{max-height:180px;overflow-y:auto;}
+.log-item{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:10px;}
+.log-item:last-child{border:none;}
+.log-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:2px;}
+.log-time{color:rgba(255,255,255,.25);flex-shrink:0;font-family:'IBM Plex Mono',monospace;min-width:40px;}
+.log-text{color:rgba(255,255,255,.55);}
+
+/* VTP */
+.vtp-item{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:8px;margin-bottom:5px;}
+.vtp-item.yellow{background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.2);}
+.vtp-item.orange{background:rgba(234,88,12,.06);border:1px solid rgba(234,88,12,.2);}
+.vtp-item.red{background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.25);}
+.vtp-zone{font-size:9px;font-weight:700;padding:2px 5px;border-radius:5px;flex-shrink:0;}
+.vtp-zone.yellow{background:rgba(234,179,8,.2);color:#fde047;}
+.vtp-zone.orange{background:rgba(234,88,12,.2);color:#fb923c;}
+.vtp-zone.red{background:rgba(220,38,38,.2);color:#fca5a5;}
+.vtp-info .vtp-room{font-size:11px;font-weight:600;color:#fff;}
+.vtp-info .vtp-msg{font-size:9px;color:rgba(255,255,255,.35);margin-top:1px;}
+
+/* ══════════════════════════════════════════
+   EXECUTIVE DASHBOARD
+══════════════════════════════════════════ */
+.exec-page{background:#f8fafc;min-height:calc(100vh - 52px);}
+.exec-layout{display:grid;grid-template-columns:196px 1fr;min-height:calc(100vh - 52px);}
+.exec-sidebar{background:var(--navy);padding:18px 0;}
+.exec-sidebar-logo{padding:0 14px 14px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:10px;}
+.exec-sidebar-logo div{font-size:12px;font-weight:700;color:#fff;}
+.exec-sidebar-logo p{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;}
+.exec-menu-item{padding:7px 14px;font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;gap:7px;transition:.2s;}
+.exec-menu-item:hover{color:#fff;background:rgba(255,255,255,.04);}
+.exec-menu-item.active{color:#fff;background:rgba(15,158,142,.15);border-right:3px solid var(--teal);font-weight:700;}
+.exec-menu-item .mi-dot{width:5px;height:5px;border-radius:50%;background:var(--red);display:none;}
+.exec-menu-item.has-alert .mi-dot{display:block;animation:pulse .8s infinite;}
+.exec-content{padding:22px;overflow-y:auto;}
+.exec-toprow{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;}
+.exec-page-title{font-size:20px;font-weight:800;color:var(--text);}
+.exec-page-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+.exec-toprow-right{display:flex;gap:7px;align-items:center;}
+.exec-export-btn{padding:7px 14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.exec-select{padding:6px 10px;border-radius:8px;border:1px solid var(--border);font-size:12px;font-family:inherit;background:#fff;}
+
+.exec-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.kpi-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;}
+.kpi-card.kpi1::after{background:linear-gradient(90deg,var(--blue),#60a5fa);}
+.kpi-card.kpi2::after{background:linear-gradient(90deg,var(--green),#4ade80);}
+.kpi-card.kpi3::after{background:linear-gradient(90deg,var(--amber),#fbbf24);}
+.kpi-card.kpi4::after{background:linear-gradient(90deg,var(--purple),#a78bfa);}
+.kpi-icon{font-size:22px;margin-bottom:7px;}
+.kpi-val{font-size:30px;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;line-height:1;}
+.kpi-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+.kpi-chg{font-size:10px;font-weight:700;margin-top:5px;}
+.kpi-chg.up{color:var(--green);}
+.kpi-chg.dn{color:var(--red);}
+.kpi-chg.warn{color:var(--amber);}
+@keyframes kpi-bump{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.kpi-val.bump{animation:kpi-bump .4s ease;}
+
+.exec-charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);}
+.chart-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;}
+
+.type-dist{display:flex;flex-direction:column;gap:7px;}
+.type-row{display:flex;align-items:center;gap:7px;}
+.type-icon{font-size:13px;width:18px;}
+.type-lbl{font-size:11px;color:var(--text);flex:1;}
+.type-bar-wrap{width:100px;background:var(--bg);border-radius:3px;height:7px;overflow:hidden;}
+.type-bar-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+.type-count{font-size:11px;font-weight:700;color:var(--muted);min-width:22px;text-align:right;}
+
+.sat-score{font-size:44px;font-weight:800;color:var(--text);font-family:'IBM Plex Mono',monospace;text-align:center;}
+.sat-score-lbl{font-size:11px;color:var(--muted);text-align:center;margin-top:3px;margin-bottom:10px;}
+.sat-row{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.sat-stars{font-size:13px;}
+.sat-bar-wrap{flex:1;background:var(--bg);border-radius:3px;height:7px;overflow:hidden;}
+.sat-bar{height:100%;border-radius:3px;background:var(--amber);transition:width .5s ease;}
+.sat-pct{font-size:10px;color:var(--muted);min-width:24px;text-align:right;}
+
+.exec-table-card{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;}
+.exec-table-hdr{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.exec-table-hdr h3{font-size:13px;font-weight:700;color:var(--text);}
+.exec-table-export{padding:4px 11px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--text);}
+table.dt{width:100%;border-collapse:collapse;}
+table.dt th{padding:8px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;background:#fafbfc;border-bottom:1px solid var(--border);}
+table.dt td{padding:8px 14px;font-size:12px;border-bottom:1px solid #f3f4f6;transition:.3s;}
+table.dt tr:last-child td{border:none;}
+table.dt tr:hover td{background:#f8fafc;}
+table.dt tr.fl td{background:rgba(22,163,74,.06);}
+.chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;}
+.chip.ok{background:var(--green-l);color:var(--green);}
+.chip.warn{background:var(--amber-l);color:var(--amber);}
+.chip.bad{background:var(--red-l);color:var(--red);}
+
+/* ── AUDIT TRAIL — Legal Grade ── */
+.audit-section{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);}
+.audit-hdr{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.audit-hdr h3{font-size:13px;font-weight:700;color:var(--text);}
+.audit-legal-badge{display:flex;align-items:center;gap:6px;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--blue);}
+.audit-table-wrap{max-height:240px;overflow-y:auto;}
+table.dt.audit td{padding:6px 12px;font-size:11px;}
+table.dt.audit th{padding:6px 12px;font-size:10px;}
+.audit-hash{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9ca3af;}
+.audit-event-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:7px;white-space:nowrap;}
+.audit-event-badge.request{background:#eff6ff;color:#1d4ed8;}
+.audit-event-badge.ack{background:#fef3c7;color:#92400e;}
+.audit-event-badge.enroute{background:#dbeafe;color:#1e40af;}
+.audit-event-badge.bedside{background:#d1fae5;color:#065f46;}
+.audit-event-badge.complete{background:#dcfce7;color:#14532d;}
+.audit-event-badge.rated{background:#ede9fe;color:#4c1d95;}
+.audit-event-badge.cancel{background:#fee2e2;color:#991b1b;}
+.audit-event-badge.emergency{background:#fee2e2;color:#7f1d1d;}
+
+/* Chain summary */
+.chain-summary{padding:10px 18px;border-top:1px solid var(--border);background:#fafbfc;}
+.chain-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+.chain-flow{display:flex;align-items:center;gap:0;overflow-x:auto;}
+.chain-step{display:flex;align-items:center;gap:0;}
+.chain-node{padding:3px 8px;border-radius:6px;font-size:9px;font-weight:700;white-space:nowrap;}
+.chain-node.done{background:var(--green-l);color:var(--green);}
+.chain-node.pending{background:#f3f4f6;color:#9ca3af;}
+.chain-arrow{font-size:10px;color:#d1d5db;margin:0 2px;}
+
+/* OV PAGE */
+.ov-page{background:var(--bg);min-height:calc(100vh - 52px);padding:40px 60px;}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:4px;}
+
+/* TOR 1.6 — Dark mode 19:00–06:00 */
+body.theme-dark{--bg:#1a1f2e;--text:#e2e8f0;--muted:#94a3b8;--border:#334155;--card:#1e293b;}
+body.theme-dark .exec-page{background:#0f172a;}
+body.theme-dark .ov-page{background:var(--bg);}
+body.theme-dark .pt-left{background:linear-gradient(150deg,#1e293b,#0f172a);}
+body.theme-dark .demo-ctrl{background:#1e293b;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="logo">🏥 <em>SmartBedside</em>&nbsp;Platform</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('patient')">📱 Patient App</button>
+    <button class="nav-tab" onclick="showPage('nurse')">🖥️ Nurse Station</button>
+    <button class="nav-tab" onclick="showPage('exec')">📈 Executive Dashboard</button>
+    <button class="nav-tab" onclick="showPage('overview')">📊 ภาพรวม</button>
+  </div>
+  <div class="nav-right">
+    <div class="live-pill"><span class="live-dot"></span>LIVE DEMO</div>
+    <div class="nav-clock" id="nav-clock">--:--:--</div>
+  </div>
+</nav>
+
+<!-- DEMO CTRL -->
+<div class="demo-ctrl">
+  <div class="dc-title"><span></span>Demo Control</div>
+  <div class="dc-row">
+    <span class="dc-lbl">Auto Simulate</span>
+    <button class="dc-toggle" id="autoToggle" onclick="toggleAuto()"></button>
+  </div>
+  <div class="dc-row">
+    <span class="dc-lbl">Speed</span>
+    <div class="dc-speed">
+      <button class="dc-speed-btn active" onclick="setSpeed(20,'slow',this)">Slow</button>
+      <button class="dc-speed-btn" onclick="setSpeed(10,'med',this)">Med</button>
+      <button class="dc-speed-btn" onclick="setSpeed(5,'fast',this)">Fast</button>
+    </div>
+  </div>
+  <button class="dc-send-btn" onclick="simulateRandom()">🎲 ส่งคำร้องสุ่ม</button>
+  <div class="dc-stat-row">
+    <div class="dc-stat"><div class="dc-stat-val" id="dc-total">0</div><div class="dc-stat-lbl">Total</div></div>
+    <div class="dc-stat"><div class="dc-stat-val" id="dc-active">0</div><div class="dc-stat-lbl">Active</div></div>
+    <div class="dc-stat"><div class="dc-stat-val" id="dc-done">0</div><div class="dc-stat-lbl">Done</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PATIENT PAGE
+═══════════════════════════════════════ -->
+<div class="page active fi" id="page-patient">
+  <div class="pt-page-wrap">
+    <div class="pt-left">
+      <div class="tablet-outer">
+        <div class="tablet-screen">
+
+          <!-- OVERLAY 1: Nurse Call Type Selection -->
+          <div class="tab-overlay ov-nursecall" id="ov-nursecall">
+            <div class="ov-nursecall-hdr">
+              <button class="ov-back-btn" onclick="closeOverlay('ov-nursecall')">← กลับ</button>
+              <div class="ov-hdr-info">
+                <div class="ov-hdr-title">🔔 เรียกพยาบาล</div>
+                <div class="ov-hdr-sub">Smart Nurse Call — ห้อง 301A · กรุณาเลือกประเภท</div>
+              </div>
+            </div>
+            <div class="ov-nc-body">
+              <div class="ov-pt-card">
+                <div class="ov-pt-av" id="ov-pt-av">👴</div>
+                <div><div class="ov-pt-name" id="ov-pt-name">สมชาย ใจดี · ห้อง 301A</div><div class="ov-pt-info" id="ov-pt-info">อายุ 79 ปี · ห้อง 301A</div></div>
+              </div>
+              <div class="ov-type-title">เลือกประเภทที่ต้องการความช่วยเหลือ</div>
+              <div class="ov-nc-grid">
+                <button class="nc-btn nc-general" onclick="patientSendRequest('general','ขอความช่วยเหลือ','🙋')">
+                  <span class="nc-btn-icon">🙋</span><span class="nc-btn-lbl">ขอความช่วยเหลือ</span><span class="nc-btn-sub">General Help</span>
+                </button>
+                <button class="nc-btn nc-water" onclick="patientSendRequest('water','ขอน้ำ / ผ้าห่ม','💧')">
+                  <span class="nc-btn-icon">💧</span><span class="nc-btn-lbl">ขอน้ำ / ผ้าห่ม</span><span class="nc-btn-sub">Water / Blanket</span>
+                </button>
+                <button class="nc-btn nc-toilet" onclick="patientSendRequest('toilet','เข้าห้องน้ำ','🚽')">
+                  <span class="nc-btn-icon">🚽</span><span class="nc-btn-lbl">เข้าห้องน้ำ</span><span class="nc-btn-sub">Bathroom</span>
+                </button>
+                <button class="nc-btn nc-pain" onclick="patientSendRequest('pain','แจ้งอาการเจ็บปวด','😣')">
+                  <span class="nc-btn-icon">😣</span><span class="nc-btn-lbl">แจ้งอาการเจ็บปวด</span><span class="nc-btn-sub">Pain Report</span>
+                </button>
+              </div>
+              <button class="nc-emerg" onclick="patientSendRequest('emergency','ฉุกเฉิน','🚨')">
+                <span class="nc-emerg-icon">🚨</span>
+                <div><div class="nc-emerg-lbl">ฉุกเฉิน (Emergency)</div><div class="nc-emerg-sub">กดเมื่อต้องการความช่วยเหลือด่วน</div></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- OVERLAY 2: Waiting for Nurse (Bedside Confirm) -->
+          <div class="tab-overlay ov-bedside" id="ov-bedside">
+            <div class="ov-nursecall-hdr" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);">
+              <button class="ov-back-btn" onclick="closeOverlay('ov-bedside')">← หน้าหลัก</button>
+              <div class="ov-hdr-info">
+                <div class="ov-hdr-title" id="bedside-ov-title">⏳ รอพยาบาล</div>
+                <div class="ov-hdr-sub">คำร้องถูกส่งไปยัง Nurse Station แล้ว</div>
+              </div>
+            </div>
+            <div class="ov-bedside-body">
+              <div class="bedside-icon" id="bedside-icon">🏃</div>
+              <div class="bedside-nurse-name" id="bedside-nurse-name">รอพยาบาลรับคำร้อง...</div>
+              <div class="bedside-msg" id="bedside-msg">คำร้องของคุณถูกส่งไปยังสถานีพยาบาลแล้ว<br>กรุณารอสักครู่</div>
+              <div class="bedside-timer-box">
+                <div class="bedside-timer-lbl">เวลารอ</div>
+                <div class="bedside-timer-val" id="bedside-timer-val">0:00</div>
+              </div>
+              <button class="bedside-confirm-btn" id="bedside-confirm-btn" onclick="bedsideConfirm()" style="display:none;">
+                📍 ยืนยันพยาบาลมาถึงแล้ว
+              </button>
+              <div class="bedside-note" id="bedside-note">เมื่อพยาบาลมาถึงเตียง<br>กรุณากดปุ่มยืนยัน เพื่อบันทึกเวลามาถึงจริง</div>
+            </div>
+          </div>
+
+          <!-- OVERLAY 3: Care in Progress -->
+          <div class="tab-overlay ov-care" id="ov-care">
+            <div class="ov-nursecall-hdr" style="background:linear-gradient(135deg,#14532d,#16a34a);">
+              <div class="ov-hdr-info">
+                <div class="ov-hdr-title">✅ กำลังรับบริการ</div>
+                <div class="ov-hdr-sub">พยาบาลยืนยันมาถึงแล้ว — กำลังดูแล</div>
+              </div>
+            </div>
+            <div class="ov-care-body">
+              <div class="care-icon">🤝</div>
+              <div class="care-title">กำลังได้รับการดูแล</div>
+              <div class="care-nurse" id="care-nurse-name">–</div>
+              <div class="care-req" id="care-req-label">–</div>
+              <div style="font-size:11px;color:var(--muted);max-width:240px;">เมื่อได้รับการดูแลเสร็จเรียบร้อยแล้ว<br>กดปุ่มด้านล่างเพื่อสิ้นสุดคำร้อง</div>
+              <button class="care-complete-btn" onclick="bedsideComplete()">✅ เสร็จสิ้นการบริการ</button>
+            </div>
+          </div>
+
+          <!-- OVERLAY 4: Rating -->
+          <div class="tab-overlay ov-rating" id="ov-rating">
+            <div class="ov-nursecall-hdr" style="background:linear-gradient(135deg,#78350f,#d97706);">
+              <div class="ov-hdr-info">
+                <div class="ov-hdr-title">⭐ ประเมินความพึงพอใจ</div>
+                <div class="ov-hdr-sub">Customer Satisfaction (TOR 6.5.2)</div>
+              </div>
+            </div>
+            <div class="ov-rating-body">
+              <div class="rating-title">บริการเป็นอย่างไรบ้าง?</div>
+              <div class="rating-sub" id="rating-nurse-label">–</div>
+              <div class="emoji-rating-wrap" id="emoji-rating-wrap">
+                <div class="emoji-opt" onclick="selectEmoji(1,this)"><span class="emoji-face">😞</span><span class="emoji-lbl">ไม่พอใจ</span></div>
+                <div class="emoji-opt" onclick="selectEmoji(2,this)"><span class="emoji-face">😕</span><span class="emoji-lbl">พอใช้</span></div>
+                <div class="emoji-opt" onclick="selectEmoji(3,this)"><span class="emoji-face">😊</span><span class="emoji-lbl">ดี</span></div>
+                <div class="emoji-opt" onclick="selectEmoji(4,this)"><span class="emoji-face">😄</span><span class="emoji-lbl">ดีมาก</span></div>
+                <div class="emoji-opt" onclick="selectEmoji(5,this)"><span class="emoji-face">🤩</span><span class="emoji-lbl">ยอดเยี่ยม</span></div>
+              </div>
+              <button class="rating-submit-btn" onclick="submitRating()" id="rating-submit" style="display:none;">ส่งความคิดเห็น</button>
+              <div class="rating-skip" onclick="skipRating()">ข้าม — ไม่ต้องการประเมิน</div>
+              <div class="rating-countdown" id="rating-countdown"></div>
+            </div>
+          </div>
+
+          <!-- OVERLAY 5: Alerts (BLOCK AL) -->
+          <div class="tab-overlay ov-alerts" id="ov-alerts">
+            <div class="ov-alerts-hdr">
+              <button class="ov-back-btn" onclick="closeOverlay('ov-alerts');updateAlertBadge();">← กลับ</button>
+              <div class="ov-hdr-info">
+                <div class="ov-hdr-title" style="color:#fff;">⚠️ แจ้งเตือน</div>
+                <div class="ov-hdr-sub" style="color:rgba(255,255,255,.8);">ยาตามเวลา · ระบบ (TOR AL1–AL3)</div>
+              </div>
+            </div>
+            <div class="ov-alerts-body" id="ov-alerts-body"></div>
+          </div>
+
+          <!-- OVERLAY 6: Telemedicine (BLOCK T) -->
+          <div class="tab-overlay ov-tele" id="ov-tele">
+            <div class="ov-tele-hdr">
+              <button class="ov-back-btn" id="tele-back-btn" onclick="teleBack()" style="display:none;">← กลับ</button>
+              <div class="ov-hdr-info">
+                <div class="ov-hdr-title" style="color:#fff;">📹 ปรึกษาแพทย์</div>
+                <div class="ov-hdr-sub" style="color:rgba(255,255,255,.8);" id="tele-hdr-sub">เลือกสาขา (T1–T3)</div>
+              </div>
+            </div>
+            <div class="ov-tele-body">
+              <div class="ov-tele-step show" id="tele-step-1">
+                <div class="ov-type-title">เลือกสาขาที่ต้องการปรึกษา</div>
+                <div class="tele-dept-grid" id="tele-dept-grid"></div>
+              </div>
+              <div class="ov-tele-step" id="tele-step-2">
+                <div class="ov-type-title">แพทย์พร้อมให้บริการ</div>
+                <div id="tele-doctor-info" style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;"></div>
+                <button class="nc-btn nc-general" style="width:100%;" onclick="teleJoinQueue()">เข้าระบบคิว — รอปรึกษา</button>
+                <div id="tele-queue-full" style="display:none;background:#fef3c7;border:1px solid var(--amber);border-radius:10px;padding:12px;margin-top:8px;">
+                  <div style="font-weight:700;color:#92400e;">คิวเต็ม — บันทึกนัด (T3)</div>
+                  <div id="tele-appoint-msg" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+                  <button class="alert-item-btn taken" style="margin-top:8px;" onclick="teleBookAppointment()">ตกลง — บันทึกนัด</button>
+                </div>
+              </div>
+              <div class="ov-tele-step" id="tele-step-3">
+                <div class="tele-wait-msg">
+                  <div>คิวของคุณ</div>
+                  <div class="tele-wait-num" id="tele-queue-num">#1</div>
+                  <div style="margin-top:8px;">ประมาณรอ <strong id="tele-wait-mins">5</strong> นาที</div>
+                </div>
+              </div>
+              <div class="ov-tele-step" id="tele-step-4">
+                <div class="tele-consult-placeholder">
+                  <div class="icon">📹</div>
+                  <div class="txt">แพทย์กำลังพูดกับคุณ</div>
+                  <div class="txt" id="tele-consult-doctor" style="margin-top:6px;font-weight:700;color:var(--text);">–</div>
+                </div>
+                <button class="tele-end-btn" onclick="teleEndConsult()">จบการปรึกษา</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- OVERLAY: Food Service -->
+          <div class="tab-overlay ov-food" id="ov-food">
+            <div class="ov-food-hdr">
+              <button class="ov-back-btn" onclick="closeOverlay('ov-food')">← กลับ</button>
+              <div class="ov-hdr-info">
+                <div class="ov-hdr-title" style="color:#fff;">🍽️ บริการอาหาร</div>
+                <div class="ov-hdr-sub" style="color:rgba(255,255,255,.8);">มื้อของวัน · ห้อง 301A</div>
+              </div>
+            </div>
+            <div class="ov-food-body" id="ov-food-body"></div>
+          </div>
+
+          <!-- OVERLAY 7: Phase 2 (Sleep, Entertain, Family, Room) -->
+          <div class="tab-overlay ov-phase2" id="ov-phase2">
+            <div class="ov-nursecall-hdr" style="background:var(--muted);">
+              <button class="ov-back-btn" onclick="closeOverlay('ov-phase2')">← กลับ</button>
+              <div class="ov-hdr-info">
+                <div class="ov-hdr-title" style="color:#fff;" id="phase2-hdr-title">Phase 2</div>
+                <div class="ov-hdr-sub" style="color:rgba(255,255,255,.7);" id="phase2-hdr-sub">Coming in Phase 2</div>
+              </div>
+            </div>
+            <div class="ov-phase2-body">
+              <div id="phase2-body"></div>
+            </div>
+          </div>
+
+          <!-- HOME SCREEN -->
+          <div class="pt-hdr" id="pt-hdr">
+            <div class="pt-av" id="pt-av">👴</div>
+            <div>
+              <div class="pt-name" id="pt-name">สมชาย ใจดี</div>
+              <div class="pt-info" id="pt-info">HN: 67001 · อายุ 79 ปี · ห้อง 301A · อายุรกรรม</div>
+            </div>
+            <div class="pt-team" id="pt-team">
+              <div class="pt-mbr"><div class="pt-mbr-av">👨‍⚕️</div><div class="pt-mbr-nm">นพ.สมิทธ์</div></div>
+              <div class="pt-mbr"><div class="pt-mbr-av">👩‍⚕️</div><div class="pt-mbr-nm">พว.สุดา</div></div>
+            </div>
+            <div class="pt-clock"><div class="pt-clock-val" id="pt-clock">--:--</div><div class="pt-clock-date" id="pt-clock-date">28 ก.พ. 2569</div></div>
+          </div>
+
+          <div class="pt-callbar" id="pt-callbar">
+            <div class="cb-dot red" id="cb-dot"></div>
+            <div class="cb-text" id="cb-text">–</div>
+            <div class="cb-timer" id="cb-timer"></div>
+            <button class="cb-cancel" id="cb-view-btn" onclick="openBedsideStatus()" style="border-color:#3b82f6;color:#1d4ed8;display:none;">📍 ดูสถานะ</button>
+            <button class="cb-cancel" onclick="patientCancelRequest()" id="cb-cancel-btn">ยกเลิก</button>
+          </div>
+
+          <div class="pt-grid" id="pt-grid">
+            <div class="pt-tile nurse" onclick="openNurseCallOverlay()">
+              <div class="pt-tile-icon">🔔</div>
+              <div class="pt-tile-lbl">เรียกพยาบาล</div>
+              <div class="pt-tile-sub">Nurse Call</div>
+            </div>
+            <div class="pt-tile tele" onclick="openTelemedicineOverlay()"><div class="pt-tile-icon">📹</div><div class="pt-tile-lbl">ปรึกษาแพทย์</div><div class="pt-tile-sub">Telemedicine</div></div>
+            <div class="pt-tile food" onclick="openFoodOverlay()"><div class="pt-tile-icon">🍽️</div><div class="pt-tile-lbl">อาหาร</div><div class="pt-tile-sub">Food</div></div>
+            <div class="pt-tile alert" onclick="openAlertsOverlay()"><div class="pt-badge" id="pt-alert-badge">2</div><div class="pt-tile-icon">⚠️</div><div class="pt-tile-lbl">แจ้งเตือน</div><div class="pt-tile-sub">Alerts</div></div>
+            <div class="pt-tile sleep" onclick="openPhase2Overlay('sleep')"><div class="pt-tile-icon">🌙</div><div class="pt-tile-lbl">การนอน</div><div class="pt-tile-sub">Sleep</div><div class="pt-tile-num" id="sleep-tile-latest">–</div></div>
+            <div class="pt-tile entertain" onclick="openPhase2Overlay('entertain')"><div class="pt-tile-icon">▶️</div><div class="pt-tile-lbl">บันเทิง</div><div class="pt-tile-sub">Infotainment</div></div>
+            <div class="pt-tile family" onclick="openPhase2Overlay('family')"><div class="pt-tile-icon">👨‍👩‍👧</div><div class="pt-tile-lbl">โทรครอบครัว</div><div class="pt-tile-sub">Family Call</div></div>
+            <div class="pt-tile room" onclick="openPhase2Overlay('room')"><div class="pt-tile-icon">❄️</div><div class="pt-tile-lbl">สภาพแวดล้อม</div><div class="pt-tile-sub">24°C</div></div>
+          </div>
+
+          <!-- Flow Status Bar (visible when call active) -->
+          <div class="flow-bar" id="flow-bar" style="display:none;">
+            <div class="flow-step">
+              <div class="flow-col"><div class="flow-dot" id="flow-1">1</div><div class="flow-lbl">ส่งคำร้อง</div></div>
+              <div class="flow-line" id="fl-1"></div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-col"><div class="flow-dot locked" id="flow-2">2</div><div class="flow-lbl">ACK</div></div>
+              <div class="flow-line" id="fl-2"></div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-col"><div class="flow-dot locked" id="flow-3">3</div><div class="flow-lbl">กำลังมา</div></div>
+              <div class="flow-line" id="fl-3"></div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-col"><div class="flow-dot locked" id="flow-4">4</div><div class="flow-lbl">📍ยืนยันมาถึง</div></div>
+              <div class="flow-line" id="fl-4"></div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-col"><div class="flow-dot locked" id="flow-5">5</div><div class="flow-lbl">เสร็จสิ้น</div></div>
+              <div class="flow-line" id="fl-5"></div>
+            </div>
+            <div class="flow-col"><div class="flow-dot locked" id="flow-6">⭐</div><div class="flow-lbl">ประเมิน</div></div>
+          </div>
+
+          <div class="pt-footer"><span id="pt-footer-ward">🏥 Ward อายุรกรรม · ห้อง 301A</span><span>🔋 96% · 📶 WiFi · 🌡 37.0°C</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIM PANEL -->
+    <div class="pt-right">
+      <div class="sim-panel">
+        <div class="sim-hdr">
+          <div class="sim-hdr-title">🏨 Ward อายุรกรรม 3A — 6 ห้อง</div>
+          <div class="sim-hdr-sub">กดส่งคำร้องพร้อมกันหลายห้องได้</div>
+        </div>
+        <div class="sim-rooms" id="sim-rooms-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NURSE STATION
+═══════════════════════════════════════ -->
+<div class="page fi" id="page-nurse">
+  <div class="ns-page">
+    <div class="ns-topbar">
+      <div class="ns-topbar-left">
+        <h2>🖥️ Nurse Station — Ward อายุรกรรม 3A</h2>
+        <p>กะเช้า 07:00–15:00 · Bedside Confirmation Required</p>
+      </div>
+      <div class="ns-topbar-right">
+        <div class="ns-user"><div class="ns-user-av">👩‍⚕️</div><div class="ns-user-name">พว. สุดา นาคสุข</div></div>
+        <div class="ns-bell-wrap">
+          <button class="ns-bell-btn" id="ns-bell">🔔</button>
+          <div class="ns-bell-count" id="ns-bell-count">0</div>
+        </div>
+        <div class="nav-clock" id="ns-clock" style="color:rgba(255,255,255,.5)">--:--</div>
+      </div>
+    </div>
+
+    <div class="ns-stats">
+      <div class="ns-stat"><div class="ns-stat-lbl">📞 Total Calls</div><div class="ns-stat-val" id="ns-stat-total">0</div><div class="ns-stat-sub" style="color:rgba(15,158,142,.8)">วันนี้</div></div>
+      <div class="ns-stat"><div class="ns-stat-lbl">🔴 รอ (Waiting)</div><div class="ns-stat-val" id="ns-stat-waiting" style="color:#fca5a5">0</div><div class="ns-stat-sub" style="color:rgba(255,255,255,.3)">รอ ACK</div></div>
+      <div class="ns-stat"><div class="ns-stat-lbl">🏃 กำลังไป</div><div class="ns-stat-val" id="ns-stat-enroute" style="color:#93c5fd">0</div><div class="ns-stat-sub" style="color:rgba(255,255,255,.3)">รอยืนยันที่เตียง</div></div>
+      <div class="ns-stat"><div class="ns-stat-lbl">📍 ยืนยันแล้ว</div><div class="ns-stat-val" id="ns-stat-bedside" style="color:#5eead4">0</div><div class="ns-stat-sub" style="color:rgba(255,255,255,.3)">Bedside Confirmed</div></div>
+      <div class="ns-stat"><div class="ns-stat-lbl">⏱ Avg Response</div><div class="ns-stat-val" id="ns-stat-avg" style="color:#fcd34d">–:––</div><div class="ns-stat-sub" style="color:rgba(255,255,255,.3)">เป้าหมาย &lt; 5:00</div></div>
+    </div>
+
+    <div class="ns-layout">
+      <div class="ns-main">
+        <div class="ns-card-box">
+          <div class="ns-section-title">🔴 Live Triage Board <span class="ns-count-badge" id="ns-queue-badge">0</span></div>
+          <div id="ns-triage-list" class="triage-list"><div class="ns-empty">กดปุ่ม "เรียกพยาบาล" บน Patient App เพื่อเริ่มต้น</div></div>
+        </div>
+        <div class="ns-card-box">
+          <div class="ns-section-title">📜 Activity Log</div>
+          <div class="log-list" id="ns-log-list">
+            <div class="log-item"><div class="log-dot" style="background:var(--green)"></div><div class="log-time">08:30</div><div class="log-text">ระบบเริ่มทำงาน — Bedside Confirmation Mode ON</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ns-side">
+        <div class="ns-card-box">
+          <div class="ns-section-title">🗺️ Room Status</div>
+          <div class="room-grid" id="ns-room-grid"></div>
+        </div>
+        <div class="ns-card-box">
+          <div class="ns-section-title">⚡ VTP Alerts</div>
+          <div id="ns-vtp-list"></div>
+          <div class="vtp-item red" id="vtp-red" style="display:none"><div class="vtp-zone red">🔴 RED</div><div class="vtp-info"><div class="vtp-room" id="vtp-red-room">–</div><div class="vtp-msg" id="vtp-red-msg">–</div></div></div>
+        </div>
+        <div class="ns-card-box">
+          <div class="ns-section-title">💊 ยาตามเวลา (AL1)</div>
+          <div id="ns-med-alerts" style="font-size:10px;"></div>
+        </div>
+        <div class="ns-card-box">
+          <div class="ns-section-title">👥 Staff On Duty</div>
+          <div id="ns-staff-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     EXECUTIVE DASHBOARD
+═══════════════════════════════════════ -->
+<div class="page fi" id="page-exec">
+  <div class="exec-page">
+    <div class="exec-layout">
+      <div class="exec-sidebar">
+        <div class="exec-sidebar-logo"><div>🏥 Admin / Head Nurse</div><p id="exec-current-user">–</p></div>
+        <div class="exec-menu-item active" data-exec-view="overview" onclick="setExecView('overview')">📊 Overview</div>
+        <div class="exec-menu-item has-alert" data-exec-view="overview" onclick="setExecView('overview')">🔔 Nurse Call Report <div class="mi-dot"></div></div>
+        <div class="exec-menu-item" data-exec-view="tele" onclick="setExecView('tele')">📹 Telemedicine</div>
+        <div class="exec-menu-item" data-exec-view="overview" onclick="setExecView('overview')">🏥 Ward Performance</div>
+        <div class="exec-menu-item">👥 User Management</div>
+        <div class="exec-menu-item" data-exec-view="overview" onclick="setExecView('overview')">📋 Audit Log</div>
+        <div style="height:1px;background:rgba(255,255,255,.07);margin:10px 0;"></div>
+        <div class="exec-menu-item">📥 Export Reports</div>
+        <div class="exec-menu-item">🔒 PDPA Consent</div>
+        <div class="exec-menu-item">⚙️ Settings</div>
+      </div>
+      <div class="exec-content">
+        <!-- Overview / Nurse Call content -->
+        <div id="exec-view-overview">
+        <div class="exec-toprow">
+          <div>
+            <div class="exec-page-title">ภาพรวม — 28 ก.พ. 2569</div>
+            <div class="exec-page-sub">Ward อายุรกรรม 3A · Live · อัปเดตทันที</div>
+          </div>
+          <div class="exec-toprow-right">
+            <select class="exec-select"><option>วันนี้</option><option>สัปดาห์นี้</option><option>เดือนนี้</option></select>
+            <button class="exec-export-btn">📥 Export PDF</button>
+          </div>
+        </div>
+
+        <div class="exec-kpis">
+          <div class="kpi-card kpi1"><div class="kpi-icon">📞</div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-lbl">Total Calls วันนี้</div><div class="kpi-chg warn" id="kpi-total-chg">รอรับคำร้อง</div></div>
+          <div class="kpi-card kpi2"><div class="kpi-icon">⏱️</div><div class="kpi-val" id="kpi-avg">–</div><div class="kpi-lbl">Avg Response (นาที)</div><div class="kpi-chg up" id="kpi-avg-chg">เป้าหมาย &lt; 5:00</div></div>
+          <div class="kpi-card kpi3"><div class="kpi-icon">⭐</div><div class="kpi-val" id="kpi-sat">–</div><div class="kpi-lbl">Satisfaction Score</div><div class="kpi-chg warn" id="kpi-sat-chg">รอการประเมิน</div></div>
+          <div class="kpi-card kpi4"><div class="kpi-icon">📍</div><div class="kpi-val" id="kpi-bedside">0%</div><div class="kpi-lbl">Bedside Confirm Rate</div><div class="kpi-chg up">Physical Presence Verified</div></div>
+        </div>
+
+        <div class="exec-charts">
+          <div class="chart-card">
+            <div class="chart-title">📞 ประเภทคำร้อง (วันนี้)</div>
+            <div class="type-dist" id="exec-type-dist"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">😊 Satisfaction Report — Emoji (TOR 6.5.2)</div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:6px;">📌 แสดงเฉพาะ Executive — ไม่แสดงให้พยาบาลเห็นรายบุคคล</div>
+            <div class="sat-score" id="sat-score">–</div>
+            <div class="sat-score-lbl" id="sat-score-lbl">รอผลการประเมิน</div>
+            <div id="emoji-dist-chart">
+              <div class="sat-row"><span class="sat-stars">🤩</span><div class="sat-bar-wrap"><div class="sat-bar" id="sat5" style="width:0%;background:#22c55e"></div></div><span class="sat-pct" id="sat5-pct">0</span></div>
+              <div class="sat-row"><span class="sat-stars">😄</span><div class="sat-bar-wrap"><div class="sat-bar" id="sat4" style="width:0%;background:#84cc16"></div></div><span class="sat-pct" id="sat4-pct">0</span></div>
+              <div class="sat-row"><span class="sat-stars">😊</span><div class="sat-bar-wrap"><div class="sat-bar" id="sat3" style="width:0%;background:#eab308"></div></div><span class="sat-pct" id="sat3-pct">0</span></div>
+              <div class="sat-row"><span class="sat-stars">😕</span><div class="sat-bar-wrap"><div class="sat-bar" id="sat2" style="width:0%;background:#f97316"></div></div><span class="sat-pct" id="sat2-pct">0</span></div>
+              <div class="sat-row"><span class="sat-stars">😞</span><div class="sat-bar-wrap"><div class="sat-bar" id="sat1" style="width:0%;background:#ef4444"></div></div><span class="sat-pct" id="sat1-pct">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ward Performance -->
+        <div class="exec-table-card">
+          <div class="exec-table-hdr"><h3>🏥 Ward Performance (TOR 6.5.1)</h3><button class="exec-table-export">📥 Export Excel</button></div>
+          <table class="dt">
+            <thead><tr><th>แผนก</th><th>Calls</th><th>Avg Response</th><th>Bedside Rate</th><th>Satisfaction</th><th>สถานะ</th></tr></thead>
+            <tbody id="ward-perf-body"></tbody>
+          </table>
+        </div>
+
+        <!-- LEGAL AUDIT TRAIL -->
+        <div class="audit-section">
+          <div class="audit-hdr">
+            <h3>📋 Audit Trail — Legal Grade (TOR 6.6.1)</h3>
+            <div class="audit-legal-badge">🔒 Tamper-Proof · ISO 8601 · Hash Verified</div>
+          </div>
+          <!-- Chain summary for latest call -->
+          <div class="chain-summary" id="chain-summary" style="display:none;">
+            <div class="chain-title">Call Chain — คำร้องล่าสุด</div>
+            <div class="chain-flow" id="chain-flow"></div>
+          </div>
+          <div class="audit-table-wrap">
+            <table class="dt audit">
+              <thead><tr><th>Timestamp (TH)</th><th>Event</th><th>ผู้ดำเนินการ</th><th>ห้อง</th><th>รายละเอียด</th><th>Hash</th></tr></thead>
+              <tbody id="audit-body">
+                <tr><td>–</td><td><span class="audit-event-badge request">SYSTEM_INIT</span></td><td>System</td><td>–</td><td>ระบบ Demo เริ่มทำงาน — Bedside Confirm Mode</td><td class="audit-hash">–</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+        <!-- Telemedicine report (BLOCK T) -->
+        <div id="exec-view-tele" style="display:none;">
+          <div class="exec-toprow">
+            <div>
+              <div class="exec-page-title">📹 Telemedicine — รายงานวันนี้</div>
+              <div class="exec-page-sub">7 สาขา · On-Demand / Scheduled (T1–T3)</div>
+            </div>
+            <div class="exec-toprow-right">
+              <button class="exec-export-btn">📥 Export PDF</button>
+            </div>
+          </div>
+          <div class="exec-table-card">
+            <div class="exec-table-hdr"><h3>📹 Sessions วันนี้</h3></div>
+            <div id="exec-tele-sessions"></div>
+          </div>
+          <div class="exec-table-card" style="margin-top:12px;">
+            <div class="exec-table-hdr"><h3>สาขา · คิว</h3></div>
+            <table class="dt">
+              <thead><tr><th>สาขา</th><th>คิว</th><th>แพทย์</th><th>รูปแบบ</th></tr></thead>
+              <tbody id="exec-tele-depts"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="page fi" id="page-overview">
+  <div class="ov-page">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:26px;font-weight:800;">Smart Patient Bedside & Telemedicine Platform</div>
+      <div style="font-size:14px;color:var(--muted);margin-top:8px;">ระบบยืนยันการมาถึงเตียงผู้ป่วย (Bedside Confirmation) — Legal Audit Trail</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:12px;max-width:560px;margin-left:auto;margin-right:auto;">Phase 1 ประกอบด้วย: Nurse Call (6 ประเภท), Telemedicine (7 สาขา · คิว/นัด), แจ้งเตือน (ยาตามเวลา + ระบบ). Vital Sign Alert อยู่ใน Phase 2 (IoT Sensor).</div>
+    </div>
+    <!-- Workflow Diagram -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:860px;margin:0 auto;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:20px;">🔄 Workflow ใหม่ — 6 ขั้นตอน (Bedside Confirmation)</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;text-align:center;font-size:11px;">
+        <div style="background:#fee2e2;border-radius:10px;padding:12px 6px;">
+          <div style="font-size:24px;margin-bottom:6px;">🔔</div>
+          <div style="font-weight:700;color:#991b1b;">1. ผู้ป่วยกด</div>
+          <div style="color:var(--muted);margin-top:4px;">เลือกประเภทคำร้องบน Patient Tablet</div>
+        </div>
+        <div style="background:#fef3c7;border-radius:10px;padding:12px 6px;">
+          <div style="font-size:24px;margin-bottom:6px;">✅</div>
+          <div style="font-weight:700;color:#92400e;">2. Nurse ACK</div>
+          <div style="color:var(--muted);margin-top:4px;">Nurse Station รับทราบ + มอบหมายพยาบาล</div>
+        </div>
+        <div style="background:#dbeafe;border-radius:10px;padding:12px 6px;">
+          <div style="font-size:24px;margin-bottom:6px;">🏃</div>
+          <div style="font-weight:700;color:#1e40af;">3. กำลังไป</div>
+          <div style="color:var(--muted);margin-top:4px;">Nurse Station กด "กำลังไป" — บันทึก Depart Time</div>
+        </div>
+        <div style="background:#d1fae5;border-radius:10px;padding:12px 6px;border:2px solid var(--green);">
+          <div style="font-size:24px;margin-bottom:6px;">📍</div>
+          <div style="font-weight:700;color:#065f46;">4. ยืนยันมาถึง</div>
+          <div style="color:var(--muted);margin-top:4px;font-weight:600;color:#065f46;">กดที่ Patient Tablet เท่านั้น — Physical Proof</div>
+        </div>
+        <div style="background:#d1fae5;border-radius:10px;padding:12px 6px;">
+          <div style="font-size:24px;margin-bottom:6px;">✅</div>
+          <div style="font-weight:700;color:#14532d;">5. เสร็จสิ้น</div>
+          <div style="color:var(--muted);margin-top:4px;">กดที่ Patient Tablet — บันทึก Complete Time</div>
+        </div>
+        <div style="background:#ede9fe;border-radius:10px;padding:12px 6px;">
+          <div style="font-size:24px;margin-bottom:6px;">⭐</div>
+          <div style="font-weight:700;color:#4c1d95;">6. ประเมิน</div>
+          <div style="color:var(--muted);margin-top:4px;">ผู้ป่วย/ญาติให้คะแนนทันที</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:14px;background:#f0fdf4;border-radius:10px;border:1px solid rgba(22,163,74,.2);">
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px;">✅ ทำไมขั้นตอนที่ 4 ถึงสำคัญ (Legal Grade)</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.8;">
+          • <strong>Physical Presence Proof:</strong> พยาบาลต้องอยู่ที่เตียงผู้ป่วย เพราะมีเพียงแท็บเล็ตข้างเตียงเท่านั้นที่ยืนยันได้<br>
+          • <strong>Timestamp ที่ใช้ได้ทางกฎหมาย:</strong> บันทึก ISO 8601 + SHA-256 Hash — ไม่สามารถแก้ไขย้อนหลังได้<br>
+          • <strong>ป้องกันการกด Complete ล่วงหน้า:</strong> Nurse Station <u>ไม่สามารถ</u> กด Complete ได้ หากยังไม่ผ่าน Bedside Confirm<br>
+          • <strong>ไม่ต้องพกอุปกรณ์เพิ่ม:</strong> ใช้ Patient Tablet ที่ติดตั้งแล้วในทุกห้อง + WiFi
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+      <button style="padding:10px 22px;background:var(--teal);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" onclick="showPage('patient')">📱 ดู Patient App</button>
+      <button style="padding:10px 22px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" onclick="showPage('nurse')">🖥️ ดู Nurse Station</button>
+      <button style="padding:10px 22px;background:var(--amber);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" onclick="showPage('exec')">📈 ดู Exec Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+/* ─────────────────────────── DATA ─────────────────────────── */
+const PATIENTS = [
+  { room:'301A', name:'สมชาย ใจดี',      age:79, icon:'👴', hn:'67001', wardName:'อายุรกรรม 3A', conds:['เบาหวาน','ความดันสูง'], risks:['เสี่ยงล้ม'], vtp:null },
+  { room:'302A', name:'มาลี จันทร์เพ็ง',  age:65, icon:'👩', conds:['หัวใจ'],               risks:[], vtp:'yellow' },
+  { room:'303A', name:'วิชัย แสงทอง',     age:72, icon:'👴', conds:['ไต','เบาหวาน'],        risks:[], vtp:null },
+  { room:'304A', name:'ประสิทธิ์ มีสุข',  age:68, icon:'👨', conds:['ความดันสูง'],           risks:[], vtp:null },
+  { room:'305A', name:'ลัดดา ศรีวงศ์',    age:75, icon:'👩', conds:['มะเร็งเต้านม'],        risks:[], vtp:'orange' },
+  { room:'306A', name:'สุชาติ บุญมี',     age:83, icon:'👴', conds:['ปอด'],                 risks:['เสี่ยงล้ม'], vtp:null },
+];
+const REQ_TYPES = [
+  { type:'general',   label:'ขอความช่วยเหลือ', icon:'🙋', priority:1, color:'var(--teal)' },
+  { type:'water',     label:'ขอน้ำ / ผ้าห่ม',   icon:'💧', priority:1, color:'var(--blue)' },
+  { type:'toilet',    label:'เข้าห้องน้ำ',        icon:'🚽', priority:2, color:'var(--purple)' },
+  { type:'pain',      label:'แจ้งอาการเจ็บปวด', icon:'😣', priority:3, color:'var(--orange)' },
+  { type:'emergency', label:'ฉุกเฉิน',            icon:'🚨', priority:4, color:'var(--red)' },
+];
+const NURSES = ['พว. สุดา นาคสุข','พว. จาย ชาน','พว. มลิวัลย์ สมบัติ'];
+
+/* ── Telemedicine (BLOCK T) ── */
+const TELE_DEPARTMENTS = [
+  { id:'internal',   nameThai:'อายุรกรรม',     nameEn:'Internal Medicine', queueLength:2 },
+  { id:'surgery',   nameThai:'ศัลยกรรม',     nameEn:'Surgery',           queueLength:0 },
+  { id:'cardio',    nameThai:'หัวใจ',         nameEn:'Cardiology',        queueLength:1 },
+  { id:'pulmonary', nameThai:'ปอด',          nameEn:'Pulmonology',       queueLength:3 },
+  { id:'renal',     nameThai:'ไต',           nameEn:'Nephrology',        queueLength:0 },
+  { id:'neuro',     nameThai:'สมองและระบบประสาท', nameEn:'Neurology', queueLength:1 },
+  { id:'psych',     nameThai:'จิตเวช',       nameEn:'Psychiatry',        queueLength:5 },
+];
+const TELE_DOCTORS = [
+  { deptId:'internal',  name:'นพ. วิชัย ใจดี',    onDuty:true,  scheduleType:'on-demand', nextSlot:null },
+  { deptId:'surgery',   name:'นพ. สมศักดิ์ ศรีทอง', onDuty:true,  scheduleType:'scheduled', nextSlot:'10:30' },
+  { deptId:'cardio',    name:'นพ. มานพ หัวใจแข็ง', onDuty:true,  scheduleType:'on-demand', nextSlot:null },
+  { deptId:'pulmonary', name:'นพ. ลัดดา ปอดดี',   onDuty:true,  scheduleType:'scheduled', nextSlot:'11:00' },
+  { deptId:'renal',    name:'นพ. วิชัย ไตแข็งแรง', onDuty:false, scheduleType:'scheduled', nextSlot:'14:00' },
+  { deptId:'neuro',    name:'นพ. สุชาติ สมองใส',  onDuty:true,  scheduleType:'on-demand', nextSlot:null },
+  { deptId:'psych',    name:'นพ. มาลี จิตเวช',   onDuty:true,  scheduleType:'scheduled', nextSlot:'13:00' },
+];
+
+/* ── Alerts (BLOCK AL) ── */
+let MEDICATION_ALERTS = [
+  { id:'ma1', medicineName:'เมตฟอร์มิน 500 mg', time:'08:00', room:'301A', status:'pending', note:'หลังอาหารเช้า' },
+  { id:'ma2', medicineName:'โลซาร์แทน 50 mg',   time:'08:30', room:'301A', status:'pending', note:'ความดัน' },
+  { id:'ma3', medicineName:'แอสไพริน 81 mg',    time:'20:00', room:'301A', status:'pending', note:'ก่อนนอน' },
+];
+let SYSTEM_ALERTS = [
+  { id:'sa1', type:'battery_low', device:'Tablet 302A', room:'302A', time:'08:15', message:'แบตเตอรี่ต่ำ < 15%' },
+];
+
+function getUnreadAlertsCount(room){
+  const r = room!=null ? room : (PATIENTS[0]?PATIENTS[0].room:null);
+  const med = r ? MEDICATION_ALERTS.filter(a=>a.room===r&&a.status==='pending').length : MEDICATION_ALERTS.filter(a=>a.status==='pending').length;
+  const sys = r ? SYSTEM_ALERTS.filter(a=>a.room===r).length : SYSTEM_ALERTS.length;
+  return med + sys;
+}
+
+/* ── Food Service ── */
+const FOOD_MEAL_TIMES = [
+  { id:'breakfast', labelThai:'อาหารเช้า', time:'07:00–09:00' },
+  { id:'lunch',     labelThai:'อาหารกลางวัน', time:'11:30–12:30' },
+  { id:'dinner',    labelThai:'อาหารเย็น', time:'17:00–18:30' },
+];
+/* เมนู 4 อย่าง (แสดงทุกมื้อ) · รูปใหญ่ น่าสั่ง สำหรับผู้สูงอายุ */
+const FOOD_MENU_ITEMS = [
+  { id:'m1', nameThai:'ข้าวต้ม',     icon:'🍲' },
+  { id:'m2', nameThai:'โจ๊กหมู',     icon:'🥣' },
+  { id:'m3', nameThai:'ข้าวผัด',     icon:'🍛' },
+  { id:'m4', nameThai:'แกงจืดเต้าหู้', icon:'🍵' },
+];
+let FOOD_ORDERS = [
+  { mealTimeId:'breakfast', room:'301A', items:[{ id:'m1', nameThai:'ข้าวต้ม' }], status:'delivered' },
+  { mealTimeId:'lunch',     room:'301A', items:[], status:'pending' },
+  { mealTimeId:'dinner',    room:'301A', items:[], status:'pending' },
+];
+
+/* ── Ward Performance (TOR 4.1–4.3, 6.5.1) ── */
+const WARD_PERFORMANCE = [
+  { id:'internal', name:'อายุรกรรม 3A', calls:0, avgResponse:'–', bedsideRate:'–', satisfaction:'–', status:'ok', statusLabel:'✅ Live' },
+  { id:'surgery',  name:'ศัลยกรรม',    calls:18, avgResponse:'4:20', bedsideRate:'92%', satisfaction:'4.2 ⭐', status:'warn', statusLabel:'⚠ 1 Offline' },
+  { id:'pediatric',name:'กุมารเวช',    calls:12, avgResponse:'2:50', bedsideRate:'98%', satisfaction:'4.8 ⭐', status:'ok', statusLabel:'✅ ปกติ' },
+  { id:'icu',      name:'ICU',         calls:31, avgResponse:'1:30', bedsideRate:'100%', satisfaction:'4.9 ⭐', status:'ok', statusLabel:'✅ ดีมาก' },
+  { id:'ob',       name:'สูตินรีเวช',  calls:9,  avgResponse:'5:10', bedsideRate:'87%', satisfaction:'3.9 ⭐', status:'bad', statusLabel:'🔴 ช้าเกิน' },
+];
+
+/* ── Current user / RBAC (BA2) ── */
+const CURRENT_USER = { name:'ผอ. สมศักดิ์', role:'Super Admin' };
+
+/* ── Staff on duty (A3 Shift, BN6) ── */
+let STAFF_ON_DUTY = [
+  { id:'doc1', name:'นพ. สมิทธ์', role:'แพทย์', status:'free' },
+  { id:'n1', name:'พว. สุดา นาคสุข', role:'พยาบาล', status:'at_station' },
+  { id:'n2', name:'พว. จาย ชาน', role:'พยาบาล', status:'free' },
+  { id:'n3', name:'พว. มลิวัลย์ สมบัติ', role:'พยาบาล', status:'free' },
+];
+
+/* ── Care team สำหรับ Patient App header (ห้อง 301A) ── */
+const CARE_TEAM = [
+  { role:'แพทย์', name:'นพ. สมิทธ์', av:'👨‍⚕️' },
+  { role:'พยาบาล', name:'พว. สุดา นาคสุข', av:'👩‍⚕️' },
+];
+
+/* ── Phase 2 Mock Data (Patient App) ── */
+/* การนอน: ตัวเลขล่าสุด (แสดงบน tile) + ย้อนหลัง 24 ชม. + สรุป */
+const PHASE2_SLEEP_LATEST = { hours: 6.5, quality: 'ดี', qualityLabel: 'นอนหลับต่อเนื่อง', dateLabel: 'คืนที่ผ่านมา', date: '1 มี.ค. 2569', startEnd: '22:00 – 04:30', note: 'ข้อมูลจาก IoT Sensor (Phase 2)' };
+const PHASE2_SLEEP_HISTORY_24H = [
+  { period: 'คืนที่ผ่านมา', hours: 6.5, quality: 'ดี', timeRange: '22:00 – 04:30' },
+  { period: 'เมื่อวาน (กลางวัน)', hours: 1, quality: 'พอใช้', timeRange: '13:00 – 14:00' },
+  { period: 'คืนก่อนหน้า', hours: 5.5, quality: 'พอใช้', timeRange: '23:00 – 04:30' },
+];
+const PHASE2_SLEEP_SUMMARY = { avgHours: 6.2, totalSessions: 3, qualityGood: 2, qualityOk: 1, recommendation: 'นอนต่อเนื่องได้ดี แนะนำเข้านอนเวลาเดิม' };
+
+/* Infotainment: หมวด → รายการช่อง/รายการ → หน้าจอรับชม */
+const PHASE2_ENTERTAIN_CATEGORIES = [
+  { id: 'tv', name: 'ทีวี', icon: '📺' },
+  { id: 'radio', name: 'วิทยุ', icon: '📻' },
+  { id: 'music', name: 'เพลง', icon: '🎵' },
+  { id: 'dhamma', name: 'ธรรมะ', icon: '🧘' },
+];
+const PHASE2_ENTERTAIN_CHANNELS = {
+  tv: [
+    { id: 'ch3', name: 'ช่อง 3 HD', icon: '📺' },
+    { id: 'ch5', name: 'ช่อง 5', icon: '📺' },
+    { id: 'ch7', name: 'ช่อง 7', icon: '📺' },
+    { id: 'thaiPBS', name: 'ไทยพีบีเอส', icon: '📺' },
+  ],
+  radio: [
+    { id: 'fm95', name: 'วิทยุส peace 95.0', icon: '📻' },
+    { id: 'fm100', name: 'คลื่นธรรมะ 100', icon: '📻' },
+  ],
+  music: [
+    { id: 'relax', name: 'เพลงสบาย', icon: '🎵' },
+    { id: 'lukthung', name: 'ลูกทุ่ง', icon: '🎵' },
+  ],
+  dhamma: [
+    { id: 'beforebed', name: 'ธรรมะก่อนนอน', icon: '🧘' },
+    { id: 'morning', name: 'สวดมนต์ยามเช้า', icon: '🧘' },
+  ],
+};
+let phase2EntertainStep = 'category';   /* 'category' | 'channel' | 'playing' */
+let phase2EntertainCategoryId = null;
+let phase2EntertainChannelId = null;
+const PHASE2_FAMILY = [
+  { id: 'f1', name: 'บุตร สมชาย', relation: 'ลูกชาย', phone: 'โทรผ่านแอป' },
+  { id: 'f2', name: 'ธิดา ใจดี', relation: 'ลูกสาว', phone: 'โทรผ่านแอป' },
+  { id: 'f3', name: 'สมหญิง ใจดี', relation: 'คู่สมรส', phone: 'โทรผ่านแอป' },
+];
+let PHASE2_ROOM = { temp: 24, light: 70 }; /* °C, % */
+
+/* ─────────────────────────── STATE ─────────────────────────── */
+let QUEUE = [], nextId = 1;
+let autoRunning = false, autoInterval = null, autoSpeed = 20;
+const roomRequests = {};
+const STATS = { total:0, done:0, bedsideConfirmed:0, responseTimes:[], bedsideTimes:[], callsByType:{}, satisfaction:[] };
+let selectedRating = 0;
+
+/* Telemedicine state */
+let TELE_SESSIONS = [];
+let currentTeleSession = null;
+let teleQueuePosition = 0;
+let teleStep = 0;
+
+/* ─────────────────────────── CLOCK ─────────────────────────── */
+function nowISO() { return new Date().toISOString(); }
+function nowTH() {
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()+543} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+}
+function nowHHMM() { const d=new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+function fmtSec(s){ const m=Math.floor(s/60); return `${m}:${String(s%60).padStart(2,'0')}`; }
+
+// Pseudo hash (demo only — simulating SHA-256 prefix)
+function makeHash(data) {
+  let h = 5381;
+  for(let c of JSON.stringify(data)) h = ((h<<5)+h)+c.charCodeAt(0)|0;
+  return Math.abs(h).toString(16).padStart(8,'0').toUpperCase() + '...';
+}
+
+function formatDateTH(d){
+  const months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`;
+}
+function tickClock() {
+  const d=new Date(), t=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+  const s=t.slice(0,5);
+  ['nav-clock'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t;});
+  ['pt-clock','ns-clock'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=s;});
+  const dateEl=document.getElementById('pt-clock-date'); if(dateEl) dateEl.textContent=formatDateTH(d);
+  applyDarkMode();
+}
+function applyDarkMode(){
+  const h=new Date().getHours();
+  const isNight=h>=19||h<6;
+  document.body.classList.toggle('theme-dark',isNight);
+}
+setInterval(tickClock,1000); tickClock();
+setInterval(applyDarkMode,60000);
+
+// Update live timers
+setInterval(()=>{
+  QUEUE.filter(q=>q.status!=='done').forEach(q=>{
+    const secs=Math.floor((Date.now()-q.startTime)/1000);
+    // Timer label
+    const el=document.getElementById('tc-timer-'+q.id);
+    if(el){el.textContent=fmtSec(secs);el.className='tc-timer '+(secs>180?'warn':'ok');}
+    // SLA Aging Bar — live update
+    const sla=getSLA(secs, q.reqType.type);
+    const bar=document.getElementById('sla-bar-'+q.id);
+    if(bar){bar.style.width=sla.pct+'%';bar.style.background=sla.color;}
+    const lbl=document.getElementById('sla-lbl-'+q.id);
+    if(lbl){lbl.textContent=sla.label+' · '+sla.remainStr;lbl.className='sla-label '+sla.cls;}
+    // Sim panel timer
+    const sl=document.getElementById('src-timer-'+q.patient.room);
+    if(sl)sl.textContent=fmtSec(secs);
+  });
+  // Bedside timer
+  const bq=roomRequests['301A'];
+  if(bq&&['enroute','bedside'].includes(bq.status)){
+    const secs=Math.floor((Date.now()-bq.startTime)/1000);
+    const bv=document.getElementById('bedside-timer-val');
+    if(bv)bv.textContent=fmtSec(secs);
+  }
+  updateCallbar301();
+},1000);
+
+/* ─────────────────────────── NAVIGATION ─────────────────────────── */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  ['patient','nurse','exec','overview'].forEach((n,i)=>{
+    if(n===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');
+  });
+  window.scrollTo(0,0);
+}
+
+/* ─────────────────────────── OVERLAYS ─────────────────────────── */
+function openOverlay(id){ document.getElementById(id).classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+function closeAllOverlays(){ ['ov-nursecall','ov-bedside','ov-care','ov-rating','ov-alerts','ov-tele','ov-food','ov-phase2'].forEach(closeOverlay); }
+
+function openNurseCallOverlay(){ if(!roomRequests['301A']) openOverlay('ov-nursecall'); }
+
+/* ─────────────────────────── PATIENT HEADER (TOR A2) ─────────────────────────── */
+function renderPatientHeader(){
+  const p=PATIENTS[0]; if(!p) return;
+  const wardName=p.wardName||(WARD_PERFORMANCE&&WARD_PERFORMANCE[0]?WARD_PERFORMANCE[0].name:'อายุรกรรม 3A');
+  const hn=p.hn||'–';
+  const infoStr=`HN: ${hn} · อายุ ${p.age} ปี · ห้อง ${p.room} · ${wardName}`;
+  const set=(id,text)=>{ const e=document.getElementById(id); if(e) e.textContent=text; };
+  const setHtml=(id,html)=>{ const e=document.getElementById(id); if(e) e.innerHTML=html; };
+  set('pt-name',p.name);
+  set('pt-info',infoStr);
+  set('pt-av',p.icon||'👤');
+  set('pt-footer-ward',`🏥 Ward ${wardName} · ห้อง ${p.room}`);
+  set('ov-pt-name',`${p.name} · ห้อง ${p.room}`);
+  set('ov-pt-info',`อายุ ${p.age} ปี · ห้อง ${p.room}`);
+  set('ov-pt-av',p.icon||'👤');
+  const teamEl=document.getElementById('pt-team'); if(teamEl&&CARE_TEAM&&CARE_TEAM.length){
+    teamEl.innerHTML=CARE_TEAM.map(m=>`<div class="pt-mbr"><div class="pt-mbr-av">${m.av||'👤'}</div><div class="pt-mbr-nm">${m.name}</div></div>`).join('');
+  }
+}
+
+/* ─────────────────────────── ALERTS (BLOCK AL) ─────────────────────────── */
+function updateAlertBadge(){
+  const n = getUnreadAlertsCount();
+  const el = document.getElementById('pt-alert-badge');
+  if(el){ el.textContent = n; el.style.display = n ? 'flex' : 'none'; }
+}
+function openAlertsOverlay(){
+  renderAlertsList();
+  openOverlay('ov-alerts');
+}
+function renderAlertsList(){
+  const body = document.getElementById('ov-alerts-body');
+  if(!body) return;
+  const room = PATIENTS[0] ? PATIENTS[0].room : null;
+  const medItems = room ? MEDICATION_ALERTS.filter(a=>a.room===room) : MEDICATION_ALERTS;
+  const sysItems = room ? SYSTEM_ALERTS.filter(a=>a.room===room) : SYSTEM_ALERTS;
+  let html = '';
+  if(medItems.length){
+    html += '<div class="ov-alerts-section">💊 ยาตามเวลา (Medication Reminder)</div>';
+    medItems.forEach(a=>{
+      const done = a.status!=='pending';
+      html += `<div class="alert-item ${done?'done':''}" id="alert-${a.id}">
+        <div class="alert-item-name">${a.medicineName}</div>
+        <div class="alert-item-meta">${a.time} · ${a.note||''}</div>
+        ${!done ? `<div class="alert-item-actions">
+          <button class="alert-item-btn ack" onclick="alertDismiss('${a.id}')">รับทราบ</button>
+          <button class="alert-item-btn taken" onclick="alertTaken('${a.id}')">รับยาแล้ว</button>
+        </div>` : '<div class="alert-item-meta" style="margin-top:4px;">✓ '+ (a.status==='taken'?'รับยาแล้ว':'รับทราบแล้ว') +'</div>'}
+      </div>`;
+    });
+  }
+  if(sysItems.length){
+    html += '<div class="ov-alerts-section">⚙️ ระบบ (System)</div>';
+    sysItems.forEach(a=>{
+      html += `<div class="alert-item">
+        <div class="alert-item-name">${a.type==='battery_low'?'🔋 แบตเตอรี่ต่ำ':'📴 ออฟไลน์'} — ${a.device}</div>
+        <div class="alert-item-meta">${a.message||a.room} · ${a.time}</div>
+      </div>`;
+    });
+  }
+  if(!html) html = '<div class="alert-item"><div class="alert-item-name">ไม่มีแจ้งเตือนขณะนี้</div></div>';
+  body.innerHTML = html;
+}
+function alertDismiss(id){
+  const a = MEDICATION_ALERTS.find(x=>x.id===id);
+  if(a){ a.status='dismissed'; renderAlertsList(); updateAlertBadge(); renderNSMedAlerts(); }
+}
+function alertTaken(id){
+  const a = MEDICATION_ALERTS.find(x=>x.id===id);
+  if(a){ a.status='taken'; renderAlertsList(); updateAlertBadge(); renderNSMedAlerts(); }
+}
+
+/* ─────────────────────────── TELEMEDICINE (BLOCK T) ─────────────────────────── */
+function openTelemedicineOverlay(){
+  currentTeleSession = null; teleStep = 1;
+  document.getElementById('tele-back-btn').style.display = 'none';
+  document.getElementById('tele-hdr-sub').textContent = 'เลือกสาขา (T1–T3)';
+  ['tele-step-1','tele-step-2','tele-step-3','tele-step-4'].forEach((sid,i)=>{
+    const el = document.getElementById(sid);
+    if(el) el.classList.toggle('show', i===0);
+  });
+  renderTeleDeptGrid();
+  openOverlay('ov-tele');
+}
+function renderTeleDeptGrid(){
+  const grid = document.getElementById('tele-dept-grid');
+  if(!grid) return;
+  grid.innerHTML = TELE_DEPARTMENTS.map(d=>{
+    const full = d.id==='psych' && d.queueLength>=5;
+    return `<button class="tele-dept-btn ${full?'full':''}" onclick="teleSelectDept('${d.id}')" ${full?'title="คิวเต็ม — บันทึกนัดได้"':''}>
+      <div class="tele-dept-name">${d.nameThai}</div>
+      <div class="tele-dept-queue">${full?'คิวเต็ม':('คิว '+d.queueLength+' คน')}</div>
+    </button>`;
+  }).join('');
+}
+function teleSelectDept(deptId){
+  const dept = TELE_DEPARTMENTS.find(d=>d.id===deptId);
+  const doctor = TELE_DOCTORS.find(d=>d.deptId===deptId);
+  if(!dept) return;
+  currentTeleSession = { deptId, dept, doctor, room:'301A' };
+  document.getElementById('tele-step-1').classList.remove('show');
+  document.getElementById('tele-step-2').classList.add('show');
+  const info = document.getElementById('tele-doctor-info');
+  const full = deptId==='psych';
+  const qfull = document.getElementById('tele-queue-full');
+  if(info){
+    if(doctor && doctor.onDuty){
+      info.innerHTML = `<strong>${doctor.name}</strong><br>${doctor.scheduleType==='on-demand'?'พร้อมปรึกษาตอนนี้':('นัดถัดไป '+doctor.nextSlot)}`;
+    } else {
+      info.innerHTML = `<strong>${dept.nameThai}</strong><br>แพทย์เวรถัดไป ${doctor&&doctor.nextSlot?doctor.nextSlot:'–'}`;
+    }
+  }
+  if(qfull) qfull.style.display = full ? 'block' : 'none';
+  if(full){
+    const d = new Date();
+    const tomorrow = new Date(d);
+    tomorrow.setDate(tomorrow.getDate()+1);
+    const dd = String(tomorrow.getDate()).padStart(2,'0'), mm = String(tomorrow.getMonth()+1).padStart(2,'0');
+    document.getElementById('tele-appoint-msg').textContent = `นัดหมาย 13:00 วันที่ ${dd}/${mm}/${d.getFullYear()+543}`;
+  }
+  document.getElementById('tele-back-btn').style.display = '';
+}
+function teleBack(){
+  if(teleStep===2){ document.getElementById('tele-step-2').classList.remove('show'); document.getElementById('tele-step-1').classList.add('show'); currentTeleSession=null; document.getElementById('tele-back-btn').style.display='none'; return; }
+  if(teleStep===3||teleStep===4){ teleStep=2; document.getElementById('tele-step-3').classList.remove('show'); document.getElementById('tele-step-4').classList.remove('show'); document.getElementById('tele-step-2').classList.add('show'); return; }
+}
+function teleJoinQueue(){
+  if(!currentTeleSession) return;
+  teleQueuePosition = currentTeleSession.dept.queueLength + 1;
+  document.getElementById('tele-step-2').classList.remove('show');
+  document.getElementById('tele-step-3').classList.add('show');
+  document.getElementById('tele-queue-num').textContent = '#'+teleQueuePosition;
+  document.getElementById('tele-wait-mins').textContent = Math.min(5 + teleQueuePosition*2, 15);
+  teleStep = 3;
+  setTimeout(()=>{
+    if(!currentTeleSession) return;
+    document.getElementById('tele-step-3').classList.remove('show');
+    document.getElementById('tele-step-4').classList.add('show');
+    document.getElementById('tele-consult-doctor').textContent = currentTeleSession.doctor ? currentTeleSession.doctor.name : currentTeleSession.dept.nameThai;
+    teleStep = 4;
+    TELE_SESSIONS.push({ room:currentTeleSession.room, dept:currentTeleSession.dept.nameThai, doctor:currentTeleSession.doctor?currentTeleSession.doctor.name:'–', status:'in-progress', startTime:Date.now() });
+    if(typeof renderExecTeleContent==='function') renderExecTeleContent();
+  }, 3000);
+}
+function teleBookAppointment(){
+  alert('บันทึกนัดหมายแล้ว (Demo)');
+  closeOverlay('ov-tele');
+  currentTeleSession = null;
+}
+function teleEndConsult(){
+  if(currentTeleSession){
+    const s = TELE_SESSIONS.find(x=>x.room===currentTeleSession.room&&x.status==='in-progress');
+    if(s) s.status = 'completed';
+  }
+  closeOverlay('ov-tele');
+  currentTeleSession = null;
+  if(typeof renderExecTeleContent==='function') renderExecTeleContent();
+}
+const PHASE2_TITLES = { sleep: ['🌙 การนอน', 'Sleep Tracking'], entertain: ['▶️ บันเทิง', 'Infotainment'], family: ['👨‍👩‍👧 โทรครอบครัว', 'Family Call'], room: ['❄️ สภาพแวดล้อม', 'Room Environment'] };
+
+function openPhase2Overlay(type){
+  const t = PHASE2_TITLES[type] || ['Phase 2', 'Coming in Phase 2'];
+  const titleEl = document.getElementById('phase2-hdr-title');
+  const subEl = document.getElementById('phase2-hdr-sub');
+  if(titleEl) titleEl.textContent = t[0];
+  if(subEl) subEl.textContent = t[1];
+  if(type === 'entertain'){ phase2EntertainStep = 'category'; phase2EntertainCategoryId = null; phase2EntertainChannelId = null; }
+  if(type === 'sleep') updateSleepTileLatest();
+  renderPhase2Content(type);
+  openOverlay('ov-phase2');
+}
+function updateSleepTileLatest(){
+  const el = document.getElementById('sleep-tile-latest');
+  if(el && PHASE2_SLEEP_LATEST) el.textContent = PHASE2_SLEEP_LATEST.hours + ' ชม. คืนล่าสุด';
+}
+
+function renderPhase2Content(type){
+  const body = document.getElementById('phase2-body');
+  if(!body) return;
+  if(type === 'sleep'){
+    const lat = PHASE2_SLEEP_LATEST;
+    const hist = PHASE2_SLEEP_HISTORY_24H;
+    const sum = PHASE2_SLEEP_SUMMARY;
+    body.innerHTML = `
+      <div class="sleep-hero">
+        <div class="hero-label">คืนล่าสุด · ชั่วโมงนอน</div>
+        <div class="hero-value">${lat.hours} <span class="hero-unit">ชม.</span></div>
+      </div>
+      <div class="phase2-card">
+        <div class="sleep-section-title">📋 ข้อมูลการนอนล่าสุด</div>
+        <div class="sleep-row"><span class="lbl">ช่วงเวลา</span><span class="val">${lat.dateLabel}</span></div>
+        <div class="sleep-row"><span class="lbl">วันที่</span><span class="val">${lat.date}</span></div>
+        <div class="sleep-row"><span class="lbl">เวลาเข้านอน – ตื่น</span><span class="val">${lat.startEnd}</span></div>
+        <div class="sleep-row"><span class="lbl">ชั่วโมงนอน</span><span class="val">${lat.hours} ชม.</span></div>
+        <div class="sleep-row"><span class="lbl">คุณภาพ</span><span class="phase2-badge">${lat.quality}</span></div>
+        <div class="sleep-row"><span class="lbl">หมายเหตุ</span><span class="val" style="font-size:18px;">${lat.qualityLabel}</span></div>
+      </div>
+      <div class="phase2-card">
+        <div class="sleep-section-title">🕐 ย้อนหลัง 24 ชั่วโมง</div>
+        <div class="sleep-table">
+          ${hist.map(h=>`
+            <div class="sleep-row">
+              <span class="lbl">${h.period}</span>
+              <span class="val">${h.hours} ชม. · ${h.quality}</span>
+            </div>
+            <div class="sleep-row" style="padding-top:0;">
+              <span class="lbl" style="font-size:14px;">${h.timeRange}</span>
+              <span></span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="phase2-card">
+        <div class="sleep-section-title">📊 สรุปผลการนอน</div>
+        <div class="sleep-summary-box">
+          <div class="big">เฉลี่ย ${sum.avgHours} ชม. ต่อคืน</div>
+          <div class="line">รวม ${sum.totalSessions} รอบใน 24 ชม. · คุณภาพดี ${sum.qualityGood} รอบ · พอใช้ ${sum.qualityOk} รอบ</div>
+          <div class="line" style="margin-top:12px;font-weight:700;">💡 ${sum.recommendation}</div>
+        </div>
+      </div>
+      <div class="phase2-sub-note">${lat.note}</div>`;
+    return;
+  }
+  if(type === 'entertain'){ renderEntertainContent(body); return; }
+  if(type === 'family'){
+    body.innerHTML = `
+      <div class="phase2-card">
+        <h4>ผู้ติดต่อ (ญาติ)</h4>
+        ${PHASE2_FAMILY.map(f=>`
+          <div class="phase2-row" style="flex-wrap:wrap;">
+            <div style="flex:1;"><span class="phase2-contact-name">${f.name}</span><div class="phase2-contact-relation">${f.relation}</div></div>
+            <button type="button" class="phase2-call-btn" onclick="phase2CallFamily('${f.id}')">📞 โทร</button>
+          </div>
+        `).join('')}
+      </div>
+      <div id="phase2-calling" style="display:none;text-align:center;padding:16px;background:#dcfce7;border-radius:12px;margin-top:8px;font-weight:700;color:var(--green);">กำลังโทร... (Demo)</div>`;
+    return;
+  }
+  if(type === 'room'){
+    const r = PHASE2_ROOM;
+    body.innerHTML = `
+      <div class="phase2-card">
+        <h4>อุณหภูมิห้อง</h4>
+        <div class="phase2-ctrl">
+          <button type="button" onclick="phase2RoomTemp(-1)" aria-label="ลด">−</button>
+          <span class="val" id="phase2-temp-val">${r.temp}</span><span class="unit">°C</span>
+          <button type="button" onclick="phase2RoomTemp(1)" aria-label="เพิ่ม">+</button>
+        </div>
+      </div>
+      <div class="phase2-card">
+        <h4>ความสว่าง</h4>
+        <div class="phase2-ctrl">
+          <button type="button" onclick="phase2RoomLight(-10)" aria-label="ลด">−</button>
+          <span class="val" id="phase2-light-val">${r.light}</span><span class="unit">%</span>
+          <button type="button" onclick="phase2RoomLight(10)" aria-label="เพิ่ม">+</button>
+        </div>
+      </div>
+      <div class="phase2-sub-note">Phase 2 — ควบคุมผ่าน IoT</div>`;
+    return;
+  }
+  body.innerHTML = '<div class="title">ฟีเจอร์นี้จะพร้อมใน Phase 2</div><div class="sub">ตาม TOR โครงการ</div>';
+}
+
+function renderEntertainContent(body){
+  if(phase2EntertainStep === 'category'){
+    body.innerHTML = `
+      <div class="phase2-card">
+        <h4>เลือกหมวด</h4>
+        ${PHASE2_ENTERTAIN_CATEGORIES.map(c=>`
+          <button class="phase2-list-btn" onclick="phase2SelectCategory('${c.id}')">
+            <span class="icon">${c.icon}</span>
+            <div style="flex:1;text-align:left;">${c.name}</div>
+            <span style="color:var(--teal);font-size:18px;">▶</span>
+          </button>
+        `).join('')}
+      </div>`;
+    return;
+  }
+  if(phase2EntertainStep === 'channel'){
+    const cat = PHASE2_ENTERTAIN_CATEGORIES.find(c=>c.id===phase2EntertainCategoryId);
+    const channels = PHASE2_ENTERTAIN_CHANNELS[phase2EntertainCategoryId]||[];
+    body.innerHTML = `
+      <div class="phase2-back-row">
+        <button type="button" class="phase2-back-btn" onclick="phase2EntertainBack()">← กลับไปหมวด</button>
+      </div>
+      <div class="phase2-card">
+        <h4>${cat?cat.name:'รายการ'} — เลือกช่อง/รายการ</h4>
+        ${channels.map(ch=>`
+          <button class="phase2-list-btn" onclick="phase2SelectChannel('${ch.id}')">
+            <span class="icon">${ch.icon}</span>
+            <div style="flex:1;text-align:left;">${ch.name}</div>
+            <span style="color:var(--teal);font-size:18px;">▶ รับชม</span>
+          </button>
+        `).join('')}
+      </div>`;
+    return;
+  }
+  if(phase2EntertainStep === 'playing'){
+    const cat = PHASE2_ENTERTAIN_CATEGORIES.find(c=>c.id===phase2EntertainCategoryId);
+    const channels = PHASE2_ENTERTAIN_CHANNELS[phase2EntertainCategoryId]||[];
+    const ch = channels.find(c=>c.id===phase2EntertainChannelId)||{ name:'รายการ', icon:'📺' };
+    body.innerHTML = `
+      <div class="phase2-back-row">
+        <button type="button" class="phase2-back-btn" onclick="phase2EntertainBack()">← กลับไปรายการ</button>
+      </div>
+      <div class="phase2-now-playing">
+        <div class="icon">${ch.icon}</div>
+        <div class="channel-name">${ch.name}</div>
+        <div class="status">กำลังถ่ายทอดสด (Demo)</div>
+        <div class="ctrl">
+          <button type="button" class="btn-back" onclick="phase2EntertainBack()">← กลับ</button>
+          <button type="button" class="btn-stop" onclick="phase2EntertainStop()">⏹ หยุด</button>
+        </div>
+      </div>`;
+    return;
+  }
+}
+
+function phase2SelectCategory(catId){
+  phase2EntertainCategoryId = catId;
+  phase2EntertainStep = 'channel';
+  const body = document.getElementById('phase2-body'); if(body) renderEntertainContent(body);
+}
+function phase2SelectChannel(channelId){
+  phase2EntertainChannelId = channelId;
+  phase2EntertainStep = 'playing';
+  const body = document.getElementById('phase2-body'); if(body) renderEntertainContent(body);
+}
+function phase2EntertainBack(){
+  if(phase2EntertainStep === 'playing'){ phase2EntertainStep = 'channel'; phase2EntertainChannelId = null; }
+  else if(phase2EntertainStep === 'channel'){ phase2EntertainStep = 'category'; phase2EntertainCategoryId = null; }
+  else { closeOverlay('ov-phase2'); return; }
+  const body = document.getElementById('phase2-body'); if(body) renderEntertainContent(body);
+}
+function phase2EntertainStop(){
+  phase2EntertainStep = 'channel';
+  phase2EntertainChannelId = null;
+  const body = document.getElementById('phase2-body'); if(body) renderEntertainContent(body);
+}
+
+function phase2PlayChannel(id){
+  const el = document.getElementById('phase2-playing');
+  if(el){ el.style.display = 'block'; setTimeout(()=>{ el.style.display = 'none'; }, 2500); }
+}
+function phase2CallFamily(id){
+  const el = document.getElementById('phase2-calling');
+  if(el){ el.style.display = 'block'; setTimeout(()=>{ el.style.display = 'none'; }, 2500); }
+}
+function phase2RoomTemp(delta){
+  PHASE2_ROOM.temp = Math.max(18, Math.min(30, PHASE2_ROOM.temp + delta));
+  const el = document.getElementById('phase2-temp-val'); if(el) el.textContent = PHASE2_ROOM.temp;
+}
+function phase2RoomLight(delta){
+  PHASE2_ROOM.light = Math.max(0, Math.min(100, PHASE2_ROOM.light + delta));
+  const el = document.getElementById('phase2-light-val'); if(el) el.textContent = PHASE2_ROOM.light;
+}
+
+/* ─────────────────────────── FOOD SERVICE ─────────────────────────── */
+let foodSelectedMealId = null;
+let foodSelectedItems = [];
+
+function openFoodOverlay(){
+  foodSelectedMealId = null;
+  foodSelectedItems = [];
+  renderFoodContent();
+  openOverlay('ov-food');
+}
+function renderFoodContent(){
+  const body = document.getElementById('ov-food-body');
+  if(!body) return;
+  const room = '301A';
+
+  if(foodSelectedMealId){
+    const meal = FOOD_MEAL_TIMES.find(m=>m.id===foodSelectedMealId);
+    const menuItems = FOOD_MENU_ITEMS;
+    let html = '<div class="food-select-hdr"><button class="food-select-back" onclick="foodBackToMeals()">← กลับ</button><span class="food-select-title">'+meal.labelThai+'</span></div>';
+    html += '<div class="ov-type-title food">เลือกรายการ (กดเลือกได้หลายอย่าง)</div>';
+    html += '<div class="food-menu-grid">';
+    menuItems.forEach(item=>{
+      const sel = foodSelectedItems.some(s=>s.id===item.id);
+      const icon = item.icon||'🍽️';
+      html += '<button type="button" class="food-menu-btn '+(sel?'sel':'')+'" onclick="foodToggleItem(\''+item.id+'\')"><span class="icon">'+(sel?'✓ ':'')+icon+'</span><span class="lbl">'+item.nameThai+'</span></button>';
+    });
+    html += '</div>';
+    html += '<button type="button" class="food-confirm-btn" onclick="foodConfirmOrder()">ยืนยันสั่งอาหาร</button>';
+    body.innerHTML = html;
+    return;
+  }
+
+  let html = '<div class="ov-food-section">มื้อของวัน · ห้อง 301A</div>';
+  FOOD_MEAL_TIMES.forEach(meal=>{
+    const order = FOOD_ORDERS.find(o=>o.room===room&&o.mealTimeId===meal.id);
+    const status = order ? (order.status==='delivered' ? 'delivered' : order.status==='ordered' ? 'ordered' : order.status==='preparing' ? 'preparing' : 'pending') : 'pending';
+    const statusLabel = { pending:'ยังไม่สั่ง', ordered:'สั่งแล้ว', preparing:'กำลังเตรียม', delivered:'ส่งแล้ว' }[status] || 'ยังไม่สั่ง';
+    const itemsText = order&&order.items&&order.items.length ? order.items.map(i=>i.nameThai).join(', ') : '';
+    html += '<div class="food-meal-row">';
+    html += '<div class="name">'+meal.labelThai+'</div>';
+    html += '<div class="time">'+meal.time+'</div>';
+    html += '<div class="status '+status+'">'+statusLabel+'</div>';
+    if(itemsText) html += '<div style="font-size:13px;color:var(--muted);margin-top:6px;">'+itemsText+'</div>';
+    if(status==='pending') html += '<button type="button" class="food-meal-btn" onclick="foodShowMenu(\''+meal.id+'\')">เลือกสั่งอาหาร</button>';
+    html += '</div>';
+  });
+  body.innerHTML = html;
+}
+function foodBackToMeals(){
+  foodSelectedMealId = null;
+  foodSelectedItems = [];
+  renderFoodContent();
+}
+function foodShowMenu(mealId){
+  foodSelectedMealId = mealId;
+  foodSelectedItems = [];
+  renderFoodContent();
+}
+function foodToggleItem(id){
+  const item = FOOD_MENU_ITEMS.find(m=>m.id===id);
+  const nameThai = item ? item.nameThai : id;
+  const idx = foodSelectedItems.findIndex(s=>s.id===id);
+  if(idx>=0) foodSelectedItems.splice(idx,1);
+  else foodSelectedItems.push({ id, nameThai });
+  renderFoodContent();
+}
+function foodConfirmOrder(){
+  if(!foodSelectedMealId||!foodSelectedItems.length){ alert('กรุณาเลือกรายการอาหาร'); return; }
+  const order = FOOD_ORDERS.find(o=>o.room==='301A'&&o.mealTimeId===foodSelectedMealId);
+  if(order){
+    order.items = foodSelectedItems.slice();
+    order.status = 'ordered';
+  }
+  foodSelectedMealId = null;
+  foodSelectedItems = [];
+  renderFoodContent();
+}
+
+/* ─────────────────────────── EXEC DASHBOARD VIEW SWITCH ─────────────────────────── */
+function setExecView(viewId){
+  document.querySelectorAll('.exec-menu-item').forEach(el=>el.classList.remove('active'));
+  const first = document.querySelector('.exec-menu-item[data-exec-view="'+viewId+'"]');
+  if(first) first.classList.add('active');
+  document.getElementById('exec-view-overview').style.display = viewId==='overview' ? '' : 'none';
+  const teleEl = document.getElementById('exec-view-tele');
+  if(teleEl) teleEl.style.display = viewId==='tele' ? 'block' : 'none';
+  if(viewId==='tele') renderExecTeleContent();
+}
+function renderExecTeleContent(){
+  const sessionsEl = document.getElementById('exec-tele-sessions');
+  const deptsEl = document.getElementById('exec-tele-depts');
+  if(sessionsEl){
+    if(!TELE_SESSIONS.length){ sessionsEl.innerHTML = '<p style="padding:16px;color:var(--muted);">ยังไม่มี session วันนี้ — เปิด Patient App แล้วกด ปรึกษาแพทย์ เพื่อจำลอง</p>'; }
+    else {
+      sessionsEl.innerHTML = '<table class="dt"><thead><tr><th>ห้อง</th><th>สาขา</th><th>แพทย์</th><th>สถานะ</th></tr></thead><tbody>'+
+        TELE_SESSIONS.map(s=>'<tr><td>'+s.room+'</td><td>'+s.dept+'</td><td>'+s.doctor+'</td><td>'+(s.status==='in-progress'?'<span class="chip warn">กำลังปรึกษา</span>':'<span class="chip ok">เสร็จแล้ว</span>')+'</td></tr>').join('')+
+        '</tbody></table>';
+    }
+  }
+  if(deptsEl){
+    deptsEl.innerHTML = TELE_DEPARTMENTS.map(d=>{
+      const doc = TELE_DOCTORS.find(x=>x.deptId===d.id);
+      return '<tr><td>'+d.nameThai+'</td><td>'+d.queueLength+'</td><td>'+(doc?doc.name:'–')+'</td><td>'+(doc&&doc.scheduleType?doc.scheduleType:'–')+'</td></tr>';
+    }).join('');
+  }
+}
+
+/* ─────────────────────────── FLOW BAR ─────────────────────────── */
+function updateFlowBar(step){
+  const bar = document.getElementById('flow-bar');
+  if(!bar) return;
+  const q = roomRequests['301A'];
+  if(!q){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  for(let i=1;i<=6;i++){
+    const dot=document.getElementById('flow-'+i);
+    const line=document.getElementById('fl-'+i);
+    if(!dot)continue;
+    if(i<step){dot.className='flow-dot done';if(line)line.className='flow-line done';}
+    else if(i===step){dot.className='flow-dot active';if(line)line.className='flow-line';}
+    else{dot.className='flow-dot locked';if(line)line.className='flow-line';}
+  }
+}
+
+/* ─────────────────────────── CORE: CREATE REQUEST ─────────────────────────── */
+function createRequest(patient, reqType){
+  if(roomRequests[patient.room]) return null;
+  const rt = REQ_TYPES.find(r=>r.type===reqType)||REQ_TYPES[0];
+  const req = {
+    id: nextId++, patient, reqType:rt,
+    status:'waiting',
+    startTime: Date.now(),
+    ackTime:null, enrouteTime:null, bedsideTime:null, completeTime:null,
+    nurse:null, rating:null,
+    auditChain:[],
+  };
+  QUEUE.push(req);
+  roomRequests[patient.room] = req;
+  STATS.total++;
+  STATS.callsByType[rt.type] = (STATS.callsByType[rt.type]||0)+1;
+
+  // First audit entry
+  const ev = { event:'REQUEST', user:'ผู้ป่วย '+patient.name, room:patient.room, detail:rt.icon+' '+rt.label, ts:nowISO(), tsTH:nowTH() };
+  ev.hash = makeHash(ev);
+  req.auditChain.push(ev);
+  addAudit(ev, 'request');
+
+  renderTriageBoard();
+  renderRoomCard(patient.room,'calling',rt.icon+' '+rt.label, reqType==='emergency');
+  renderSimCard(patient.room,'waiting',rt.label);
+  updateNSStats();
+  updateExecDashboard();
+  ringBell();
+  addLog('var(--amber)',`ห้อง ${patient.room} — ${patient.name}: ${rt.icon} ${rt.label}`);
+  updateDcStats();
+  if(reqType==='emergency'){
+    document.getElementById('vtp-red').style.display='flex';
+    document.getElementById('vtp-red-room').textContent=`ห้อง ${patient.room} — ${patient.name}`;
+    document.getElementById('vtp-red-msg').textContent='กดฉุกเฉิน — แจ้งทีมพยาบาลทุกคน';
+  }
+  if(patient.room==='301A'){
+    closeAllOverlays();   // กลับ home screen ทันที — ไม่ค้างที่ overlay
+    updateCallbar301();
+    updateFlowBar(1);
+    updateChainSummary(req);
+  }
+  return req;
+}
+
+/* ─────────────────────────── PATIENT 301A ─────────────────────────── */
+function patientSendRequest(type,label,icon){ createRequest(PATIENTS[0], type); }
+
+function patientCancelRequest(){
+  const q=roomRequests['301A']; if(!q)return;
+  cancelRequest(q.id);
+  closeAllOverlays();
+  updateFlowBar(0);
+}
+
+function updateCallbar301(){
+  const q=roomRequests['301A'];
+  const bar=document.getElementById('pt-callbar');
+  if(!bar)return;
+  if(!q){bar.style.display='none';return;}
+  bar.style.display='flex';
+  const secs=Math.floor((Date.now()-q.startTime)/1000);
+  document.getElementById('cb-timer').textContent=fmtSec(secs);
+  const dot=document.getElementById('cb-dot'), txt=document.getElementById('cb-text');
+  const cancel=document.getElementById('cb-cancel-btn');
+  const viewBtn=document.getElementById('cb-view-btn');
+  const STATUS_MAP={
+    waiting:{bc:'waiting',dotc:'red',tc:'waiting',  msg:`${q.reqType.icon} ${q.reqType.label} — รอพยาบาลรับคำร้อง...`,showCancel:true, showView:false},
+    ack:    {bc:'ack',    dotc:'blue',tc:'ack',      msg:`✅ ${q.nurse||'พยาบาล'} รับทราบ — กำลังเตรียมมา`,             showCancel:false,showView:false},
+    enroute:{bc:'enroute',dotc:'blue',tc:'enroute', msg:`🏃 ${q.nurse||'พยาบาล'} กำลังมาหาคุณ...`,                    showCancel:false,showView:true},
+    bedside:{bc:'bedside',dotc:'green',tc:'bedside',msg:`📍 ${q.nurse||'พยาบาล'} มาถึงแล้ว — กำลังดูแล`,             showCancel:false,showView:true},
+    progress:{bc:'progress',dotc:'green',tc:'progress',msg:`✅ เสร็จสิ้น — ขอบคุณ`,                                    showCancel:false,showView:false},
+  };
+  const s=STATUS_MAP[q.status]||STATUS_MAP.waiting;
+  bar.className=`pt-callbar show ${s.bc}`;
+  dot.className=`cb-dot ${s.dotc}`;
+  txt.className=`cb-text ${s.tc}`;
+  txt.textContent=s.msg;
+  cancel.style.display=s.showCancel?'':'none';
+  if(viewBtn)viewBtn.style.display=s.showView?'':'none';
+}
+
+function openBedsideStatus(){
+  const q=roomRequests['301A']; if(!q)return;
+  // Update overlay content before showing
+  const ni=document.getElementById('bedside-icon');
+  const nn=document.getElementById('bedside-nurse-name');
+  const nm=document.getElementById('bedside-msg');
+  const btn=document.getElementById('bedside-confirm-btn');
+  const title=document.getElementById('bedside-ov-title');
+  if(q.status==='enroute'){
+    if(ni)ni.textContent='🏃';
+    if(nn)nn.textContent=`${q.nurse} กำลังมา...`;
+    if(nm)nm.textContent='พยาบาลออกจากสถานีแล้ว\nเมื่อพยาบาลมาถึงเตียง กรุณากดยืนยัน';
+    if(btn)btn.style.display='';
+    if(title)title.textContent='🏃 พยาบาลกำลังมา';
+  } else if(q.status==='bedside'){
+    if(ni)ni.textContent='🤝';
+    if(nn)nn.textContent=`${q.nurse} มาถึงแล้ว`;
+    if(nm)nm.textContent='กำลังได้รับการดูแล';
+    if(btn)btn.style.display='none';
+    if(title)title.textContent='📍 ยืนยันแล้ว';
+    // Open care overlay instead
+    closeOverlay('ov-bedside');
+    openOverlay('ov-care');
+    return;
+  }
+  openOverlay('ov-bedside');
+}
+
+function showBedsideWaiting(req){
+  openOverlay('ov-bedside');
+  document.getElementById('bedside-icon').textContent=req.status==='enroute'?'🏃':'⏳';
+  document.getElementById('bedside-nurse-name').textContent=req.nurse?`${req.nurse} กำลังมา...`:'รอพยาบาลรับคำร้อง...';
+  document.getElementById('bedside-msg').textContent=req.status==='enroute'?'พยาบาลออกเดินทางจากสถานีแล้ว\nกรุณารอสักครู่':'คำร้องถูกส่งไปยังสถานีพยาบาลแล้ว\nกรุณารอสักครู่';
+  const btn=document.getElementById('bedside-confirm-btn');
+  // Show confirm button only when nurse is enroute
+  btn.style.display=req.status==='enroute'?'':'none';
+  document.getElementById('bedside-note').textContent=req.status==='enroute'?'เมื่อพยาบาลมาถึงเตียง\nกรุณากดปุ่มด้านบนเพื่อยืนยัน':'รอพยาบาลรับทราบคำร้องก่อน...';
+}
+
+function bedsideConfirm(){
+  const q=roomRequests['301A']; if(!q||q.status!=='enroute') return;
+  q.status='bedside'; q.bedsideTime=Date.now();
+  STATS.bedsideConfirmed++;
+  if(q.nurse) setStaffStatus(q.nurse,'busy');
+
+  const ev={event:'BEDSIDE_CONFIRMED', user:'ผู้ป่วย/ญาติ (Patient Tablet)',room:'301A',detail:'📍 ยืนยันพยาบาลมาถึงแล้ว — Physical Presence Verified',ts:nowISO(),tsTH:nowTH()};
+  ev.hash=makeHash(ev); q.auditChain.push(ev); addAudit(ev,'bedside');
+
+  closeOverlay('ov-bedside');
+  document.getElementById('care-nurse-name').textContent=q.nurse||'พยาบาล';
+  document.getElementById('care-req-label').textContent=q.reqType.icon+' '+q.reqType.label;
+  openOverlay('ov-care');
+  updateFlowBar(5);
+  updateCallbar301();
+  renderTriageBoard();
+  renderRoomCard('301A','bedside-ok');
+  renderSimCard('301A','bedside','');
+  updateNSStats();
+  addLog('var(--teal)',`ห้อง 301A: 📍 ยืนยันมาถึงแล้ว — Physical Presence Confirmed`);
+  updateChainSummary(q);
+  updateExecDashboard();
+}
+
+function bedsideComplete(){
+  const q=roomRequests['301A']; if(!q) return;
+  const nurseLabel=`${q.nurse||'พยาบาล'} — ${q.reqType.icon} ${q.reqType.label}`;
+  completeRequest(q.id,'tablet');
+  closeOverlay('ov-care');
+  // ── 5-minute delay before showing rating ──
+  // Demo: 5 seconds (simulate 5 minutes)
+  const DELAY_MS = 5000; // real = 300000 (5 min)
+  let countdown = Math.round(DELAY_MS/1000);
+  document.getElementById('rating-nurse-label').textContent = nurseLabel;
+  selectedRating = 0;
+  document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.remove('sel'));
+  document.getElementById('rating-submit').style.display = 'none';
+
+  // Show thank-you screen first (no rating yet)
+  openOverlay('ov-rating');
+  updateFlowBar(6);
+
+  // Grey out emoji options during countdown
+  const wrap = document.getElementById('emoji-rating-wrap');
+  wrap.style.opacity = '0.3';
+  wrap.style.pointerEvents = 'none';
+  const skip = document.querySelector('.rating-skip');
+  skip.style.display = 'none';
+
+  const cdEl = document.getElementById('rating-countdown');
+  cdEl.textContent = `สามารถประเมินได้ใน ${countdown} วินาที (จริง: 5 นาที)`;
+
+  const cdTimer = setInterval(()=>{
+    countdown--;
+    if(countdown <= 0){
+      clearInterval(cdTimer);
+      wrap.style.opacity = '1';
+      wrap.style.pointerEvents = '';
+      skip.style.display = '';
+      cdEl.textContent = '⭐ กรุณาประเมินบริการที่ได้รับ';
+    } else {
+      cdEl.textContent = `สามารถประเมินได้ใน ${countdown} วินาที (จริง: 5 นาที)`;
+    }
+  }, 1000);
+}
+
+/* Emoji Rating */
+function selectEmoji(n, el){
+  selectedRating = n;
+  document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('rating-submit').style.display = '';
+}
+
+function submitRating(){
+  const q = QUEUE.find(x=>x.patient.room==='301A'&&x.status==='done');
+  const EMOJI_MAP = {1:'😞 ไม่พอใจ',2:'😕 พอใช้',3:'😊 ดี',4:'😄 ดีมาก',5:'🤩 ยอดเยี่ยม'};
+  if(q && selectedRating>0){
+    q.rating = selectedRating;
+    STATS.satisfaction.push(selectedRating);
+  }
+  const ev={event:'PATIENT_RATED',user:'ผู้ป่วย สมชาย',room:'301A',
+    detail:`${EMOJI_MAP[selectedRating]||'–'} — ${q?q.reqType.label:''}`,
+    ts:nowISO(),tsTH:nowTH()};
+  ev.hash = makeHash(ev);
+  if(q) q.auditChain.push(ev);
+  addAudit(ev,'rated');
+  updateExecDashboard();
+  if(q) updateChainSummary(q);
+  closeAllOverlays();
+  updateFlowBar(0);
+}
+function skipRating(){ closeAllOverlays(); updateFlowBar(0); }
+
+/* ─────────────────────────── NURSE STATION ACTIONS ─────────────────────────── */
+function ackRequest(id){
+  const q=QUEUE.find(x=>x.id===id); if(!q||q.status!=='waiting')return;
+  q.status='ack'; q.ackTime=Date.now();
+  q.nurse=NURSES[Math.floor(Math.random()*NURSES.length)];
+  setStaffStatus(q.nurse,'at_station');
+  const ev={event:'NURSE_ACK',user:q.nurse,room:q.patient.room,detail:`รับทราบ ${q.reqType.icon} ${q.reqType.label}`,ts:nowISO(),tsTH:nowTH()};
+  ev.hash=makeHash(ev); q.auditChain.push(ev); addAudit(ev,'ack');
+  renderTriageBoard(); hideBellBadge(); updateNSStats();
+  addLog('var(--amber)',`${q.nurse}: รับคำร้อง ${q.reqType.icon} ห้อง ${q.patient.room}`);
+  if(q.patient.room==='301A'){
+    updateCallbar301(); updateFlowBar(2);
+    const el=document.getElementById('bedside-nurse-name'); if(el)el.textContent=`${q.nurse} รับทราบแล้ว...`;
+    const msg=document.getElementById('bedside-msg'); if(msg)msg.textContent='พยาบาลรับทราบคำร้องของคุณแล้ว\nกำลังเตรียมมาหาคุณ';
+    updateChainSummary(q);
+  }
+}
+
+function enrouteRequest(id){
+  const q=QUEUE.find(x=>x.id===id); if(!q||q.status!=='ack')return;
+  q.status='enroute'; q.enrouteTime=Date.now();
+  setStaffStatus(q.nurse,'enroute');
+  const ev={event:'NURSE_ENROUTE',user:q.nurse,room:q.patient.room,detail:`กำลังไปห้อง ${q.patient.room}`,ts:nowISO(),tsTH:nowTH()};
+  ev.hash=makeHash(ev); q.auditChain.push(ev); addAudit(ev,'enroute');
+  renderTriageBoard(); renderRoomCard(q.patient.room,'enrouting');
+  renderSimCard(q.patient.room,'enroute','');
+  updateNSStats();
+  addLog('var(--blue)',`${q.nurse}: 🏃 กำลังไปห้อง ${q.patient.room}`);
+  if(q.patient.room==='301A'){
+    updateCallbar301(); updateFlowBar(3);
+    // Show confirm button on bedside overlay
+    const btn=document.getElementById('bedside-confirm-btn'); if(btn)btn.style.display='';
+    const ni=document.getElementById('bedside-icon'); if(ni)ni.textContent='🏃';
+    const nn=document.getElementById('bedside-nurse-name'); if(nn)nn.textContent=`${q.nurse} กำลังมา...`;
+    const nm=document.getElementById('bedside-msg'); if(nm)nm.textContent='พยาบาลออกเดินทางแล้ว\nกรุณากดปุ่มยืนยันเมื่อพยาบาลมาถึง';
+    const nt=document.getElementById('bedside-note'); if(nt)nt.textContent='';
+    if(!document.getElementById('ov-bedside').classList.contains('show'))openOverlay('ov-bedside');
+    updateChainSummary(q);
+  }
+}
+
+function completeRequest(id, source='station'){
+  const q=QUEUE.find(x=>x.id===id); if(!q||q.status==='done')return;
+  // GUARD: if source is station, require bedside confirmed (except emergency & auto-sim)
+  if(source==='station' && q.status!=='bedside' && q.status!=='progress' && q.patient.room!=='301A'){
+    // Auto-sim rooms: allow
+  }
+  q.status='done'; q.completeTime=Date.now();
+  if(q.nurse) setStaffStatus(q.nurse,'free');
+  const responseSecs=Math.floor((q.completeTime-q.startTime)/1000);
+  STATS.responseTimes.push(responseSecs); STATS.done++;
+  delete roomRequests[q.patient.room];
+
+  if(!q.rating){
+    q.rating=Math.random()<0.65?5:Math.random()<0.65?4:3;
+    if(q.patient.room!=='301A'){ STATS.satisfaction.push(q.rating); }
+  }
+
+  const ev={event:'COMPLETE',user:source==='tablet'?'ผู้ป่วย/ญาติ (Patient Tablet)':q.nurse,room:q.patient.room,detail:`เสร็จสิ้น — Response ${fmtSec(responseSecs)} min`,ts:nowISO(),tsTH:nowTH()};
+  ev.hash=makeHash(ev); q.auditChain.push(ev); addAudit(ev,'complete');
+
+  renderTriageBoard(); renderRoomCard(q.patient.room,'ok');
+  renderSimCard(q.patient.room,'done','');
+  updateNSStats(); updateExecDashboard();
+  document.getElementById('vtp-red').style.display='none';
+  addLog('var(--green)',`ห้อง ${q.patient.room}: ✅ เสร็จสิ้น — Response ${fmtSec(responseSecs)} · ⭐${q.rating}`);
+  updateDcStats();
+  if(q.patient.room==='301A'){ updateCallbar301(); updateChainSummary(q); }
+}
+
+function cancelRequest(id){
+  const q=QUEUE.find(x=>x.id===id); if(!q)return;
+  if(q.nurse) setStaffStatus(q.nurse,'free');
+  q.status='done'; delete roomRequests[q.patient.room];
+  QUEUE=QUEUE.filter(x=>x.id!==id);
+  const ev={event:'CANCELLED',user:'ผู้ป่วย',room:q.patient.room,detail:q.reqType.icon+' '+q.reqType.label+' — ยกเลิก',ts:nowISO(),tsTH:nowTH()};
+  ev.hash=makeHash(ev); addAudit(ev,'cancel');
+  renderTriageBoard(); renderRoomCard(q.patient.room,'ok');
+  renderSimCard(q.patient.room,'reset','');
+  updateNSStats(); addLog('var(--amber)',`ห้อง ${q.patient.room}: ยกเลิกคำร้อง`);
+  if(q.patient.room==='301A'){updateCallbar301(); updateFlowBar(0);}
+  updateDcStats();
+}
+
+/* ─────────────────────────── RENDER: TRIAGE BOARD ─────────────────────────── */
+function getSLA(secs, reqType){
+  // SLA target: emergency=2min, pain=3min, others=5min
+  const targets = { emergency:120, pain:180, toilet:300, water:300, general:300 };
+  const target = targets[reqType] || 300;
+  const pct = Math.min(100, Math.round((secs/target)*100));
+  const cls = pct < 60 ? 'ok' : pct < 85 ? 'warn' : 'over';
+  const colors = { ok:'#22c55e', warn:'#eab308', over:'#ef4444' };
+  const labels = { ok:'ในเกณฑ์', warn:'ใกล้เกิน', over:'เกิน SLA' };
+  const remain = target - secs;
+  const remainStr = remain > 0 ? `เหลือ ${fmtSec(remain)}` : `เกิน ${fmtSec(Math.abs(remain))}`;
+  return { pct, cls, color:colors[cls], label:labels[cls], remainStr, target };
+}
+
+function renderTriageBoard(){
+  const list=document.getElementById('ns-triage-list');
+  const active=QUEUE.filter(q=>q.status!=='done');
+  active.sort((a,b)=>b.reqType.priority-a.reqType.priority||a.startTime-b.startTime);
+  document.getElementById('ns-queue-badge').textContent=active.length;
+  if(!active.length){list.innerHTML='<div class="ns-empty">✅ ไม่มีคำร้องค้างอยู่</div>';return;}
+
+  list.innerHTML=active.map(q=>{
+    const secs=Math.floor((Date.now()-q.startTime)/1000);
+    const isEmerg=q.reqType.type==='emergency';
+    const sla=getSLA(secs, q.reqType.type);
+    let pill='',btn='';
+    if(q.status==='waiting'){
+      pill=`<span class="tc-status-pill waiting">รอพยาบาล</span>`;
+      btn=`<button class="tc-btn ack" onclick="ackRequest(${q.id})">✓ รับทราบ</button>`;
+    } else if(q.status==='ack'){
+      pill=`<span class="tc-status-pill ack">${q.nurse?.split(' ')[1]||'พยาบาล'}</span>`;
+      btn=`<button class="tc-btn enroute" onclick="enrouteRequest(${q.id})">🏃 กำลังไป</button>`;
+    } else if(q.status==='enroute'){
+      pill=`<span class="tc-status-pill enroute">🏃 กำลังไป</span>`;
+      btn=`<button class="tc-btn locked">📍 รอยืนยันที่เตียง</button>`;
+    } else if(q.status==='bedside'){
+      pill=`<span class="tc-status-pill bedside">📍 ยืนยันแล้ว</span>`;
+      btn=`<button class="tc-btn locked">✅ รอเสร็จสิ้นที่เตียง</button>`;
+    }
+    return `
+      <div class="triage-card ${q.status} ${isEmerg?'emergency':''} new" id="tc-${q.id}">
+        <div class="tc-icon">${q.reqType.icon}</div>
+        <div class="tc-room">${q.patient.room}</div>
+        <div class="tc-info">
+          <div class="tc-patient">${q.patient.icon} ${q.patient.name} · ${q.patient.age} ปี</div>
+          <div class="tc-req">${q.reqType.label}${q.nurse?' · '+q.nurse:''}</div>
+          <div class="tc-badges">
+            ${q.patient.risks.map(r=>`<span class="tc-badge risk">⚠ ${r}</span>`).join('')}
+            ${q.patient.conds.map(c=>`<span class="tc-badge cond">${c}</span>`).join('')}
+          </div>
+        </div>
+        <div class="tc-right">
+          <div class="tc-timer ok" id="tc-timer-${q.id}">${fmtSec(secs)}</div>
+          <span class="sla-label ${sla.cls}" id="sla-lbl-${q.id}">${sla.label} · ${sla.remainStr}</span>
+          ${pill}${btn}
+        </div>
+        <div class="sla-bar-wrap">
+          <div class="sla-bar-fill" id="sla-bar-${q.id}" style="width:${sla.pct}%;background:${sla.color};"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ─────────────────────────── ROOM CARDS ─────────────────────────── */
+function initRoomGrid(){
+  const g=document.getElementById('ns-room-grid');
+  g.innerHTML=PATIENTS.map(p=>`
+    <div class="room-card" id="rc-${p.room}">
+      <div class="rc-number">${p.room}</div>
+      <div class="rc-name">${p.name}</div>
+      <div class="rc-status" id="rc-status-${p.room}"><div class="rc-dot" style="background:var(--green)"></div><span style="color:rgba(255,255,255,.4)">ปกติ</span></div>
+    </div>`).join('');
+}
+function renderRoomCard(room,state,label,critical){
+  const card=document.getElementById('rc-'+room), st=document.getElementById('rc-status-'+room);
+  if(!card||!st)return;
+  card.className='room-card';
+  const map={
+    calling:['calling',critical?'emergency':'','🔴','เรียก','#fca5a5'],
+    enrouting:['enrouting','','🔵','กำลังมา','#93c5fd'],
+    'bedside-ok':['bedside-ok','','📍','ยืนยันแล้ว','#5eead4'],
+    ok:['done-flash','','🟢','ปกติ','rgba(255,255,255,.35)'],
+  };
+  const [cls1,cls2,icon,text,color]=map[state]||map.ok;
+  card.classList.add(cls1); if(cls2)card.classList.add(cls2);
+  st.innerHTML=`<div class="rc-dot" style="background:${color}${state==='calling'?';animation:pulse .8s infinite':''}"></div><span style="color:${color}">${icon} ${text}</span>`;
+  if(state==='ok')setTimeout(()=>card.classList.remove('done-flash'),2000);
+}
+
+/* ─────────────────────────── SIM ROOMS ─────────────────────────── */
+function initSimPanel(){
+  const list=document.getElementById('sim-rooms-list');
+  list.innerHTML=PATIENTS.map(p=>`
+    <div class="src" id="src-${p.room}">
+      <div class="src-top">
+        <div class="src-room">${p.room}</div>
+        <div class="src-name">${p.icon} ${p.name}</div>
+        <div class="src-dot green" id="src-dot-${p.room}"></div>
+      </div>
+      <div class="src-conds">
+        ${p.conds.map(c=>`<span class="src-cond">${c}</span>`).join('')}
+        ${p.risks.map(r=>`<span class="src-cond warn">⚠ ${r}</span>`).join('')}
+        ${p.vtp==='yellow'?'<span class="src-cond vtp-y">🟡 VTP Yellow</span>':''}
+        ${p.vtp==='orange'?'<span class="src-cond vtp-o">🟠 VTP Orange</span>':''}
+      </div>
+      <div class="src-req-label" id="src-req-${p.room}"></div>
+      <div class="src-actions">
+        <button class="src-btn send" id="src-send-${p.room}" onclick="simRoomRequest('${p.room}')">📞 ส่งคำร้อง</button>
+        <button class="src-btn emerg" onclick="simRoomEmergency('${p.room}')">🚨</button>
+        <button class="src-btn cancel" id="src-cancel-${p.room}" onclick="simCancelRequest('${p.room}')" style="display:none">✕</button>
+      </div>
+      <div class="src-timer" id="src-timer-${p.room}"></div>
+    </div>`).join('');
+}
+function renderSimCard(room,status,label){
+  const card=document.getElementById('src-'+room), dot=document.getElementById('src-dot-'+room);
+  const req=document.getElementById('src-req-'+room), send=document.getElementById('src-send-'+room);
+  const cancel=document.getElementById('src-cancel-'+room);
+  if(!card)return;
+  card.className='src';
+  const map={
+    waiting:['has-req','amber','⏳ '+label,true,true],
+    enroute:['is-enroute','blue','🏃 กำลังมา...',true,false],
+    bedside:['is-bedside','teal','📍 ยืนยันมาถึงแล้ว',true,false],
+    done:['is-done','green','✅ เสร็จสิ้น',false,false],
+    reset:['','green','',false,false],
+  };
+  const [cls,dotcls,txt,sendDis,showCancel]=map[status]||map.reset;
+  if(cls)card.classList.add(cls);
+  dot.className='src-dot '+(dotcls||'green');
+  if(txt){req.textContent=txt;req.classList.add('show');}else req.classList.remove('show');
+  send.classList.toggle('disabled',sendDis); send.disabled=sendDis;
+  cancel.style.display=showCancel?'':'none';
+  if(status==='done')setTimeout(()=>{req.classList.remove('show');card.className='src';dot.className='src-dot green';},4000);
+}
+function simRoomRequest(room){
+  if(roomRequests[room])return;
+  const p=PATIENTS.find(x=>x.room===room);
+  const w=['general','general','water','water','toilet','toilet','pain'];
+  createRequest(p,w[Math.floor(Math.random()*w.length)]);
+}
+function simRoomEmergency(room){
+  if(roomRequests[room])cancelRequest(roomRequests[room].id);
+  createRequest(PATIENTS.find(x=>x.room===room),'emergency');
+}
+function simCancelRequest(room){const q=roomRequests[room];if(q)cancelRequest(q.id);}
+
+/* ─────────────────────────── BELL ─────────────────────────── */
+function ringBell(){
+  const bell=document.getElementById('ns-bell'), cnt=document.getElementById('ns-bell-count');
+  if(!bell)return;
+  bell.classList.add('ring'); setTimeout(()=>bell.classList.remove('ring'),1500);
+  const w=QUEUE.filter(q=>q.status==='waiting').length;
+  cnt.textContent=w; cnt.classList.toggle('show',w>0); cnt.style.display=w>0?'flex':'none';
+}
+function hideBellBadge(){
+  const w=QUEUE.filter(q=>q.status==='waiting').length;
+  const cnt=document.getElementById('ns-bell-count');
+  cnt.textContent=w; cnt.classList.toggle('show',w>0); cnt.style.display=w>0?'flex':'none';
+}
+
+/* ─────────────────────────── STATS ─────────────────────────── */
+function updateNSStats(){
+  const active=QUEUE.filter(q=>q.status!=='done');
+  const waiting=active.filter(q=>q.status==='waiting').length;
+  const enroute=active.filter(q=>q.status==='enroute').length;
+  const bedside=active.filter(q=>q.status==='bedside').length;
+  document.getElementById('ns-stat-total').textContent=STATS.total;
+  document.getElementById('ns-stat-waiting').textContent=waiting;
+  document.getElementById('ns-stat-enroute').textContent=enroute;
+  document.getElementById('ns-stat-bedside').textContent=bedside;
+  if(STATS.responseTimes.length>0){
+    const avg=Math.round(STATS.responseTimes.reduce((a,b)=>a+b,0)/STATS.responseTimes.length);
+    document.getElementById('ns-stat-avg').textContent=fmtSec(avg);
+  }
+}
+
+/* Nurse Station: ยาตามเวลา from MEDICATION_ALERTS (AL1) */
+function renderNSMedAlerts(){
+  const el=document.getElementById('ns-med-alerts'); if(!el)return;
+  const items=MEDICATION_ALERTS.filter(a=>a.status==='pending').concat(MEDICATION_ALERTS.filter(a=>a.status!=='pending'));
+  el.innerHTML=items.map(a=>{
+    const done=a.status!=='pending';
+    return `<div class="log-item" style="${done?'opacity:.7':''}"><div class="log-dot" style="background:${done?'var(--green)':'var(--amber)'}"></div><div class="log-time">${a.time}</div><div class="log-text">${a.room} ${a.medicineName}${done?' ✓ '+(a.status==='taken'?'รับยาแล้ว':'รับทราบแล้ว') :''}</div></div>`;
+  }).join('') || '<div class="log-item"><div class="log-text" style="color:var(--muted)">ไม่มีรายการยาตามเวลาคงค้าง</div></div>';
+}
+
+/* Nurse Station: Staff On Duty from STAFF_ON_DUTY (A3, BN6) */
+const STAFF_STATUS_LABELS = { free:'ว่าง', at_station:'สถานี', enroute:'กำลังไป', busy:'อยู่ข้างเตียง' };
+function setStaffStatus(nurseName, status){
+  const s=STAFF_ON_DUTY.find(x=>x.name===nurseName);
+  if(s){ s.status=status; renderNSStaff(); }
+}
+function renderNSStaff(){
+  const el=document.getElementById('ns-staff-list'); if(!el)return;
+  el.innerHTML=STAFF_ON_DUTY.map(s=>{
+    const statusCls=s.status==='enroute'?'enroute':s.status==='busy'?'busy':'free';
+    const label=STAFF_STATUS_LABELS[s.status]||s.status;
+    const av=s.role==='แพทย์'?'👨‍⚕️':'👩‍⚕️';
+    return `<div class="staff-item"><div class="staff-av">${av}</div><div><div class="staff-name">${s.name}</div><div class="staff-status ${statusCls}" id="staff-${s.id}">● ${label}</div></div></div>`;
+  }).join('');
+}
+
+/* Nurse Station: VTP Yellow/Orange from PATIENTS */
+const VTP_MSG = { yellow:'HR 98 bpm · BP 148/92', orange:'SpO₂ 91% — แจ้งแพทย์เฉพาะทาง' };
+function renderNSVtp(){
+  const el=document.getElementById('ns-vtp-list'); if(!el)return;
+  const yellow=PATIENTS.filter(p=>p.vtp==='yellow');
+  const orange=PATIENTS.filter(p=>p.vtp==='orange');
+  let html='';
+  yellow.forEach(p=>{ html+=`<div class="vtp-item yellow"><div class="vtp-zone yellow">🟡 YELLOW</div><div class="vtp-info"><div class="vtp-room">${p.room} — ${p.name}</div><div class="vtp-msg">${VTP_MSG.yellow}</div></div></div>`; });
+  orange.forEach(p=>{ html+=`<div class="vtp-item orange"><div class="vtp-zone orange">🟠 ORANGE</div><div class="vtp-info"><div class="vtp-room">${p.room} — ${p.name}</div><div class="vtp-msg">${VTP_MSG.orange}</div></div></div>`; });
+  el.innerHTML=html;
+}
+function updateDcStats(){
+  document.getElementById('dc-total').textContent=STATS.total;
+  document.getElementById('dc-active').textContent=Object.keys(roomRequests).length;
+  document.getElementById('dc-done').textContent=STATS.done;
+}
+
+/* ─────────────────────────── EXEC DASHBOARD ─────────────────────────── */
+function updateExecDashboard(){
+  // Ward table first so w-* elements exist (TOR 6.5.1)
+  renderWardPerformance();
+
+  // KPI total
+  const kt=document.getElementById('kpi-total');
+  if(kt){kt.textContent=STATS.total;kt.classList.remove('bump');void kt.offsetWidth;kt.classList.add('bump');}
+  document.getElementById('kpi-total-chg').textContent=Object.keys(roomRequests).length>0?`🔴 LIVE — ${Object.keys(roomRequests).length} คำร้องขณะนี้`:'–';
+
+  // Avg response
+  if(STATS.responseTimes.length>0){
+    const avg=Math.round(STATS.responseTimes.reduce((a,b)=>a+b,0)/STATS.responseTimes.length);
+    const avgStr=fmtSec(avg);
+    const wAvg=document.getElementById('w-avg'); if(wAvg)wAvg.textContent=avgStr;
+    document.getElementById('kpi-avg').textContent=avgStr;
+    document.getElementById('kpi-avg-chg').className='kpi-chg '+(avg<300?'up':'dn');
+    document.getElementById('kpi-avg-chg').textContent=(avg<300?'✅ ':'')+avgStr+' (เป้า < 5:00)';
+  }
+
+  // Satisfaction (Emoji-based, Exec-only — ไม่แสดงให้พยาบาลเห็น)
+  if(STATS.satisfaction.length>0){
+    const avg=(STATS.satisfaction.reduce((a,b)=>a+b,0)/STATS.satisfaction.length).toFixed(1);
+    const EMOJI_SCORE=['–','😞','😕','😊','😄','🤩'];
+    const avgNum=parseFloat(avg);
+    const emojiIdx=Math.round(avgNum); // 1-5
+    const wSat=document.getElementById('w-sat'); if(wSat)wSat.textContent=avg+'/5';
+    document.getElementById('kpi-sat').textContent=EMOJI_SCORE[emojiIdx]||avg;
+    document.getElementById('kpi-sat-chg').textContent=`คะแนนเฉลี่ย ${avg}/5 — จาก ${STATS.satisfaction.length} รีวิว`;
+    document.getElementById('sat-score').textContent=EMOJI_SCORE[emojiIdx]||avg;
+    document.getElementById('sat-score-lbl').textContent=`เฉลี่ย ${avg}/5 — ${STATS.satisfaction.length} การประเมิน`;
+    for(let s=1;s<=5;s++){
+      const cnt=STATS.satisfaction.filter(x=>x===s).length;
+      const pct=Math.round((cnt/STATS.satisfaction.length)*100);
+      const el=document.getElementById('sat'+s); if(el)el.style.width=pct+'%';
+      const pe=document.getElementById('sat'+s+'-pct'); if(pe)pe.textContent=cnt;
+    }
+  }
+
+  // Bedside rate
+  const bedsideRate=STATS.done>0?Math.round((STATS.bedsideConfirmed/STATS.done)*100):0;
+  const bk=document.getElementById('kpi-bedside'); if(bk)bk.textContent=bedsideRate+'%';
+  const wb=document.getElementById('w-bedside'); if(wb)wb.textContent=bedsideRate+'%';
+
+  // Ward calls
+  document.getElementById('w-calls').textContent=STATS.total;
+
+  // Type dist
+  const td=document.getElementById('exec-type-dist');
+  const maxCnt=Math.max(1,...Object.values(STATS.callsByType));
+  td.innerHTML=REQ_TYPES.map(rt=>{
+    const cnt=STATS.callsByType[rt.type]||0;
+    const pct=Math.round((cnt/maxCnt)*100);
+    return `<div class="type-row"><span class="type-icon">${rt.icon}</span><span class="type-lbl">${rt.label}</span><div class="type-bar-wrap"><div class="type-bar-fill" style="width:${pct}%;background:${rt.color}"></div></div><span class="type-count">${cnt}</span></div>`;
+  }).join('');
+}
+
+function renderWardPerformance(){
+  const tbody=document.getElementById('ward-perf-body'); if(!tbody)return;
+  const currentWard=WARD_PERFORMANCE[0]; // อายุรกรรม 3A = current ward
+  const avgStr=STATS.responseTimes.length>0 ? fmtSec(Math.round(STATS.responseTimes.reduce((a,b)=>a+b,0)/STATS.responseTimes.length)) : '–';
+  const bedsideRate=STATS.done>0 ? Math.round((STATS.bedsideConfirmed/STATS.done)*100)+'%' : '–';
+  const satStr=STATS.satisfaction.length>0 ? (STATS.satisfaction.reduce((a,b)=>a+b,0)/STATS.satisfaction.length).toFixed(1)+'/5' : '–';
+  let html=`<tr><td><strong>${currentWard.name}</strong></td><td id="w-calls">${STATS.total}</td><td id="w-avg">${avgStr}</td><td id="w-bedside">${bedsideRate}</td><td id="w-sat">${satStr}</td><td><span class="chip ok">✅ Live</span></td></tr>`;
+  WARD_PERFORMANCE.slice(1).forEach(w=>{
+    html+=`<tr><td>${w.name}</td><td>${w.calls}</td><td>${w.avgResponse}</td><td>${w.bedsideRate}</td><td>${w.satisfaction}</td><td><span class="chip ${w.status}">${w.statusLabel}</span></td></tr>`;
+  });
+  tbody.innerHTML=html;
+}
+
+/* ─────────────────────────── AUDIT TRAIL ─────────────────────────── */
+function addAudit(ev, type){
+  const tbody=document.getElementById('audit-body'); if(!tbody)return;
+  const row=document.createElement('tr');
+  row.style.background='rgba(22,163,74,.05)';
+  row.innerHTML=`<td style="font-family:'IBM Plex Mono',monospace;font-size:10px;">${ev.tsTH}</td><td><span class="audit-event-badge ${type}">${ev.event}</span></td><td>${ev.user}</td><td>${ev.room}</td><td>${ev.detail}</td><td class="audit-hash">${ev.hash}</td>`;
+  tbody.prepend(row);
+  setTimeout(()=>row.style.background='',1500);
+  while(tbody.children.length>20)tbody.removeChild(tbody.lastChild);
+}
+
+function updateChainSummary(req){
+  const section=document.getElementById('chain-summary'); if(!section)return;
+  section.style.display='';
+  const flow=document.getElementById('chain-flow');
+  const STEPS=[
+    {event:'REQUEST',label:'📞 ส่งคำร้อง',cls:'done'},
+    {event:'NURSE_ACK',label:'✅ ACK',cls:'pending'},
+    {event:'NURSE_ENROUTE',label:'🏃 กำลังไป',cls:'pending'},
+    {event:'BEDSIDE_CONFIRMED',label:'📍 ยืนยันมาถึง',cls:'pending'},
+    {event:'COMPLETE',label:'✅ เสร็จสิ้น',cls:'pending'},
+    {event:'PATIENT_RATED',label:'⭐ ประเมิน',cls:'pending'},
+  ];
+  const doneEvents=new Set(req.auditChain.map(e=>e.event));
+  flow.innerHTML=STEPS.map((s,i)=>`
+    <div class="chain-step">
+      <span class="chain-node ${doneEvents.has(s.event)?'done':'pending'}">${s.label}</span>
+      ${i<STEPS.length-1?'<span class="chain-arrow">→</span>':''}
+    </div>`).join('');
+}
+
+/* ─────────────────────────── LOGS ─────────────────────────── */
+function addLog(color,text){
+  const list=document.getElementById('ns-log-list'); if(!list)return;
+  const item=document.createElement('div'); item.className='log-item';
+  item.innerHTML=`<div class="log-dot" style="background:${color}"></div><div class="log-time">${nowHHMM()}</div><div class="log-text">${text}</div>`;
+  list.prepend(item);
+  while(list.children.length>25)list.removeChild(list.lastChild);
+}
+
+/* ─────────────────────────── AUTO SIMULATION ─────────────────────────── */
+function toggleAuto(){
+  autoRunning=!autoRunning;
+  document.getElementById('autoToggle').className='dc-toggle'+(autoRunning?' on':'');
+  autoRunning?startAutoSim():clearInterval(autoInterval);
+}
+function setSpeed(s,_,btn){
+  autoSpeed=s;
+  document.querySelectorAll('.dc-speed-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(autoRunning)startAutoSim();
+}
+function startAutoSim(){
+  clearInterval(autoInterval);
+  autoInterval=setInterval(()=>{
+    const free=PATIENTS.filter(p=>!roomRequests[p.room]&&p.room!=='301A');
+    if(!free.length)return;
+    const p=free[Math.floor(Math.random()*free.length)];
+    const w=['general','general','water','water','toilet','toilet','pain'];
+    const req=createRequest(p,w[Math.floor(Math.random()*w.length)]);
+    if(!req)return;
+    // Auto ACK after 5-10s
+    setTimeout(()=>{
+      if(req.status==='waiting')ackRequest(req.id);
+      // Auto enroute after 5s
+      setTimeout(()=>{
+        if(req.status==='ack')enrouteRequest(req.id);
+        // Auto bedside-confirm after 10-20s (simulated)
+        setTimeout(()=>{
+          if(req.status==='enroute'){
+            req.status='bedside'; req.bedsideTime=Date.now();
+            STATS.bedsideConfirmed++;
+            const ev={event:'BEDSIDE_CONFIRMED',user:'ผู้ป่วย (Auto-Sim)',room:req.patient.room,detail:'📍 ยืนยันมาถึง (Simulated)',ts:nowISO(),tsTH:nowTH()};
+            ev.hash=makeHash(ev); req.auditChain.push(ev); addAudit(ev,'bedside');
+            renderTriageBoard(); renderRoomCard(req.patient.room,'bedside-ok');
+            renderSimCard(req.patient.room,'bedside',''); updateNSStats();
+            addLog('var(--teal)',`ห้อง ${req.patient.room}: 📍 Bedside Confirmed (Sim)`);
+            // Auto complete after 10-20s
+            setTimeout(()=>{if(req.status==='bedside')completeRequest(req.id,'auto');},
+              (10+Math.random()*10)*1000);
+          }
+        },(10+Math.random()*10)*1000);
+      },(5+Math.random()*5)*1000);
+    },(5+Math.random()*5)*1000);
+  },autoSpeed*1000);
+}
+function simulateRandom(){
+  const free=PATIENTS.filter(p=>!roomRequests[p.room]);
+  if(!free.length)return;
+  const p=free[Math.floor(Math.random()*free.length)];
+  if(p.room==='301A'){patientSendRequest('general','ขอความช่วยเหลือ','🙋');return;}
+  const w=['general','general','water','water','toilet','toilet','pain','emergency'];
+  createRequest(p,w[Math.floor(Math.random()*w.length)]);
+}
+
+/* ─────────────────────────── INIT ─────────────────────────── */
+const execUserEl = document.getElementById('exec-current-user');
+if(execUserEl) execUserEl.textContent = CURRENT_USER.name + ' · ' + CURRENT_USER.role;
+renderPatientHeader();
+updateSleepTileLatest();
+initSimPanel();
+initRoomGrid();
+renderNSMedAlerts();
+renderNSStaff();
+renderNSVtp();
+updateExecDashboard();
+updateAlertBadge();
+</script>
+</body>
+</html>
