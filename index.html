@@ -1128,7 +1128,7 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
           <div class="ns-section-title">🔴 Live Triage Board <span class="ns-count-badge" id="ns-queue-badge">0</span></div>
           <div class="ns-fair-info" id="ns-fair-info">
             <span>⚖️</span>
-            <span><strong>มอบหมายอัตโนมัติตาม workload</strong> — กด "รับทราบ (มอบตามระบบ)" ระบบจะเลือกพยาบาลที่งานน้อยสุดหรือสลับตามลำดับ ลดการเลือกที่รักมักที่ชัง</span>
+            <span><strong>มอบหมายอัตโนมัติตาม workload</strong> — กด "รับทราบ (มอบตามระบบ)" ระบบจะเลือกพยาบาลที่งานน้อยสุดหรือสลับตามลำดับ มอบหมายอย่างเป็นธรรม</span>
           </div>
           <div id="ns-triage-list" class="triage-list"><div class="ns-empty">กดปุ่ม "เรียกพยาบาล" บน Patient App เพื่อเริ่มต้น</div></div>
         </div>
@@ -2784,7 +2784,7 @@ function submitRating(){
 }
 function skipRating(){ closeAllOverlays(); updateFlowBar(0); }
 
-/* ─────────────────────────── NURSE STATION: มอบหมายยุติธรรม (ป้องกันเลือกที่รักมักที่ชัง) ─────────────────────────── */
+/* ─────────────────────────── NURSE STATION: มอบหมายตามระบบ (เป็นธรรมตาม workload) ─────────────────────────── */
 function getStaffWorkload(nurseName){
   return QUEUE.filter(q=>q.nurse===nurseName&&q.status!=='done').length;
 }
