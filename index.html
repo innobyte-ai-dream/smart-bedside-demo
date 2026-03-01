@@ -16,6 +16,7 @@
   --green:#16a34a;--green-l:#dcfce7;
   --purple:#7c3aed;--purple-l:#ede9fe;
   --bg:#f0f4f8;--text:#1a2742;--muted:#607090;
+  --pt-text-secondary:#4a5568;
   --border:#d8e4f0;--card:#fff;
   --shadow:0 2px 16px rgba(12,31,63,.09);
 }
@@ -79,126 +80,145 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 
 /* Nurse Call Type Selection */
 .ov-nursecall{background:#f8fafc;}
-.ov-nursecall-hdr{background:linear-gradient(135deg,#b83a2a,#e8735a);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.ov-back-btn{background:rgba(255,255,255,.25);border:none;border-radius:7px;padding:4px 11px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;}
+.ov-nursecall-hdr{background:linear-gradient(135deg,#b83a2a,#e8735a);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.ov-back-btn{background:rgba(255,255,255,.25);border:none;border-radius:10px;padding:8px 14px;min-height:44px;font-size:20px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;}
 .ov-hdr-info{flex:1;}
-.ov-hdr-title{font-size:15px;font-weight:700;color:#fff;}
-.ov-hdr-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;}
-.ov-nc-body{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
-.ov-pt-card{background:#fff8f7;border:1.5px solid rgba(232,115,90,.2);border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:10px;}
-.ov-pt-av{font-size:22px;}
-.ov-pt-name{font-size:12px;font-weight:700;color:#b83a2a;}
-.ov-pt-info{font-size:10px;color:var(--muted);margin-top:2px;}
-.ov-type-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
-.ov-nc-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.nc-btn{background:#fff;border:2px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;transition:.2s;}
-.nc-btn:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.1);}
-.nc-btn:active{transform:scale(.97);}
+.ov-hdr-title{font-size:22px;font-weight:700;color:#fff;}
+.ov-hdr-sub{font-size:16px;color:rgba(255,255,255,.85);margin-top:2px;}
+.ov-nc-body{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:10px;}
+.ov-pt-card{background:#fff8f7;border:1px solid rgba(232,115,90,.25);border-radius:10px;padding:6px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.ov-pt-av{font-size:20px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(232,115,90,.12);flex-shrink:0;}
+.ov-pt-name{font-size:16px;font-weight:700;color:#b83a2a;}
+.ov-pt-info{font-size:13px;color:var(--pt-text-secondary);margin-top:0;}
+.ov-nc-content{max-width:520px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:10px;}
+.ov-nc-section-lead{font-size:18px;font-weight:700;color:var(--pt-text-secondary);margin:0 0 2px;text-align:center;}
+.ov-nc-group{display:flex;flex-direction:column;gap:6px;}
+.ov-nc-group-title{font-size:14px;font-weight:700;color:var(--pt-text-secondary);text-transform:uppercase;letter-spacing:.5px;}
+.ov-nc-group-emerg .ov-nc-group-title{color:#c04030;}
+.ov-nc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.nc-btn{background:#fff;border:2px solid var(--border);border-radius:12px;padding:14px 10px;min-height:56px;cursor:pointer;text-align:center;font-family:inherit;transition:.2s;}
+.nc-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.1);}
+.nc-btn:active:not(:disabled){transform:scale(.97);}
+.nc-btn:disabled{opacity:.85;cursor:not-allowed;}
 .nc-btn.nc-general{border-color:rgba(15,158,142,.4);background:#f0fdfa;}
 .nc-btn.nc-water{border-color:rgba(37,99,235,.4);background:#eff6ff;}
 .nc-btn.nc-toilet{border-color:rgba(124,58,237,.4);background:#f5f3ff;}
 .nc-btn.nc-pain{border-color:rgba(234,88,12,.4);background:#fff7ed;}
-.nc-btn-icon{font-size:24px;display:block;margin-bottom:5px;}
-.nc-btn-lbl{font-size:11px;font-weight:700;color:var(--text);display:block;}
-.nc-btn-sub{font-size:9px;color:var(--muted);display:block;margin-top:1px;}
-.nc-emerg{background:#fff0ee;border:2px solid rgba(220,38,38,.4);border-radius:12px;padding:11px 14px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px;transition:.2s;}
-.nc-emerg:hover{background:#ffe0dc;}
-.nc-emerg-icon{font-size:26px;}
-.nc-emerg-lbl{font-size:12px;font-weight:700;color:var(--red);}
-.nc-emerg-sub{font-size:10px;color:#e8735a;margin-top:1px;}
+.nc-btn-icon{font-size:28px;display:block;margin-bottom:6px;}
+.nc-btn-lbl{font-size:22px;font-weight:700;color:var(--text);display:block;}
+.nc-btn-sub{font-size:14px;color:var(--pt-text-secondary);display:block;margin-top:2px;}
+/* ปุ่มฉุกเฉิน: เต็มความกว้าง สัดส่วนใหญ่ แยกกลุ่มชัด */
+.nc-emerg{width:100%;background:#fff0ee;border:2px solid rgba(220,38,38,.5);border-radius:14px;padding:18px 20px;min-height:72px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:16px;transition:.2s;box-sizing:border-box;}
+.nc-emerg:hover{background:#ffe0dc;box-shadow:0 4px 16px rgba(220,38,38,.2);}
+.nc-emerg:active{transform:scale(.98);}
+.nc-emerg-icon{font-size:36px;flex-shrink:0;}
+.nc-emerg-lbl{font-size:22px;font-weight:700;color:var(--red);}
+.nc-emerg-sub{font-size:16px;color:#e8735a;margin-top:2px;}
+/* Modal ยืนยันฉุกเฉิน — กลางจอ ชัดเจน */
+.nc-emerg-modal{display:none;position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+.nc-emerg-modal.show{display:flex;}
+.nc-emerg-modal-box{background:#fff;border:3px solid #dc2626;border-radius:20px;padding:24px 28px;max-width:360px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center;}
+.nc-emerg-modal-icon{font-size:48px;margin-bottom:12px;}
+.nc-emerg-confirm-msg{font-size:22px;font-weight:800;color:var(--text);margin:0 0 20px;line-height:1.4;}
+.nc-emerg-confirm-btns{display:flex;flex-direction:column;gap:12px;}
+.nc-emerg-confirm-cancel,.nc-emerg-confirm-ok{padding:14px 20px;min-height:52px;border-radius:14px;font-size:20px;font-weight:700;cursor:pointer;font-family:inherit;border:2px solid;}
+.nc-emerg-confirm-ok{background:#dc2626;border-color:#b91c1c;color:#fff;order:-1;}
+.nc-emerg-confirm-ok:hover{background:#b91c1c;}
+.nc-emerg-confirm-cancel{background:#f1f5f9;border-color:var(--border);color:var(--text);}
+.nc-emerg-confirm-cancel:hover{background:#e2e8f0;}
 
 /* ── BEDSIDE CONFIRM OVERLAY ── */
 .ov-bedside{background:#f0f9ff;}
-.ov-bedside-hdr{background:linear-gradient(135deg,#1e40af,#2563eb);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-bedside-hdr{background:linear-gradient(135deg,#1e40af,#2563eb);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .ov-bedside-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:12px;text-align:center;}
 .bedside-icon{font-size:56px;margin-bottom:4px;}
-.bedside-nurse-name{font-size:16px;font-weight:800;color:var(--navy);}
-.bedside-msg{font-size:13px;color:var(--muted);line-height:1.5;}
-.bedside-timer-box{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:10px 20px;font-family:'IBM Plex Mono',monospace;}
-.bedside-timer-lbl{font-size:10px;color:var(--muted);}
+.bedside-nurse-name{font-size:22px;font-weight:800;color:var(--navy);}
+.bedside-msg{font-size:16px;color:var(--pt-text-secondary);line-height:1.5;}
+.bedside-timer-box{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:12px 20px;font-family:'IBM Plex Mono',monospace;}
+.bedside-timer-lbl{font-size:16px;color:var(--pt-text-secondary);}
 .bedside-timer-val{font-size:24px;font-weight:700;color:var(--blue);}
-.bedside-confirm-btn{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 28px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;max-width:280px;transition:.2s;box-shadow:0 4px 20px rgba(37,99,235,.3);}
+.bedside-confirm-btn{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 28px;min-height:48px;font-size:22px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;max-width:280px;transition:.2s;box-shadow:0 4px 20px rgba(37,99,235,.3);}
 .bedside-confirm-btn:hover{opacity:.9;transform:scale(1.02);}
 .bedside-confirm-btn:active{transform:scale(.98);}
-.bedside-note{font-size:10px;color:var(--muted);padding:0 16px;}
+.bedside-note{font-size:14px;color:var(--pt-text-secondary);padding:0 16px;}
 
 /* ── CARE IN PROGRESS OVERLAY ── */
 .ov-care{background:#f0fdf4;}
 .ov-care-hdr{background:linear-gradient(135deg,#14532d,#16a34a);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .ov-care-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:12px;text-align:center;}
 .care-icon{font-size:50px;}
-.care-title{font-size:15px;font-weight:800;color:#14532d;}
-.care-nurse{font-size:13px;color:var(--muted);}
-.care-req{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--text);}
-.care-complete-btn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:14px 28px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;max-width:280px;transition:.2s;box-shadow:0 4px 20px rgba(22,163,74,.3);}
+.care-title{font-size:22px;font-weight:800;color:#14532d;}
+.care-nurse{font-size:16px;color:var(--pt-text-secondary);}
+.care-req{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:16px;font-weight:600;color:var(--text);}
+.care-complete-btn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:14px 28px;min-height:48px;font-size:22px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;max-width:280px;transition:.2s;box-shadow:0 4px 20px rgba(22,163,74,.3);}
 .care-complete-btn:hover{opacity:.9;transform:scale(1.02);}
 
 /* ── RATING OVERLAY ── */
 .ov-rating{background:#fffbf0;}
 .ov-rating-hdr{background:linear-gradient(135deg,#78350f,#d97706);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .ov-rating-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:10px;text-align:center;}
-.rating-title{font-size:15px;font-weight:800;color:#78350f;}
-.rating-sub{font-size:12px;color:var(--muted);}
-.rating-submit-btn{background:var(--amber);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;width:100%;max-width:240px;}
-.rating-skip{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;}
+.rating-title{font-size:22px;font-weight:800;color:#78350f;}
+.rating-sub{font-size:16px;color:var(--pt-text-secondary);}
+.rating-submit-btn{background:var(--amber);color:#fff;border:none;border-radius:12px;padding:12px 28px;min-height:48px;font-size:22px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;width:100%;max-width:240px;}
+.rating-skip{font-size:16px;color:var(--pt-text-secondary);cursor:pointer;text-decoration:underline;}
 
 /* ── ALERTS OVERLAY (BLOCK AL) ── */
 .ov-alerts{background:#fffef7;}
-.ov-alerts-hdr{background:linear-gradient(135deg,#854d0e,#b45309);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-alerts-hdr{background:linear-gradient(135deg,#854d0e,#b45309);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .ov-alerts-body{flex:1;overflow-y:auto;padding:12px 14px;}
-.ov-alerts-section{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:10px 0 6px;}
+.ov-alerts-section{font-size:16px;font-weight:700;color:var(--pt-text-secondary);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 8px;}
 .ov-alerts-section:first-of-type{margin-top:0;}
-.alert-item{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+.alert-item{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
 .alert-item.done{opacity:.6;}
-.alert-item-name{font-size:13px;font-weight:700;color:var(--text);}
-.alert-item-meta{font-size:11px;color:var(--muted);margin-top:2px;}
-.alert-item-actions{display:flex;gap:6px;margin-top:8px;}
-.alert-item-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit;}
+.alert-item-name{font-size:22px;font-weight:700;color:var(--text);}
+.alert-item-meta{font-size:16px;color:var(--pt-text-secondary);margin-top:4px;}
+.alert-item-actions{display:flex;gap:8px;margin-top:10px;}
+.alert-item-btn{padding:10px 16px;min-height:48px;border-radius:10px;font-size:20px;font-weight:700;cursor:pointer;border:none;font-family:inherit;}
 .alert-item-btn.ack{background:var(--blue-l);color:var(--blue);}
 .alert-item-btn.taken{background:var(--green-l);color:var(--green);}
 
 /* ── TELEMEDICINE OVERLAY (BLOCK T) ── */
 .ov-tele{background:#f0f9ff;}
-.ov-tele-hdr{background:linear-gradient(135deg,#1e40af,#2563eb);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ov-tele-hdr{background:linear-gradient(135deg,#1e40af,#2563eb);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .ov-tele-body{flex:1;overflow-y:auto;padding:12px 14px;}
 .ov-tele-step{display:none;}
 .ov-tele-step.show{display:block;}
-.tele-dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.tele-dept-btn{background:#fff;border:2px solid var(--border);border-radius:12px;padding:12px 10px;cursor:pointer;text-align:center;font-family:inherit;transition:.2s;}
+.tele-dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tele-dept-btn{background:#fff;border:2px solid var(--border);border-radius:12px;padding:14px 12px;min-height:48px;cursor:pointer;text-align:center;font-family:inherit;transition:.2s;}
 .tele-dept-btn:hover{border-color:var(--blue);background:var(--blue-l);}
 .tele-dept-btn.full{border-color:var(--amber);background:#fef3c7;}
-.tele-dept-name{font-size:12px;font-weight:700;color:var(--text);}
-.tele-dept-queue{font-size:10px;color:var(--muted);margin-top:2px;}
-.tele-wait-msg{text-align:center;padding:20px;font-size:14px;color:var(--text);}
+.tele-dept-name{font-size:22px;font-weight:700;color:var(--text);}
+.tele-dept-queue{font-size:16px;color:var(--pt-text-secondary);margin-top:4px;}
+.tele-wait-msg{text-align:center;padding:20px;font-size:22px;color:var(--text);}
 .tele-wait-num{font-size:28px;font-weight:800;color:var(--blue);font-family:'IBM Plex Mono',monospace;}
 .tele-consult-placeholder{background:rgba(0,0,0,.05);border-radius:12px;padding:24px;text-align:center;}
 .tele-consult-placeholder .icon{font-size:48px;margin-bottom:8px;}
-.tele-consult-placeholder .txt{font-size:13px;color:var(--muted);}
-.tele-end-btn{width:100%;max-width:260px;margin:16px auto 0;padding:12px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:block;}
+.tele-consult-placeholder .txt{font-size:16px;color:var(--pt-text-secondary);}
+.tele-end-btn{width:100%;max-width:260px;margin:16px auto 0;padding:14px;min-height:48px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:22px;font-weight:700;cursor:pointer;font-family:inherit;display:block;}
 
 /* ── FOOD SERVICE OVERLAY (TOR 1.2: Large touch, font 18–28px) ── */
 .ov-food{background:#fffbf5;}
 .ov-food-hdr{background:linear-gradient(135deg,#b45309,#ea580c);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
-.ov-food-hdr .ov-hdr-title{font-size:18px;font-weight:700;}
-.ov-food-hdr .ov-hdr-sub{font-size:12px;}
+.ov-food-hdr .ov-hdr-title{font-size:22px;font-weight:700;}
+.ov-food-hdr .ov-hdr-sub{font-size:16px;}
 .ov-food-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
-.ov-food-section{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.ov-food-section{font-size:16px;font-weight:700;color:var(--pt-text-secondary);text-transform:uppercase;letter-spacing:.6px;}
 .food-meal-row{background:#fff;border:2px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:0;}
-.food-meal-row .name{font-size:18px;font-weight:700;color:var(--text);}
-.food-meal-row .time{font-size:13px;color:var(--muted);margin-top:4px;}
-.food-meal-row .status{font-size:13px;font-weight:600;margin-top:8px;padding:6px 12px;border-radius:8px;display:inline-block;}
+.food-meal-row .name{font-size:22px;font-weight:700;color:var(--text);}
+.food-meal-row .time{font-size:16px;color:var(--pt-text-secondary);margin-top:4px;}
+.food-meal-row .status{font-size:16px;font-weight:600;margin-top:8px;padding:8px 14px;border-radius:8px;display:inline-block;}
 .food-meal-row .status.pending{background:#fef3c7;color:#92400e;}
 .food-meal-row .status.ordered{background:#dbeafe;color:#1e40af;}
 .food-meal-row .status.preparing{background:#ffedd5;color:#9a3412;}
 .food-meal-row .status.delivered{background:#dcfce7;color:#14532d;}
-.food-meal-btn{min-height:48px;margin-top:12px;padding:14px 16px;background:var(--orange);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:.2s;}
+.food-meal-btn{min-height:48px;margin-top:12px;padding:14px 16px;background:var(--orange);color:#fff;border:none;border-radius:12px;font-size:22px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:.2s;}
 .food-meal-btn:hover{opacity:.95;}
 .food-meal-btn:active{transform:scale(.98);}
 /* เลือกรายการ — grid เหมือน Nurse Call (TOR 1.2) */
 .food-select-hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.food-select-back{min-height:48px;background:rgba(0,0,0,.08);border:none;border-radius:10px;padding:10px 18px;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;}
+.food-select-back{min-height:48px;background:rgba(0,0,0,.08);border:none;border-radius:10px;padding:10px 18px;font-size:22px;font-weight:700;cursor:pointer;font-family:inherit;}
 .food-select-title{font-size:22px;font-weight:700;color:var(--text);}
-.ov-type-title.food{font-size:16px;font-weight:700;margin:12px 0 10px;color:var(--muted);}
+.ov-type-title.food{font-size:20px;font-weight:700;margin:12px 0 10px;color:var(--pt-text-secondary);}
 /* ผู้สูงอายุ: การ์ดใหญ่ รูปใหญ่ ตัวอักษร 20–24px (TOR 1.2+) */
 .food-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .food-menu-btn{min-height:100px;background:#fff;border:3px solid var(--border);border-radius:16px;padding:16px 12px;cursor:pointer;text-align:center;font-family:inherit;transition:.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
@@ -215,26 +235,26 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 .ov-phase2{background:#f8fafc;}
 .ov-phase2-body{flex:1;overflow-y:auto;padding:16px;}
 .ov-phase2-body .icon{font-size:56px;margin-bottom:12px;}
-.ov-phase2-body .title{font-size:16px;font-weight:800;color:var(--text);}
-.ov-phase2-body .sub{font-size:12px;color:var(--muted);margin-top:6px;}
+.ov-phase2-body .title{font-size:22px;font-weight:800;color:var(--text);}
+.ov-phase2-body .sub{font-size:16px;color:var(--pt-text-secondary);margin-top:6px;}
 .phase2-card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);}
-.phase2-card h4{font-size:18px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
-.phase2-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.06);gap:10px;font-size:18px;}
+.phase2-card h4{font-size:20px;font-weight:700;color:var(--pt-text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.phase2-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.06);gap:10px;font-size:22px;}
 .phase2-row:last-child{border-bottom:none;}
-.phase2-list-btn{width:100%;text-align:left;background:#fff;border:2px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;font-family:inherit;font-size:18px;font-weight:600;display:flex;align-items:center;gap:12px;transition:.2s;min-height:48px;}
+.phase2-list-btn{width:100%;text-align:left;background:#fff;border:2px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;font-family:inherit;font-size:22px;font-weight:600;display:flex;align-items:center;gap:12px;transition:.2s;min-height:48px;}
 .phase2-list-btn:hover{background:#f0f9ff;border-color:var(--blue);}
 .phase2-list-btn .icon{font-size:28px;}
-.phase2-list-btn .category{font-size:14px;color:var(--muted);}
+.phase2-list-btn .category{font-size:16px;color:var(--pt-text-secondary);}
 .phase2-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin:12px 0;}
 .phase2-ctrl .val{font-size:22px;font-weight:800;color:var(--text);min-width:60px;text-align:center;}
-.phase2-ctrl .unit{font-size:14px;color:var(--muted);margin-left:2px;}
+.phase2-ctrl .unit{font-size:14px;color:var(--pt-text-secondary);margin-left:2px;}
 .phase2-ctrl button{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;}
 .phase2-ctrl button:hover{background:var(--teal-l);border-color:var(--teal);color:var(--teal);}
 .phase2-badge{font-size:14px;background:var(--green-l);color:var(--green);padding:4px 10px;border-radius:20px;font-weight:700;}
 .phase2-call-btn{min-height:48px;padding:10px 18px;font-size:18px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:2px solid var(--teal);background:var(--teal-l);color:var(--teal);}
 .phase2-contact-name{font-size:18px;font-weight:700;}
-.phase2-contact-relation{font-size:14px;color:var(--muted);}
-.phase2-sub-note{font-size:14px;color:var(--muted);text-align:center;margin-top:12px;}
+.phase2-contact-relation{font-size:14px;color:var(--pt-text-secondary);}
+.phase2-sub-note{font-size:14px;color:var(--pt-text-secondary);text-align:center;margin-top:12px;}
 .phase2-back-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
 .phase2-back-btn{min-height:48px;padding:10px 16px;font-size:18px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:2px solid var(--border);background:#fff;color:var(--text);display:inline-flex;align-items:center;gap:6px;}
 .phase2-back-btn:hover{background:var(--teal-l);border-color:var(--teal);color:var(--teal);}
@@ -255,49 +275,49 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 .sleep-section-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--teal);}
 .sleep-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:18px;border-bottom:1px solid rgba(0,0,0,.06);}
 .sleep-row:last-child{border-bottom:none;}
-.sleep-row .lbl{color:var(--muted);}
+.sleep-row .lbl{color:var(--pt-text-secondary);}
 .sleep-row .val{font-weight:700;font-size:20px;color:var(--text);}
 .sleep-table .sleep-row{font-size:18px;}
 .sleep-summary-box{background:var(--teal-l);border:2px solid rgba(15,158,142,.25);border-radius:12px;padding:16px;margin-top:12px;}
 .sleep-summary-box .big{font-size:22px;font-weight:800;color:var(--teal);}
 .sleep-summary-box .line{font-size:18px;margin-top:8px;color:var(--text);}
-.pt-tile-num{font-size:15px;font-weight:700;color:var(--teal);margin-top:2px;}
+.pt-tile-num{font-size:18px;font-weight:700;color:var(--teal);margin-top:4px;}
 
-/* Patient Home Screen */
-.pt-hdr{background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.pt-av{width:42px;height:42px;border-radius:50%;background:#dceef8;border:2px solid #4a90d9;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.pt-name{font-size:13px;font-weight:700;color:var(--text);}
-.pt-info{font-size:10px;color:var(--muted);margin-top:1px;}
+/* Patient Home Screen — ตัวอักษรใหญ่ อ่านง่าย ผู้สูงอายุ (TOR 1.2, D5) */
+.pt-hdr{background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06);padding:12px 14px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.pt-av{width:48px;height:48px;border-radius:50%;background:#dceef8;border:2px solid #4a90d9;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.pt-name{font-size:22px;font-weight:700;color:var(--text);}
+.pt-info{font-size:16px;color:var(--pt-text-secondary);margin-top:2px;}
 .pt-tags{display:flex;gap:4px;margin-top:2px;flex-wrap:wrap;}
-.pt-tag{padding:1px 6px;border-radius:20px;background:#fde8e3;color:#c04030;font-size:9px;font-weight:600;}
-.pt-team{margin-left:auto;display:flex;gap:7px;}
+.pt-tag{padding:2px 8px;border-radius:20px;background:#fde8e3;color:#c04030;font-size:12px;font-weight:600;}
+.pt-team{margin-left:auto;display:flex;gap:8px;}
 .pt-mbr{display:flex;flex-direction:column;align-items:center;gap:2px;}
-.pt-mbr-av{width:32px;height:32px;border-radius:50%;background:#e0f0ff;border:2px solid #4a90d9;display:flex;align-items:center;justify-content:center;font-size:14px;}
-.pt-mbr-nm{font-size:9px;color:var(--muted);text-align:center;}
-.pt-clock{padding:6px 10px;background:rgba(37,99,235,.08);border-radius:9px;border:1px solid rgba(37,99,235,.15);text-align:right;flex-shrink:0;}
+.pt-mbr-av{width:36px;height:36px;border-radius:50%;background:#e0f0ff;border:2px solid #4a90d9;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.pt-mbr-nm{font-size:14px;color:var(--pt-text-secondary);text-align:center;}
+.pt-clock{padding:8px 12px;background:rgba(37,99,235,.08);border-radius:10px;border:1px solid rgba(37,99,235,.15);text-align:right;flex-shrink:0;}
 .pt-clock-val{font-size:20px;font-weight:800;color:#1d4ed8;font-family:'IBM Plex Mono',monospace;line-height:1;}
-.pt-clock-date{font-size:9px;color:var(--muted);margin-top:2px;}
+.pt-clock-date{font-size:14px;color:var(--pt-text-secondary);margin-top:2px;}
 
-.pt-callbar{display:none;align-items:center;gap:10px;padding:7px 14px;border-bottom:2px solid;flex-shrink:0;}
+.pt-callbar{display:none;align-items:center;gap:12px;padding:10px 14px;border-bottom:2px solid;flex-shrink:0;}
 .pt-callbar.show{display:flex;}
 .pt-callbar.waiting{background:#fde3da;border-color:#e8735a;}
 .pt-callbar.ack,.pt-callbar.enroute{background:#dbeafe;border-color:#3b82f6;}
 .pt-callbar.bedside,.pt-callbar.progress{background:#dcfce7;border-color:#22c55e;}
-.cb-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.cb-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
 .cb-dot.red{background:#e8735a;box-shadow:0 0 0 3px rgba(232,115,90,.25);animation:pulse 1.2s infinite;}
 .cb-dot.blue{background:var(--blue);}
 .cb-dot.green{background:var(--green);}
-.cb-text{font-size:12px;font-weight:700;flex:1;}
+.cb-text{font-size:22px;font-weight:700;flex:1;}
 .cb-text.waiting{color:#c04030;}
 .cb-text.ack,.cb-text.enroute{color:#1d4ed8;}
 .cb-text.bedside,.cb-text.progress{color:#15803d;}
-.cb-timer{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);}
-.cb-cancel{padding:3px 10px;border:2px solid #e8735a;border-radius:6px;background:transparent;font-size:10px;font-weight:700;color:#c04030;cursor:pointer;font-family:inherit;}
+.cb-timer{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--pt-text-secondary);}
+.cb-cancel{padding:10px 16px;min-height:48px;border:2px solid #e8735a;border-radius:10px;background:transparent;font-size:20px;font-weight:700;color:#c04030;cursor:pointer;font-family:inherit;}
 
-.pt-grid{flex:1;padding:8px 10px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:6px;}
-.pt-tile{border-radius:11px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.06);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 4px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.05);}
-.pt-tile:hover{transform:scale(1.04);box-shadow:0 5px 16px rgba(0,0,0,.1);}
-.pt-tile::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:11px 11px 0 0;}
+.pt-grid{flex:1;padding:10px 12px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:8px;}
+.pt-tile{border-radius:12px;background:rgba(255,255,255,.88);border:1px solid rgba(0,0,0,.06);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 8px;min-height:56px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.pt-tile:hover{transform:scale(1.03);box-shadow:0 6px 20px rgba(0,0,0,.1);}
+.pt-tile::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:12px 12px 0 0;}
 .pt-tile.nurse::before{background:#e8735a;}
 .pt-tile.tele::before{background:#4a90d9;}
 .pt-tile.food::before{background:#f0a04b;}
@@ -307,12 +327,12 @@ body{font-family:'IBM Plex Sans','Noto Sans Thai',sans-serif;background:var(--bg
 .pt-tile.family::before{background:#e8709a;}
 .pt-tile.room::before{background:#2bbdb4;}
 .pt-tile.nurse{background:#fff0ee;border-color:rgba(232,115,90,.3);}
-.pt-tile-icon{font-size:22px;}
-.pt-tile-lbl{font-size:10px;font-weight:700;color:var(--text);text-align:center;line-height:1.3;}
-.pt-tile-sub{font-size:9px;color:var(--muted);}
-.pt-badge{position:absolute;top:5px;right:5px;background:var(--red);color:#fff;font-size:8px;font-weight:700;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;}
-.pt-footer{padding:4px 14px;border-top:1px solid rgba(0,0,0,.05);background:rgba(255,255,255,.5);display:flex;justify-content:space-between;flex-shrink:0;}
-.pt-footer span{font-size:9px;color:var(--muted);}
+.pt-tile-icon{font-size:32px;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.6);flex-shrink:0;}
+.pt-tile-lbl{font-size:22px;font-weight:700;color:var(--text);text-align:center;line-height:1.3;}
+.pt-tile-sub{font-size:16px;color:var(--pt-text-secondary);}
+.pt-badge{position:absolute;top:6px;right:6px;background:var(--red);color:#fff;font-size:10px;font-weight:700;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+.pt-footer{padding:8px 14px;border-top:1px solid rgba(0,0,0,.05);background:rgba(255,255,255,.5);display:flex;justify-content:space-between;flex-shrink:0;}
+.pt-footer span{font-size:14px;color:var(--pt-text-secondary);}
 
 /* SIM PANEL */
 .sim-panel{height:100%;display:flex;flex-direction:column;}
@@ -611,7 +631,7 @@ table.dt.audit th{padding:6px 12px;font-size:10px;}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:4px;}
 
 /* TOR 1.6 — Dark mode 19:00–06:00 */
-body.theme-dark{--bg:#1a1f2e;--text:#e2e8f0;--muted:#94a3b8;--border:#334155;--card:#1e293b;}
+body.theme-dark{--bg:#1a1f2e;--text:#e2e8f0;--muted:#94a3b8;--pt-text-secondary:#94a3b8;--border:#334155;--card:#1e293b;}
 body.theme-dark .exec-page{background:#0f172a;}
 body.theme-dark .ov-page{background:var(--bg);}
 body.theme-dark .pt-left{background:linear-gradient(150deg,#1e293b,#0f172a);}
@@ -679,27 +699,46 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
             <div class="ov-nc-body">
               <div class="ov-pt-card">
                 <div class="ov-pt-av" id="ov-pt-av">👴</div>
-                <div><div class="ov-pt-name" id="ov-pt-name">สมชาย ใจดี · ห้อง 301A</div><div class="ov-pt-info" id="ov-pt-info">อายุ 79 ปี · ห้อง 301A</div></div>
+                <div><div class="ov-pt-name" id="ov-pt-name">คุณคือ สมชาย ใจดี</div><div class="ov-pt-info" id="ov-pt-info">ห้อง 301A · อายุ 79 ปี</div></div>
               </div>
-              <div class="ov-type-title">เลือกประเภทที่ต้องการความช่วยเหลือ</div>
-              <div class="ov-nc-grid">
-                <button class="nc-btn nc-general" onclick="patientSendRequest('general','ขอความช่วยเหลือ','🙋')">
-                  <span class="nc-btn-icon">🙋</span><span class="nc-btn-lbl">ขอความช่วยเหลือ</span><span class="nc-btn-sub">General Help</span>
-                </button>
-                <button class="nc-btn nc-water" onclick="patientSendRequest('water','ขอน้ำ / ผ้าห่ม','💧')">
-                  <span class="nc-btn-icon">💧</span><span class="nc-btn-lbl">ขอน้ำ / ผ้าห่ม</span><span class="nc-btn-sub">Water / Blanket</span>
-                </button>
-                <button class="nc-btn nc-toilet" onclick="patientSendRequest('toilet','เข้าห้องน้ำ','🚽')">
-                  <span class="nc-btn-icon">🚽</span><span class="nc-btn-lbl">เข้าห้องน้ำ</span><span class="nc-btn-sub">Bathroom</span>
-                </button>
-                <button class="nc-btn nc-pain" onclick="patientSendRequest('pain','แจ้งอาการเจ็บปวด','😣')">
-                  <span class="nc-btn-icon">😣</span><span class="nc-btn-lbl">แจ้งอาการเจ็บปวด</span><span class="nc-btn-sub">Pain Report</span>
-                </button>
+              <div class="ov-nc-content">
+                <p class="ov-nc-section-lead">ต้องการความช่วยเหลือแบบไหน?</p>
+                <div class="ov-nc-group">
+                  <div class="ov-nc-group-title">ความช่วยเหลือทั่วไป</div>
+                  <div class="ov-nc-grid">
+                    <button type="button" class="nc-btn nc-general" data-type="general" onclick="patientSendWithFeedback('general','ขอความช่วยเหลือ','🙋',this)">
+                      <span class="nc-btn-icon">🙋</span><span class="nc-btn-lbl">ขอความช่วยเหลือ</span><span class="nc-btn-sub">กดเมื่อต้องการความช่วยเหลือทั่วไป</span>
+                    </button>
+                    <button type="button" class="nc-btn nc-water" data-type="water" onclick="patientSendWithFeedback('water','ขอน้ำ / ผ้าห่ม','💧',this)">
+                      <span class="nc-btn-icon">💧</span><span class="nc-btn-lbl">ขอน้ำ / ผ้าห่ม</span><span class="nc-btn-sub">กดเมื่อต้องการน้ำหรือผ้าห่ม</span>
+                    </button>
+                    <button type="button" class="nc-btn nc-toilet" data-type="toilet" onclick="patientSendWithFeedback('toilet','เข้าห้องน้ำ','🚽',this)">
+                      <span class="nc-btn-icon">🚽</span><span class="nc-btn-lbl">เข้าห้องน้ำ</span><span class="nc-btn-sub">กดเมื่อต้องการไปห้องน้ำ</span>
+                    </button>
+                    <button type="button" class="nc-btn nc-pain" data-type="pain" onclick="patientSendWithFeedback('pain','แจ้งอาการเจ็บปวด','😣',this)">
+                      <span class="nc-btn-icon">😣</span><span class="nc-btn-lbl">แจ้งอาการเจ็บปวด</span><span class="nc-btn-sub">กดเมื่อมีอาการเจ็บปวด</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="ov-nc-group ov-nc-group-emerg">
+                  <div class="ov-nc-group-title">ฉุกเฉิน</div>
+                  <button type="button" class="nc-emerg" id="nc-emerg-btn" onclick="showEmergencyConfirm()">
+                    <span class="nc-emerg-icon">🚨</span>
+                    <div><div class="nc-emerg-lbl">ฉุกเฉิน</div><div class="nc-emerg-sub">กดเมื่อต้องการความช่วยเหลือด่วนเท่านั้น</div></div>
+                  </button>
+                </div>
               </div>
-              <button class="nc-emerg" onclick="patientSendRequest('emergency','ฉุกเฉิน','🚨')">
-                <span class="nc-emerg-icon">🚨</span>
-                <div><div class="nc-emerg-lbl">ฉุกเฉิน (Emergency)</div><div class="nc-emerg-sub">กดเมื่อต้องการความช่วยเหลือด่วน</div></div>
-              </button>
+            </div>
+            <!-- Modal ยืนยันฉุกเฉิน กลางจอ -->
+            <div class="nc-emerg-modal" id="nc-emerg-modal">
+              <div class="nc-emerg-modal-box">
+                <div class="nc-emerg-modal-icon">🚨</div>
+                <p class="nc-emerg-confirm-msg">แน่ใจหรือไม่?<br>กดยืนยันเพื่อส่งสัญญาณฉุกเฉิน</p>
+                <div class="nc-emerg-confirm-btns">
+                  <button type="button" class="nc-emerg-confirm-ok" onclick="confirmEmergencySend()">ยืนยัน ส่งฉุกเฉิน</button>
+                  <button type="button" class="nc-emerg-confirm-cancel" onclick="hideEmergencyConfirm()">ยกเลิก</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -740,7 +779,7 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
               <div class="care-title">กำลังได้รับการดูแล</div>
               <div class="care-nurse" id="care-nurse-name">–</div>
               <div class="care-req" id="care-req-label">–</div>
-              <div style="font-size:11px;color:var(--muted);max-width:240px;">เมื่อได้รับการดูแลเสร็จเรียบร้อยแล้ว<br>กดปุ่มด้านล่างเพื่อสิ้นสุดคำร้อง</div>
+              <div style="font-size:11px;color:var(--pt-text-secondary);max-width:240px;">เมื่อได้รับการดูแลเสร็จเรียบร้อยแล้ว<br>กดปุ่มด้านล่างเพื่อสิ้นสุดคำร้อง</div>
               <button class="care-complete-btn" onclick="bedsideComplete()">✅ เสร็จสิ้นการบริการ</button>
             </div>
           </div>
@@ -801,7 +840,7 @@ body.theme-dark .demo-ctrl{background:#1e293b;}
                 <button class="nc-btn nc-general" style="width:100%;" onclick="teleJoinQueue()">เข้าระบบคิว — รอปรึกษา</button>
                 <div id="tele-queue-full" style="display:none;background:#fef3c7;border:1px solid var(--amber);border-radius:10px;padding:12px;margin-top:8px;">
                   <div style="font-weight:700;color:#92400e;">คิวเต็ม — บันทึกนัด (T3)</div>
-                  <div id="tele-appoint-msg" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+                  <div id="tele-appoint-msg" style="font-size:12px;color:var(--pt-text-secondary);margin-top:4px;"></div>
                   <button class="alert-item-btn taken" style="margin-top:8px;" onclick="teleBookAppointment()">ตกลง — บันทึกนัด</button>
                 </div>
               </div>
@@ -1416,7 +1455,13 @@ function openOverlay(id){ document.getElementById(id).classList.add('show'); }
 function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
 function closeAllOverlays(){ ['ov-nursecall','ov-bedside','ov-care','ov-rating','ov-alerts','ov-tele','ov-food','ov-phase2'].forEach(closeOverlay); }
 
-function openNurseCallOverlay(){ if(!roomRequests['301A']) openOverlay('ov-nursecall'); }
+function openNurseCallOverlay(){
+  if(!roomRequests['301A']){
+    hideEmergencyConfirm();
+    var eb=document.getElementById('nc-emerg-btn'); if(eb){ eb.disabled=false; eb.style.opacity=''; }
+    openOverlay('ov-nursecall');
+  }
+}
 
 /* ─────────────────────────── PATIENT HEADER (TOR A2) ─────────────────────────── */
 function renderPatientHeader(){
@@ -1936,16 +1981,46 @@ function createRequest(patient, reqType){
     document.getElementById('vtp-red-msg').textContent='กดฉุกเฉิน — แจ้งทีมพยาบาลทุกคน';
   }
   if(patient.room==='301A'){
-    closeAllOverlays();   // กลับ home screen ทันที — ไม่ค้างที่ overlay
     updateCallbar301();
     updateFlowBar(1);
     updateChainSummary(req);
+    showBedsideWaiting(req);  // ไปหน้ารอพยาบาล พร้อมข้อความ "ส่งคำร้องแล้ว"
   }
   return req;
 }
 
 /* ─────────────────────────── PATIENT 301A ─────────────────────────── */
 function patientSendRequest(type,label,icon){ createRequest(PATIENTS[0], type); }
+
+function showEmergencyConfirm(){
+  const el=document.getElementById('nc-emerg-modal'); if(el)el.classList.add('show');
+}
+function hideEmergencyConfirm(){
+  const el=document.getElementById('nc-emerg-modal'); if(el)el.classList.remove('show');
+}
+function confirmEmergencySend(){
+  hideEmergencyConfirm();
+  var btn=document.getElementById('nc-emerg-btn'); if(btn){ btn.disabled=true; btn.style.opacity='0.8'; }
+  createRequest(PATIENTS[0], 'emergency');
+}
+
+function patientSendWithFeedback(type,label,icon,btnEl){
+  const body=document.querySelector('.ov-nc-body');
+  const allBtns=body ? body.querySelectorAll('.nc-btn') : [];
+  allBtns.forEach(function(b){ b.disabled=true; });
+  const lbl=btnEl.querySelector('.nc-btn-lbl');
+  const sub=btnEl.querySelector('.nc-btn-sub');
+  const origLbl=lbl?lbl.textContent:'';
+  const origSub=sub?sub.textContent:'';
+  if(lbl)lbl.textContent='กำลังส่ง...';
+  if(sub)sub.textContent='';
+  setTimeout(function(){
+    createRequest(PATIENTS[0], type);
+    if(lbl)lbl.textContent=origLbl;
+    if(sub)sub.textContent=origSub;
+    allBtns.forEach(function(b){ b.disabled=false; });
+  }, 450);
+}
 
 function patientCancelRequest(){
   const q=roomRequests['301A']; if(!q)return;
@@ -2010,14 +2085,14 @@ function openBedsideStatus(){
 }
 
 function showBedsideWaiting(req){
+  closeOverlay('ov-nursecall');  // ปิดหน้าเรียกพยาบาล เพื่อให้เห็นหน้ารอชัดเจน
   openOverlay('ov-bedside');
   document.getElementById('bedside-icon').textContent=req.status==='enroute'?'🏃':'⏳';
   document.getElementById('bedside-nurse-name').textContent=req.nurse?`${req.nurse} กำลังมา...`:'รอพยาบาลรับคำร้อง...';
-  document.getElementById('bedside-msg').textContent=req.status==='enroute'?'พยาบาลออกเดินทางจากสถานีแล้ว\nกรุณารอสักครู่':'คำร้องถูกส่งไปยังสถานีพยาบาลแล้ว\nกรุณารอสักครู่';
+  document.getElementById('bedside-msg').textContent=req.status==='enroute'?'พยาบาลออกเดินทางจากสถานีแล้ว\nกรุณารอสักครู่':'ส่งคำร้องแล้ว — พยาบาลจะรีบมา\nกรุณารอสักครู่';
   const btn=document.getElementById('bedside-confirm-btn');
-  // Show confirm button only when nurse is enroute
-  btn.style.display=req.status==='enroute'?'':'none';
-  document.getElementById('bedside-note').textContent=req.status==='enroute'?'เมื่อพยาบาลมาถึงเตียง\nกรุณากดปุ่มด้านบนเพื่อยืนยัน':'รอพยาบาลรับทราบคำร้องก่อน...';
+  if(btn)btn.style.display=req.status==='enroute'?'':'none';
+  var note=document.getElementById('bedside-note'); if(note)note.textContent=req.status==='enroute'?'เมื่อพยาบาลมาถึงเตียง\nกรุณากดปุ่มด้านบนเพื่อยืนยัน':'รอพยาบาลรับทราบคำร้องก่อน...';
 }
 
 function bedsideConfirm(){
